@@ -1,7 +1,7 @@
 package cz.cvut.fel.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.cvut.nss.security.model.LoginStatus;
+import cz.cvut.fel.security.model.LoginStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

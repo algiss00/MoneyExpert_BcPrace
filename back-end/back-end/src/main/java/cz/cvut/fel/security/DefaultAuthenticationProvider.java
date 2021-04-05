@@ -1,7 +1,7 @@
 package cz.cvut.fel.security;
 
-import cz.cvut.nss.security.model.AuthenticationToken;
-import cz.cvut.nss.security.model.UserDetails;
+import cz.cvut.fel.security.model.AuthenticationToken;
+import cz.cvut.fel.security.model.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

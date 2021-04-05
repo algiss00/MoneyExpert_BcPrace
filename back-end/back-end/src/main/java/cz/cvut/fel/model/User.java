@@ -2,10 +2,8 @@ package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "user_table")
 @Entity
@@ -23,7 +21,44 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private String password;
 
+    @OneToOne(mappedBy = "creatorId")
+    private Ucet myUcet;
+
+    @ManyToMany
+    @JoinTable(
+            name = "relation_ucet_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "ucet_id"))
+    private List<Ucet> dostupneUcty;
+
+    @OneToMany(mappedBy = "creatorId")
+    private List<Kategorie> myKategories;
+
     public User() {
+    }
+
+    public Ucet getMyUcet() {
+        return myUcet;
+    }
+
+    public void setMyUcet(Ucet myUcet) {
+        this.myUcet = myUcet;
+    }
+
+    public List<Ucet> getDostupneUcty() {
+        return dostupneUcty;
+    }
+
+    public void setDostupneUcty(List<Ucet> dostupneUcty) {
+        this.dostupneUcty = dostupneUcty;
+    }
+
+    public List<Kategorie> getMyKategories() {
+        return myKategories;
+    }
+
+    public void setMyKategories(List<Kategorie> myKategories) {
+        this.myKategories = myKategories;
     }
 
     @Override

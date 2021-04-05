@@ -1,5 +1,6 @@
 package cz.cvut.fel.security;
 
+import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.model.AuthenticationToken;
 import cz.cvut.fel.security.model.UserDetails;
 import org.springframework.security.core.context.SecurityContext;

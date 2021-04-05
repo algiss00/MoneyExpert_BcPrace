@@ -1,6 +1,7 @@
 package cz.cvut.fel.security.model;
 
 
+import cz.cvut.fel.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -16,7 +17,6 @@ public class UserDetails implements org.springframework.security.core.userdetail
         Objects.requireNonNull(user);
         this.user = user;
         this.authorities = new HashSet<>();
-        addUserRole();
     }
 
     public UserDetails(User user, Collection<GrantedAuthority> authorities) {
@@ -24,12 +24,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
         Objects.requireNonNull(authorities);
         this.user = user;
         this.authorities = new HashSet<>();
-        addUserRole();
         this.authorities.addAll(authorities);
-    }
-
-    private void addUserRole() {
-        authorities.add(new SimpleGrantedAuthority(user.getSystemRole().toString()));
     }
 
     @Override
