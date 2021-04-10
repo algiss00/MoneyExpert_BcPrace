@@ -5,12 +5,14 @@ import java.util.Date;
 
 @Table(name = "transakce_table")
 @Entity
-@NamedQuery(name = "Transakce.getAll", query = "SELECT c FROM transakce c")
+@NamedQuery(name = "Transakce.getAll", query = "SELECT c FROM Transakce c")
 public class Transakce extends AbstractEntity{
     @Column
     private double castka;
     @Column
     private Date datum;
+    @Column
+    private String pozanamky;
     @Enumerated(EnumType.STRING)
     private TypTransakce typTransakce;
 
@@ -21,6 +23,13 @@ public class Transakce extends AbstractEntity{
     @JoinColumn(name = "ucet_id")
     private Ucet ucetId;
 
+    public String getPozanamky() {
+        return pozanamky;
+    }
+
+    public void setPozanamky(String pozanamky) {
+        this.pozanamky = pozanamky;
+    }
 
     public double getCastka() {
         return castka;

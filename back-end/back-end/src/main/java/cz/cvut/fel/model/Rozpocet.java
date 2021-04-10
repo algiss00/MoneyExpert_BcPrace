@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Table(name = "rozpocet_table")
 @Entity
-@NamedQuery(name = "Rozpocet.getAll", query = "SELECT c FROM rozpocet c")
+@NamedQuery(name = "Rozpocet.getAll", query = "SELECT c FROM Rozpocet c")
 public class Rozpocet extends AbstractEntity {
     @Column
     private double castka;

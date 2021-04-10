@@ -6,7 +6,7 @@ public class SecurityConstants {
         throw new AssertionError();
     }
 
-    public static final String SESSION_COOKIE_NAME = "EAR_JSESSIONID";
+    public static final String SESSION_COOKIE_NAME = "PRO_JSESSIONID";
 
     public static final String REMEMBER_ME_COOKIE_NAME = "remember-me";
 
@@ -25,8 +25,8 @@ public class SecurityConstants {
      */
     public static final int SESSION_TIMEOUT = 30 * 60;
 
-    public final static String USER = "ROLE_USER";
-    public final static String ADMIN = "ROLE_ADMIN";
+//    public final static String USER = "ROLE_USER";
+//    public final static String ADMIN = "ROLE_ADMIN";
 }
 
 

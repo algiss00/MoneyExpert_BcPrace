@@ -5,10 +5,11 @@ import java.util.List;
 
 @Table(name = "kategorie_table")
 @Entity
-@NamedQuery(name = "Kategorie.getAll", query = "SELECT c FROM kategorie c")
+@NamedQuery(name = "Kategorie.getAll", query = "SELECT c FROM Kategorie c")
 public class Kategorie extends AbstractEntity {
     @Column
     private String name;
+
     @OneToOne(mappedBy = "kategorieId")
     private Rozpocet rozpocetId;
     @ManyToOne
@@ -16,14 +17,14 @@ public class Kategorie extends AbstractEntity {
     private User creatorId;
 
     @OneToMany(mappedBy = "kategorieId")
-    private List<Transakce> transakces;
+    private List<Transakce> transakce;
 
-    public List<Transakce> getTransakces() {
-        return transakces;
+    public List<Transakce> getTransakce() {
+        return transakce;
     }
 
-    public void setTransakces(List<Transakce> transakces) {
-        this.transakces = transakces;
+    public void setTransakce(List<Transakce> transakces) {
+        this.transakce = transakces;
     }
 
     public String getName() {

@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Table(name = "zavazek_table")
 @Entity
-@NamedQuery(name = "Zavazek.getAll", query = "SELECT c FROM zavazek c")
+@NamedQuery(name = "Zavazek.getAll", query = "SELECT c FROM Zavazek c")
 public class Zavazek extends AbstractEntity {
     @Column
     private double castka;

@@ -5,7 +5,7 @@ import java.util.List;
 
 @Table(name = "ucet_table")
 @Entity
-@NamedQuery(name = "Ucet.getAll", query = "SELECT c FROM ucet c")
+@NamedQuery(name = "Ucet.getAll", query = "SELECT c FROM Ucet c")
 public class Ucet extends AbstractEntity {
     @Column
     private String name;
@@ -14,14 +14,14 @@ public class Ucet extends AbstractEntity {
     @Column
     private double zustatek;
 
-    @ManyToMany(mappedBy = "dostupneUcty")
+    @ManyToMany(mappedBy = "availableUcty")
     private List<User> vlastniky;
 
-    @OneToMany(mappedBy = "ucetId")
-    private List<Transakce> transakces;
+    @OneToMany(mappedBy = "ucetId", cascade = CascadeType.ALL)
+    private List<Transakce> transakce;
 
-    @OneToMany(mappedBy = "ucetId")
-    private List<Rozpocet> rozpocety;
+    @OneToMany(mappedBy = "ucetId", cascade = CascadeType.ALL)
+    private List<Rozpocet> rozpocty;
 
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -38,20 +38,20 @@ public class Ucet extends AbstractEntity {
         this.vlastniky = vlastniky;
     }
 
-    public List<Transakce> getTransakces() {
-        return transakces;
+    public List<Transakce> getTransakce() {
+        return transakce;
     }
 
-    public void setTransakces(List<Transakce> transakces) {
-        this.transakces = transakces;
+    public void setTransakce(List<Transakce> transakces) {
+        this.transakce = transakces;
     }
 
-    public List<Rozpocet> getRozpocety() {
-        return rozpocety;
+    public List<Rozpocet> getRozpocty() {
+        return rozpocty;
     }
 
-    public void setRozpocety(List<Rozpocet> rozpocety) {
-        this.rozpocety = rozpocety;
+    public void setRozpocty(List<Rozpocet> rozpocety) {
+        this.rozpocty = rozpocety;
     }
 
     public List<Zavazek> getZavazky() {

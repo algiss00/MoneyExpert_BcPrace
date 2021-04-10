@@ -10,15 +10,9 @@ import java.util.Map;
 
 @MappedSuperclass
 public class AbstractEntity implements Serializable {
-    @Transient
-    private Map<String, String> url;
     @Id
     @GeneratedValue
     private int id;
-
-    AbstractEntity() {
-        url = new HashMap<String, String>();
-    }
 
     public int getId() {
         return id;
@@ -28,11 +22,4 @@ public class AbstractEntity implements Serializable {
         this.id = id;
     }
 
-    public void setUrl(Map<String, String> url) {
-        this.url = url;
-    }
-
-    public Map<String, String> getUrl() {
-        return url;
-    }
 }

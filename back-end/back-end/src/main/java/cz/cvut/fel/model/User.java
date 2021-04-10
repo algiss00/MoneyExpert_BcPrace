@@ -29,10 +29,10 @@ public class User extends AbstractEntity {
             name = "relation_ucet_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "ucet_id"))
-    private List<Ucet> dostupneUcty;
+    private List<Ucet> availableUcty;
 
     @OneToMany(mappedBy = "creatorId")
-    private List<Kategorie> myKategories;
+    private List<Kategorie> myCategories;
 
     public User() {
     }
@@ -45,20 +45,20 @@ public class User extends AbstractEntity {
         this.myUcet = myUcet;
     }
 
-    public List<Ucet> getDostupneUcty() {
-        return dostupneUcty;
+    public List<Ucet> getAvailableUcty() {
+        return availableUcty;
     }
 
-    public void setDostupneUcty(List<Ucet> dostupneUcty) {
-        this.dostupneUcty = dostupneUcty;
+    public void setAvailableUcty(List<Ucet> dostupneUcty) {
+        this.availableUcty = dostupneUcty;
     }
 
-    public List<Kategorie> getMyKategories() {
-        return myKategories;
+    public List<Kategorie> getMyCategories() {
+        return myCategories;
     }
 
-    public void setMyKategories(List<Kategorie> myKategories) {
-        this.myKategories = myKategories;
+    public void setMyCategories(List<Kategorie> myKategories) {
+        this.myCategories = myKategories;
     }
 
     @Override
