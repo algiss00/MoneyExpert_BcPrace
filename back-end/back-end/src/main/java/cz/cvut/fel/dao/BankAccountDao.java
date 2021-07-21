@@ -1,7 +1,6 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.Transakce;
-import cz.cvut.fel.model.Ucet;
+import cz.cvut.fel.model.BankAccount;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,35 +8,36 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class TransakceDao extends AbstractDao<Transakce> {
-    TransakceDao(EntityManager em) {
+public class BankAccountDao extends AbstractDao<BankAccount> {
+
+    BankAccountDao(EntityManager em) {
         super(em);
     }
 
     @Override
-    public Transakce find(int id) {
-        return em.find(Transakce.class, id);
+    public BankAccount find(int id) {
+        return em.find(BankAccount.class, id);
     }
 
     @Override
-    public List<Transakce> findAll() {
-        return em.createNamedQuery("Transakce.getAll").getResultList();
+    public List<BankAccount> findAll() {
+        return em.createNamedQuery("BankAccount.getAll").getResultList();
     }
 
     @Override
-    public void persist(Transakce entity) {
+    public void persist(BankAccount entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
     }
 
     @Override
-    public Transakce update(Transakce entity) {
+    public BankAccount update(BankAccount entity) {
         Objects.requireNonNull(entity);
         return em.merge(entity);
     }
 
     @Override
-    public void remove(Transakce entity) {
+    public void remove(BankAccount entity) {
         Objects.requireNonNull(entity);
         em.remove(em.contains(entity) ? entity : em.merge(entity));
     }

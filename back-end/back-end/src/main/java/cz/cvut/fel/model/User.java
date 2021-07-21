@@ -1,13 +1,24 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "user_table")
 @Entity
-@NamedQuery(name = "User.getAll", query = "SELECT c FROM User c")
+@NamedQueries({
+        @NamedQuery(name = "User.getAll", query = "SELECT c FROM User c"),
+        @NamedQuery(
+                name = "User.getByUsername",
+                query = "SELECT c FROM User c WHERE c.username = :name"),
+        @NamedQuery(
+                name = "User.getByEmail",
+                query = "SELECT c FROM User c WHERE c.email = :email")
+})
 public class User extends AbstractEntity {
     @Column
     private String email;
@@ -18,46 +29,73 @@ public class User extends AbstractEntity {
     @Column
     private String username;
     @Column
-    @JsonIgnore
+    //@JsonIgnore
     private String password;
 
-    @OneToOne(mappedBy = "creatorId")
-    private Ucet myUcet;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "relation_ucet_user",
+            name = "relation_bankAccount_user",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "ucet_id"))
-    private List<Ucet> availableUcty;
+            inverseJoinColumns = @JoinColumn(name = "bankAccount_id"))
+    @JsonIgnore
+    private List<BankAccount> availableBankAccounts;
 
-    @OneToMany(mappedBy = "creatorId")
-    private List<Kategorie> myCategories;
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Category> myCategories;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Budget> myBudgets;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Debt> myDebts;
 
     public User() {
     }
 
-    public Ucet getMyUcet() {
-        return myUcet;
+    public List<Budget> getMyBudgets() {
+        if (myBudgets == null) {
+            setMyBudgets(new ArrayList<>());
+        }
+        return myBudgets;
     }
 
-    public void setMyUcet(Ucet myUcet) {
-        this.myUcet = myUcet;
+    public void setMyBudgets(List<Budget> myBudgets) {
+        this.myBudgets = myBudgets;
     }
 
-    public List<Ucet> getAvailableUcty() {
-        return availableUcty;
+    public List<Debt> getMyDebts() {
+        if (myDebts == null) {
+            setMyDebts(new ArrayList<>());
+        }
+        return myDebts;
     }
 
-    public void setAvailableUcty(List<Ucet> dostupneUcty) {
-        this.availableUcty = dostupneUcty;
+    public void setMyDebts(List<Debt> myDebts) {
+        this.myDebts = myDebts;
     }
 
-    public List<Kategorie> getMyCategories() {
+    public List<BankAccount> getAvailableBankAccounts() {
+        if (availableBankAccounts == null) {
+            setAvailableBankAccounts(new ArrayList<>());
+        }
+        return availableBankAccounts;
+    }
+
+    public void setAvailableBankAccounts(List<BankAccount> dostupneUcty) {
+        this.availableBankAccounts = dostupneUcty;
+    }
+
+    public List<Category> getMyCategories() {
+        if (myCategories == null) {
+            setMyCategories(new ArrayList<>());
+        }
         return myCategories;
     }
 
-    public void setMyCategories(List<Kategorie> myKategories) {
+    public void setMyCategories(List<Category> myKategories) {
         this.myCategories = myKategories;
     }
 

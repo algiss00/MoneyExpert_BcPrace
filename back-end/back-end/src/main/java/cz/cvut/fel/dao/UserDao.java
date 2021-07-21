@@ -24,6 +24,22 @@ public class UserDao extends AbstractDao<User> {
         return em.createNamedQuery("User.getAll").getResultList();
     }
 
+    public User getByUsername(String username) {
+        return em.createNamedQuery("User.getByUsername", User.class)
+                .setParameter("name", username)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
+    }
+
+    public User getByEmail(String email) {
+        return em.createNamedQuery("User.getByEmail", User.class)
+                .setParameter("email", email)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
+    }
+
     @Override
     public void persist(User entity) {
         Objects.requireNonNull(entity);

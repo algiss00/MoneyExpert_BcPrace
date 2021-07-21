@@ -1,0 +1,95 @@
+GET:
+
+User
+/users - array of all users
+/users/{id} - get user by ID
+/users/getAvailableAccounts - get available bankAcc
+
+Debt
+/debt - array of all zavazky
+/debt/getAllUsersDebts - get all user's zavazky - todo controla if user ma pristup do toho
+/debt/getAllAccountsDebts - get all debts from BankAcc
+/debt/{id} - by Id
+
+BankAccount
+/bankAccount/{id} - get ucet by ID - kontorola pristupu
+/bankAccount/usersAcc - get all user's account
+/bankAccount/owners?accId=... - get all owners of this bankAcc accId = ...
+
+Transaction
+/transaction/account?accId={accountId} - get all transactions from bankAccount
+/transaction/{id} - get Transaction by ID - todo controla pristupu
+/transaction/category?catId={id}&accId={id} - get all transactions from Category from defined BankAccount
+
+
+Budget
+/budget - get all budgets
+/budget/accounts?accId={bankAccountId} - array of all budget from ucet
+/budget/{id} - get budget by ID - todo cotrola pristupu
+
+Category
+/category - array of all Category
+/category/{id} - get Category by ID
+
+
+POST:
+
+User
+/users - add user
+/users/updateUser - update user
+/users/updateEmail?email={email} - update email
+/users/updateUsername?username={username} - update username
+
+debt
+/debt - add debt
+/debt/updateDebt?debtId={id} - update
+
+bankAccount
+/bankAccount - add bankAccount
+/bankAccount/addOwner?userId={userId}&accId={accId} - sdileni uctu
+/bankAccount/updateAcc?accId={id} - update
+
+transaction
+/transaction/add?accId={id} - add transaction to bankAccount
+/transaction/updateTransaction?transId={id} - update
+
+budget
+/budget - add rozpocet
+/budget/updateBudget?budId={id} - update
+
+category
+/category - add kategorie
+/category/updateCategory?catId={id} - update
+
+
+DELETE:
+
+User
+/users/{userId} - delete user - todo controla pristupu
+
+debt
+/debt/{debtId} - delete zavazek
+
+bankAccount
+/bankAccount/{bankAccountId} - delete bankAcc
+/bankAccount/removeOwner?userId={userId}&accId={accId} - odstranit pristup k uctu
+
+transaction
+/transaction/{id} - delete transaction
+/transaction/category?transId={id}&catId={id} - remove trans from kategorie
+/transaction/bankAccount?transId={id}&bankAccountId={id} - remove trans from bankAccount
+
+budget
+/budget/{Id} - delete budget
+/budget/removeBudFromAcc?budId={id}&bankAcc={id} - remove rozpocet from Ucet
+/budget/removeBudFromCategory?budId={id} - remove rozpocet from kategorie
+
+category
+/category/{id} - delete category
+
+STATISTIKA
+
+GET:
+/statistic/category?catId={categoryId} - get All Transactions From Category
+
+все потраченные деньги....
