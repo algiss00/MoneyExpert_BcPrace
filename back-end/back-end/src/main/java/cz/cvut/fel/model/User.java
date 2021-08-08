@@ -42,10 +42,6 @@ public class User extends AbstractEntity {
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Category> myCategories;
-
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Budget> myBudgets;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
@@ -86,17 +82,6 @@ public class User extends AbstractEntity {
 
     public void setAvailableBankAccounts(List<BankAccount> dostupneUcty) {
         this.availableBankAccounts = dostupneUcty;
-    }
-
-    public List<Category> getMyCategories() {
-        if (myCategories == null) {
-            setMyCategories(new ArrayList<>());
-        }
-        return myCategories;
-    }
-
-    public void setMyCategories(List<Category> myKategories) {
-        this.myCategories = myKategories;
     }
 
     @Override

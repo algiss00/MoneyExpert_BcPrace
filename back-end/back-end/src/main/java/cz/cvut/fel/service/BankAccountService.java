@@ -1,16 +1,9 @@
 package cz.cvut.fel.service;
 
-import cz.cvut.fel.dao.BankAccountDao;
-import cz.cvut.fel.dao.BudgetDao;
-import cz.cvut.fel.dao.UserDao;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.dao.*;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
-import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
-import cz.cvut.fel.service.exceptions.BudgetNotFoundException;
-import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
-import cz.cvut.fel.service.exceptions.UserNotFoundException;
+import cz.cvut.fel.service.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +14,18 @@ import java.util.List;
 @Transactional
 public class BankAccountService {
     private BankAccountDao bankAccountDao;
-    private UserService userService;
     private UserDao userDao;
+    private TransactionDao transactionDao;
     private BudgetDao budgetDao;
+    private DebtDao debtDao;
 
     @Autowired
-    public BankAccountService(BankAccountDao bankAccountDao, UserService userService, UserDao userDao, BudgetDao budgetDao) {
+    public BankAccountService(BankAccountDao bankAccountDao, UserDao userDao, TransactionDao transactionDao, BudgetDao budgetDao, DebtDao debtDao) {
         this.bankAccountDao = bankAccountDao;
-        this.userService = userService;
         this.userDao = userDao;
+        this.transactionDao = transactionDao;
         this.budgetDao = budgetDao;
+        this.debtDao = debtDao;
     }
 
     public List<BankAccount> getAll() {
@@ -38,7 +33,10 @@ public class BankAccountService {
     }
 
     public List<BankAccount> getAllUsersAccounts(int id) throws UserNotFoundException {
-        User u = userService.getById(id);
+        User u = userDao.find(id);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
         return u.getAvailableBankAccounts();
     }
 
@@ -60,7 +58,10 @@ public class BankAccountService {
             throw new NullPointerException("bankAccount cannot be Null.");
         if (!validate(bankAccount))
             return false;
-        User u = userService.getById(userId);
+        User u = userDao.find(userId);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
         bankAccount.getOwners().add(u);
         bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
@@ -69,7 +70,10 @@ public class BankAccountService {
     }
 
     public void addNewOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException {
-        User u = userService.getById(userId);
+        User u = userDao.find(userId);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
         BankAccount b = getById(accId);
 
         b.getOwners().add(u);
@@ -95,24 +99,19 @@ public class BankAccountService {
     }
 
     // TODO: 30.05.2021 Pridej Prava, kontrolu pro delete
-    public void remove(int id) throws BankAccountNotFoundException, NotAuthenticatedClient, BudgetNotFoundException {
+    public void remove(int id) throws NotAuthenticatedClient, BankAccountNotFoundException {
         if (SecurityUtils.getCurrentUser() == null) {
             throw new NotAuthenticatedClient();
         }
         BankAccount bankAccount = getById(id);
-        removeBudgetsFromBankAcc(bankAccount);
-//        bankAccount.getBudgets().clear();
-//        bankAccountDao.update(bankAccount);
-//        bankAccount.getOwners().clear();
-//        bankAccountDao.update(bankAccount);
-//        bankAccount.getDebts().clear();
-//        bankAccountDao.update(bankAccount);
-
         bankAccountDao.remove(bankAccount);
     }
 
     public void removeOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException {
-        User u = userService.getById(userId);
+        User u = userDao.find(userId);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
         BankAccount b = getById(accId);
 
         b.getOwners().remove(u);
@@ -121,13 +120,58 @@ public class BankAccountService {
         userDao.update(u);
     }
 
-    public void removeBudgetsFromBankAcc(BankAccount bankAccount) throws BankAccountNotFoundException, BudgetNotFoundException {
-        for (Budget budget : bankAccount.getBudgets()) {
-            bankAccount.getBudgets().remove(budget);
-            budget.setBankAccount(null);
-            budgetDao.update(budget);
-            bankAccountDao.update(bankAccount);
+
+    public void removeTransFromAccount(int transId, int accId) throws TransactionNotFoundException, BankAccountNotFoundException {
+        BankAccount b = bankAccountDao.find(accId);
+        if (b == null) {
+            throw new BankAccountNotFoundException();
         }
+        Transaction t = transactionDao.find(transId);
+        if (t == null) {
+            throw new TransactionNotFoundException();
+        }
+
+        b.getTransactions().remove(t);
+        t.setBankAccount(null);
+        bankAccountDao.update(b);
+        transactionDao.update(t);
     }
 
+    public void removeBudgetFromBankAcc(int budgetId, int accId) throws BankAccountNotFoundException, BudgetNotFoundException {
+        Budget budget = budgetDao.find(budgetId);
+        if (budget == null) {
+            throw new BudgetNotFoundException();
+        }
+        BankAccount bankAccount = bankAccountDao.find(accId);
+        if (bankAccount == null) {
+            throw new BankAccountNotFoundException();
+        }
+        bankAccount.getBudgets().remove(budget);
+        budget.setBankAccount(null);
+        budgetDao.update(budget);
+        bankAccountDao.update(bankAccount);
+    }
+
+    public void removeDebt(int id, int accId) throws DebtNotFoundException, BankAccountNotFoundException {
+        Debt debt = debtDao.find(id);
+        if (debt == null) {
+            throw new DebtNotFoundException();
+        }
+        BankAccount bankAccount = bankAccountDao.find(accId);
+        if (bankAccount == null) {
+            throw new BankAccountNotFoundException();
+        }
+        bankAccount.getDebts().remove(debt);
+        debt.setCreator(null);
+        debt.setBankAccount(null);
+        debtDao.update(debt);
+        bankAccountDao.update(bankAccount);
+    }
+
+    public void removeAllTrans(int accId) throws BankAccountNotFoundException, TransactionNotFoundException {
+        BankAccount b = getById(accId);
+        for (Transaction t : b.getTransactions()) {
+            removeTransFromAccount(t.getId(), b.getId());
+        }
+    }
 }

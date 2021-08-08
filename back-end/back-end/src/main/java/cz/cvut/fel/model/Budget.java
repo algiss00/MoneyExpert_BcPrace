@@ -28,9 +28,8 @@ public class Budget extends AbstractEntity {
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
     private BankAccount bankAccount;
-    @OneToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+
+    private CategoryEnum category;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -77,11 +76,11 @@ public class Budget extends AbstractEntity {
         this.bankAccount = bankAccountId;
     }
 
-    public Category getCategory() {
+    public CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(CategoryEnum category) {
         this.category = category;
     }
 }

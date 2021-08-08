@@ -30,6 +30,11 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         em.persist(entity);
     }
 
+//    public void deleteBankAccFromUser(int uid) {
+//        em.createNamedQuery("BankAccount.deleteBankAccFromUser")
+//                .setParameter(1, uid).executeUpdate();
+//    }
+
     @Override
     public BankAccount update(BankAccount entity) {
         Objects.requireNonNull(entity);

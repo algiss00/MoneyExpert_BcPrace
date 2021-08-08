@@ -1,7 +1,6 @@
 package cz.cvut.fel.model;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Table(name = "transaction_table")
 @Entity
@@ -12,7 +11,7 @@ import java.util.Date;
                 query = "SELECT c FROM Transaction c WHERE c.bankAccount.id = :id"),
         @NamedQuery(
                 name = "Transaction.getAllFromCategory",
-                query = "SELECT c FROM Transaction c WHERE c.category.id = :catId AND c.bankAccount.id = :accId")
+                query = "SELECT c FROM Transaction c WHERE c.category = :cat AND c.bankAccount.id = :accId")
 })
 
 public class Transaction extends AbstractEntity {
@@ -25,9 +24,8 @@ public class Transaction extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private TypeTransaction typeTransaction;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private CategoryEnum category;
+
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
     private BankAccount bankAccount;
@@ -64,11 +62,11 @@ public class Transaction extends AbstractEntity {
         this.typeTransaction = typeTransaction;
     }
 
-    public Category getCategory() {
+    public CategoryEnum getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(CategoryEnum category) {
         this.category = category;
     }
 

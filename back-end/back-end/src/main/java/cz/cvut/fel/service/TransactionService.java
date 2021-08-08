@@ -1,10 +1,9 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
-import cz.cvut.fel.dao.CategoryDao;
 import cz.cvut.fel.dao.TransactionDao;
 import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
+import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
@@ -22,16 +21,11 @@ import java.util.List;
 public class TransactionService {
     private TransactionDao transactionDao;
     private BankAccountDao bankAccountDao;
-    private BankAccountService bankAccountService;
-    private CategoryDao categoryDao;
 
     @Autowired
-    public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao, CategoryDao categoryDao,
-                              BankAccountService bankAccountService) {
+    public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao) {
         this.transactionDao = transactionDao;
         this.bankAccountDao = bankAccountDao;
-        this.categoryDao = categoryDao;
-        this.bankAccountService = bankAccountService;
     }
 
     public List<Transaction> getAll() {
@@ -39,18 +33,19 @@ public class TransactionService {
     }
 
     public List<Transaction> getAllFromAccount(int accountId) throws BankAccountNotFoundException {
-        bankAccountService.getById(accountId);
+        if (bankAccountDao.find(accountId) == null) {
+            throw new BankAccountNotFoundException();
+        }
         return transactionDao.getAllFromAccount(accountId);
     }
 
-    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
-            BankAccountNotFoundException, CategoryNotFoundException {
-        bankAccountService.getById(accountId);
-        if (categoryDao.find(catId) == null) {
-            throw new CategoryNotFoundException(catId);
+    public List<Transaction> getAllTransFromCategoryFromBankAcc(CategoryEnum cat, int accountId) throws
+            BankAccountNotFoundException {
+        if (bankAccountDao.find(accountId) == null) {
+            throw new BankAccountNotFoundException();
         }
 
-        return transactionDao.getAllTransFromCategory(catId, accountId);
+        return transactionDao.getAllTransFromCategory(cat, accountId);
     }
 
     public Transaction getById(int id) throws TransactionNotFoundException {
@@ -61,16 +56,15 @@ public class TransactionService {
         return t;
     }
 
-    public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException {
+    public boolean persist(Transaction transaction, int accId, CategoryEnum category) throws BankAccountNotFoundException, CategoryNotFoundException {
         if (transaction == null)
             throw new NullPointerException("transaction can not be Null.");
         if (!validateIncome(transaction))
             return false;
 
-        BankAccount b = bankAccountService.getById(accId);
-        Category category = categoryDao.find(categoryId);
-        if (category == null) {
-            throw new CategoryNotFoundException(categoryId);
+        BankAccount b = bankAccountDao.find(accId);
+        if (b == null) {
+            throw new BankAccountNotFoundException();
         }
         transaction.setBankAccount(b);
         transaction.setCategory(category);
@@ -78,8 +72,6 @@ public class TransactionService {
 
         b.getTransactions().add(transaction);
         bankAccountDao.update(b);
-        category.getTransactions().add(transaction);
-        categoryDao.update(category);
         return true;
     }
 
@@ -106,26 +98,9 @@ public class TransactionService {
         transactionDao.remove(transaction);
     }
 
-    public void removeFromAccount(int transId, int accId) throws TransactionNotFoundException, BankAccountNotFoundException {
-        BankAccount b = bankAccountService.getById(accId);
+    public void removeFromCategory(int transId) throws TransactionNotFoundException {
         Transaction t = getById(transId);
-
-        b.getTransactions().remove(t);
-        t.setBankAccount(null);
-        bankAccountDao.update(b);
-        transactionDao.update(t);
-    }
-
-    public void removeFromCategory(int transId, int catId) throws CategoryNotFoundException, TransactionNotFoundException {
-        Category category = categoryDao.find(catId);
-        if (category == null) {
-            throw new CategoryNotFoundException(catId);
-        }
-        Transaction t = getById(transId);
-
-        category.getTransactions().remove(t);
         t.setCategory(null);
-        categoryDao.update(category);
         transactionDao.update(t);
     }
 }

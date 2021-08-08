@@ -15,10 +15,6 @@
     <name>MoneyExpert</name>
     <description>BcPrace</description>
 
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
     <dependencies>
         <!-- Web application -->
         <!-- Will pull in web-related dependencies, including Jackson for JSON -->

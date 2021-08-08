@@ -1,10 +1,15 @@
 package cz.cvut.fel.service;
 
+import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.DebtDao;
+import cz.cvut.fel.dao.UserDao;
+import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
+import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
 import cz.cvut.fel.service.exceptions.DebtNotFoundException;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +21,14 @@ import java.util.List;
 @Transactional
 public class DebtService {
     private DebtDao debtDao;
-    private UserService userService;
-    private BankAccountService bankAccountService;
+    private UserDao userDao;
+    private BankAccountDao bankAccountDao;
 
     @Autowired
-    public DebtService(DebtDao debtDao, UserService userService, BankAccountService bankAccountService) {
+    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao) {
         this.debtDao = debtDao;
-        this.userService = userService;
-        this.bankAccountService = bankAccountService;
+        this.userDao = userDao;
+        this.bankAccountDao = bankAccountDao;
     }
 
     public List<Debt> getAll() {
@@ -31,7 +36,9 @@ public class DebtService {
     }
 
     public List<Debt> getAllAccountsDebts(int accId) throws BankAccountNotFoundException {
-        bankAccountService.getById(accId);
+        if (bankAccountDao.find(accId) == null) {
+            throw new BankAccountNotFoundException();
+        }
         return debtDao.getAllAccountsDebts(accId);
     }
 
@@ -41,21 +48,29 @@ public class DebtService {
 
 
     public Debt getById(int id) throws DebtNotFoundException {
-        Debt u = debtDao.find(id);
-        if (u == null) {
+        Debt d = debtDao.find(id);
+        if (d == null) {
             throw new DebtNotFoundException(id);
         }
-        return u;
+        return d;
     }
 
     //todo debt add to Account
-    public boolean persist(Debt debt, int uid) throws UserNotFoundException {
-        User u = userService.getById(uid);
+    public boolean persist(Debt debt, int uid, int accId) throws UserNotFoundException, BankAccountNotFoundException {
+        User u = userDao.find(uid);
+        if (u == null) {
+            throw new UserNotFoundException(uid);
+        }
+        BankAccount bankAccount = bankAccountDao.find(accId);
+        if (bankAccount == null) {
+            throw new BankAccountNotFoundException();
+        }
         if (debt == null)
             throw new NullPointerException("debt can not be Null.");
         if (!validate(debt))
             return false;
         debt.setCreator(u);
+        debt.setBankAccount(bankAccount);
         debtDao.persist(debt);
         return true;
     }
@@ -64,10 +79,12 @@ public class DebtService {
         return !debt.getName().trim().isEmpty();
     }
 
-    public void remove(int id) throws DebtNotFoundException {
+    public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
         Debt debt = getById(id);
-        debt.setCreator(null);
-        debt.setBankAccount(null);
+
         debtDao.remove(debt);
     }
 

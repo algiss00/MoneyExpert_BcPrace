@@ -1,7 +1,9 @@
 package cz.cvut.fel.controller;
 
+import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.User;
+import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.TransactionService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -18,10 +20,12 @@ import java.util.logging.Logger;
 @RequestMapping("/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
+    private final BankAccountService bankAccountService;
     private static final Logger log = Logger.getLogger(User.class.getName());
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService) {
         this.transactionService = transactionService;
+        this.bankAccountService = bankAccountService;
     }
 
     @GetMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,8 +35,8 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
-        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
+    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam CategoryEnum cat, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
+        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(cat, accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
@@ -43,9 +47,9 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
+    ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam CategoryEnum category, @RequestBody Transaction transaction) throws
             BankAccountNotFoundException, CategoryNotFoundException {
-        if (!transactionService.persist(transaction, accId, categoryId)) {
+        if (!transactionService.persist(transaction, accId, category)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(transaction, HttpStatus.CREATED);
@@ -65,13 +69,13 @@ public class TransactionController {
 
     @DeleteMapping(value = "/bankAccount")
     ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws BankAccountNotFoundException, TransactionNotFoundException {
-        transactionService.removeFromAccount(transId, bankAccountId);
+        bankAccountService.removeTransFromAccount(transId, bankAccountId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeFromCategory(@RequestParam int transId, @RequestParam int catId) throws CategoryNotFoundException, TransactionNotFoundException {
-        transactionService.removeFromCategory(transId, catId);
+    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws CategoryNotFoundException, TransactionNotFoundException {
+        transactionService.removeFromCategory(transId);
         return new ResponseEntity<Void>(HttpStatus.OK);
 
     }

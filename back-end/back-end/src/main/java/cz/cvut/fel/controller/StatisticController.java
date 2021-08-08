@@ -18,17 +18,15 @@ import java.util.logging.Logger;
 public class StatisticController {
     private final BankAccountService bankAccountService;
     private final BudgetService budgetService;
-    private final CategoryService categoryService;
     private final DebtService debtService;
     private final TransactionService transactionService;
     private final UserService userService;
 
     private static final Logger log = Logger.getLogger(User.class.getName());
 
-    public StatisticController(BankAccountService bankAccountService, BudgetService budgetService, CategoryService categoryService, DebtService debtService, TransactionService transactionService, UserService userService) {
+    public StatisticController(BankAccountService bankAccountService, BudgetService budgetService, DebtService debtService, TransactionService transactionService, UserService userService) {
         this.bankAccountService = bankAccountService;
         this.budgetService = budgetService;
-        this.categoryService = categoryService;
         this.debtService = debtService;
         this.transactionService = transactionService;
         this.userService = userService;

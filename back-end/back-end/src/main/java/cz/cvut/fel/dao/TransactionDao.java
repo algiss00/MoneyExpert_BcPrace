@@ -1,5 +1,6 @@
 package cz.cvut.fel.dao;
 
+import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.User;
 import org.springframework.stereotype.Repository;
@@ -30,9 +31,9 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransFromCategory(int catId, int accountId) {
+    public List<Transaction> getAllTransFromCategory(CategoryEnum cat, int accountId) {
         return em.createNamedQuery("Transaction.getAllFromCategory", Transaction.class)
-                .setParameter("catId", catId)
+                .setParameter("cat", cat)
                 .setParameter("accId", accountId)
                 .getResultList();
     }

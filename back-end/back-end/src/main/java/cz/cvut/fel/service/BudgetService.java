@@ -2,10 +2,10 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.BudgetDao;
-import cz.cvut.fel.dao.CategoryDao;
+import cz.cvut.fel.dao.UserDao;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Category;
+import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
@@ -13,28 +13,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.List;
 
 @Service
 @Transactional
 public class BudgetService {
     private BudgetDao budgetDao;
-    private BankAccountService bankAccountService;
     private BankAccountDao bankAccountDao;
-    private UserService userService;
-    private CategoryService categoryService;
-    private CategoryDao categoryDao;
+    private UserDao userDao;
 
     @Autowired
-    public BudgetService(BudgetDao budgetDao, BankAccountService bankAccountService, BankAccountDao bankAccountDao,
-                         UserService userService, CategoryService categoryService, CategoryDao categoryDao) {
+    public BudgetService(BudgetDao budgetDao, BankAccountDao bankAccountDao,
+                         UserDao userDao) {
         this.budgetDao = budgetDao;
-        this.bankAccountService = bankAccountService;
         this.bankAccountDao = bankAccountDao;
-        this.userService = userService;
-        this.categoryService = categoryService;
-        this.categoryDao = categoryDao;
+        this.userDao = userDao;
     }
 
     public List<Budget> getAll() {
@@ -42,12 +35,15 @@ public class BudgetService {
     }
 
     public List<Budget> getAllAccountsBudgets(int accId) throws BankAccountNotFoundException {
-        bankAccountService.getById(accId);
+        if (bankAccountDao.find(accId) == null) {
+            throw new BankAccountNotFoundException();
+        }
         return budgetDao.getAllAccountsBudgets(accId);
     }
 
     public List<Budget> getAllUsersBudgets(int uid) throws UserNotFoundException {
-        userService.getById(uid);
+        if (userDao.find(uid) == null)
+            throw new UserNotFoundException();
         return budgetDao.getAllUsersBudgets(uid);
     }
 
@@ -59,23 +55,25 @@ public class BudgetService {
         return budget;
     }
 
-    public boolean persist(Budget budget, int uid, int accId, int categoryId) throws UserNotFoundException,
+    public boolean persist(Budget budget, int uid, int accId, CategoryEnum category) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException {
         if (budget == null)
             throw new NullPointerException("budget can not be Null.");
         if (!validate(budget))
             return false;
-        Category category = categoryService.getById(categoryId);
-        User u = userService.getById(uid);
-        BankAccount bankAccount = bankAccountService.getById(accId);
+        User u = userDao.find(uid);
+        if (u == null)
+            throw new UserNotFoundException();
+        BankAccount bankAccount = bankAccountDao.find(accId);
+        if (bankAccount == null) {
+            throw new BankAccountNotFoundException();
+        }
         budget.setCreator(u);
         budget.setCategory(category);
         budget.setBankAccount(bankAccount);
         budgetDao.persist(budget);
         bankAccount.getBudgets().add(budget);
         bankAccountDao.update(bankAccount);
-        category.setBudget(budget);
-        categoryDao.update(category);
         return true;
     }
 
@@ -100,7 +98,10 @@ public class BudgetService {
     }
 
     public boolean isOwner(int uid, int bid) throws UserNotFoundException {
-        User u = userService.getById(uid);
+        User u = userDao.find(uid);
+        if (u == null) {
+            throw new UserNotFoundException(uid);
+        }
         for (Budget budget : u.getMyBudgets()) {
             if (budget.getId() == bid) {
                 return true;
@@ -121,16 +122,6 @@ public class BudgetService {
         b.setCategory(budget.getCategory());
 
         return budgetDao.update(b);
-    }
-
-    public void removeBudgetFromBankAcc(int budgetId, int accId) throws BankAccountNotFoundException, BudgetNotFoundException {
-        Budget budget = getById(budgetId);
-        BankAccount bankAccount = bankAccountService.getById(accId);
-
-        bankAccount.getBudgets().remove(budget);
-        budget.setBankAccount(null);
-        budgetDao.update(budget);
-        bankAccountDao.update(bankAccount);
     }
 
     public void removeBudgetFromCategory(int buId) throws BudgetNotFoundException {

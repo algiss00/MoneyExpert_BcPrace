@@ -9,8 +9,10 @@ import java.util.List;
 @Table(name = "bankAccount_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "BankAccount.getAll", query = "SELECT c FROM BankAccount c")
+        @NamedQuery(name = "BankAccount.getAll", query = "SELECT c FROM BankAccount c"),
 })
+//@NamedNativeQuery(name = "BankAccount.deleteBankAccFromUser",
+//        query = "delete b1 from bank_account_table as b1 right join relation_bank_account_user as r1 on r1.bank_account_id = b1.id where r1.user_id=?")
 
 public class BankAccount extends AbstractEntity {
     @Column

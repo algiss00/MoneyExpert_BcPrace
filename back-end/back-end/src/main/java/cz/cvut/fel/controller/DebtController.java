@@ -1,11 +1,8 @@
 package cz.cvut.fel.controller;
 
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
-import cz.cvut.fel.service.CategoryService;
 import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -53,8 +50,8 @@ public class DebtController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> add(@RequestBody Debt d) throws UserNotFoundException {
-        if (!debtService.persist(d, SecurityUtils.getCurrentUser().getId())) {
+    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws UserNotFoundException, BankAccountNotFoundException {
+        if (!debtService.persist(d, SecurityUtils.getCurrentUser().getId(), accId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(d, HttpStatus.CREATED);
@@ -66,7 +63,7 @@ public class DebtController {
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException {
+    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
         debtService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
