@@ -1,8 +1,7 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.CategoryEnum;
+import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.Transaction;
-import cz.cvut.fel.model.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -31,12 +30,13 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransFromCategory(CategoryEnum cat, int accountId) {
-        return em.createNamedQuery("Transaction.getAllFromCategory", Transaction.class)
-                .setParameter("cat", cat)
-                .setParameter("accId", accountId)
-                .getResultList();
-    }
+    //todo
+//    public List<Transaction> getAllTransFromCategory(Category cat, int accountId) {
+//        return em.createNamedQuery("Transaction.getAllFromCategory", Transaction.class)
+//                .setParameter("cat", cat)
+//                .setParameter("accId", accountId)
+//                .getResultList();
+//    }
 
     @Override
     public void persist(Transaction entity) {

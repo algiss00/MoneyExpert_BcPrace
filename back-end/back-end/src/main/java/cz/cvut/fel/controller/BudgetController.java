@@ -1,7 +1,6 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.BankAccountService;
@@ -49,9 +48,9 @@ public class BudgetController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam CategoryEnum category, @RequestBody Budget b) throws UserNotFoundException,
+    ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException {
-        if (!budgetService.persist(b, SecurityUtils.getCurrentUser().getId(), accId, category)) {
+        if (!budgetService.persist(b, SecurityUtils.getCurrentUser().getId(), accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(b, HttpStatus.CREATED);

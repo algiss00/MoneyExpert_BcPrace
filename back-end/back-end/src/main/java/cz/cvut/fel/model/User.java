@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "user_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "User.getAll", query = "SELECT c FROM User c"),
+        @NamedQuery(name = "User.getAll", query = "SELECT c.email, c.lastname, c.id, c.name FROM User c"),
         @NamedQuery(
                 name = "User.getByUsername",
                 query = "SELECT c FROM User c WHERE c.username = :name"),
@@ -29,16 +29,23 @@ public class User extends AbstractEntity {
     @Column
     private String username;
     @Column
-    //@JsonIgnore
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_bankAccount_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "bankAccount_id"))
     @JsonIgnore
     private List<BankAccount> availableBankAccounts;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "relation_category_user",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JsonIgnore
+    private List<Category> myCategories;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -49,6 +56,14 @@ public class User extends AbstractEntity {
     private List<Debt> myDebts;
 
     public User() {
+    }
+
+    public List<Category> getMyCategories() {
+        return myCategories;
+    }
+
+    public void setMyCategories(List<Category> myCategories) {
+        this.myCategories = myCategories;
     }
 
     public List<Budget> getMyBudgets() {

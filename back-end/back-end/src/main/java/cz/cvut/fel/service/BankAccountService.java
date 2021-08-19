@@ -104,6 +104,10 @@ public class BankAccountService {
             throw new NotAuthenticatedClient();
         }
         BankAccount bankAccount = getById(id);
+        bankAccount.getOwners().clear();
+//        bankAccount.getTransactions().clear();
+//        bankAccount.getBudgets().clear();
+//        bankAccount.getDebts().clear();
         bankAccountDao.remove(bankAccount);
     }
 

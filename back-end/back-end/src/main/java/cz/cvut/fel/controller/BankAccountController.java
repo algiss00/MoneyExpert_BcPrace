@@ -31,7 +31,8 @@ public class BankAccountController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/usersAcc", produces = MediaType.APPLICATION_JSON_VALUE)
+    //All my accounts
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllUserAcc() throws UserNotFoundException {
         List<BankAccount> u = bankAccountService.getAllUsersAccounts(SecurityUtils.getCurrentUser().getId());
         return new ResponseEntity<>(u, HttpStatus.OK);
@@ -51,30 +52,32 @@ public class BankAccountController {
         return new ResponseEntity<>(b, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/addOwner", produces = MediaType.APPLICATION_JSON_VALUE)
+    //todo use -
+    @PostMapping(value = "/owner", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<BankAccount> addNewOwner(@RequestParam int userId, @RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException {
         bankAccountService.addNewOwner(userId, accId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateAcc", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<BankAccount> updateAcc(@RequestParam int accId, @RequestBody BankAccount bankAccount) throws Exception {
         return new ResponseEntity<>(bankAccountService.updateAccount(accId, bankAccount), HttpStatus.CREATED);
     }
 
+    //todo vsude krome GET use REQUEST PARAM
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
         bankAccountService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/removeOwner")
+    @DeleteMapping(value = "/owner")
     ResponseEntity<Void> removeOwner(@RequestParam int userId, @RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException {
         bankAccountService.removeOwner(userId, accId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/removeAllTransactions")
+    @DeleteMapping(value = "/transactions")
     ResponseEntity<Void> removeAllTransactions(@RequestParam int accId) throws BankAccountNotFoundException, TransactionNotFoundException {
         bankAccountService.removeAllTrans(accId);
         return new ResponseEntity<Void>(HttpStatus.OK);

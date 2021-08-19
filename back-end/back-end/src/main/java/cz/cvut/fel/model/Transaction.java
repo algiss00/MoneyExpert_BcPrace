@@ -9,9 +9,10 @@ import javax.persistence.*;
         @NamedQuery(
                 name = "Transaction.getAllFromAccount",
                 query = "SELECT c FROM Transaction c WHERE c.bankAccount.id = :id"),
-        @NamedQuery(
-                name = "Transaction.getAllFromCategory",
-                query = "SELECT c FROM Transaction c WHERE c.category = :cat AND c.bankAccount.id = :accId")
+        //todo
+//        @NamedQuery(
+//                name = "Transaction.getAllFromCategory",
+//                query = "SELECT c FROM Transaction c WHERE c.category = :cat AND c.bankAccount.id = :accId")
 })
 
 public class Transaction extends AbstractEntity {
@@ -24,9 +25,11 @@ public class Transaction extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private TypeTransaction typeTransaction;
 
-    private CategoryEnum category;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bankAccount_id")
     private BankAccount bankAccount;
 
@@ -62,19 +65,19 @@ public class Transaction extends AbstractEntity {
         this.typeTransaction = typeTransaction;
     }
 
-    public CategoryEnum getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryEnum category) {
-        this.category = category;
-    }
-
     public BankAccount getBankAccount() {
         return bankAccount;
     }
 
     public void setBankAccount(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }

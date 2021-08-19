@@ -1,6 +1,5 @@
 package cz.cvut.fel.controller;
 
-import cz.cvut.fel.model.CategoryEnum;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.service.BankAccountService;
@@ -34,11 +33,12 @@ public class TransactionController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam CategoryEnum cat, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
-        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(cat, accId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
-    }
+    //todo
+//    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
+//        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
+//        return new ResponseEntity<>(transactions, HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException {
@@ -47,12 +47,19 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam CategoryEnum category, @RequestBody Transaction transaction) throws
+    ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
             BankAccountNotFoundException, CategoryNotFoundException {
-        if (!transactionService.persist(transaction, accId, category)) {
+        if (!transactionService.persist(transaction, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/transferTransaction")
+    ResponseEntity<Transaction> transferTransaction(@RequestParam int accId, @RequestParam int transID) throws
+            BankAccountNotFoundException, TransactionNotFoundException {
+        Transaction t = transactionService.transferTransaction(accId, transID);
+        return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/updateTransaction", produces = MediaType.APPLICATION_JSON_VALUE)

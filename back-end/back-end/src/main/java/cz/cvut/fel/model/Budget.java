@@ -24,12 +24,14 @@ public class Budget extends AbstractEntity {
     @Column
     private int percentNotif;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
     private BankAccount bankAccount;
 
-    private CategoryEnum category;
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -76,11 +78,11 @@ public class Budget extends AbstractEntity {
         this.bankAccount = bankAccountId;
     }
 
-    public CategoryEnum getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEnum category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 }

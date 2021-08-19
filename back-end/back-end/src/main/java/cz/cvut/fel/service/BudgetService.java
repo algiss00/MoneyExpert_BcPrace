@@ -2,10 +2,11 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.BudgetDao;
+import cz.cvut.fel.dao.CategoryDao;
 import cz.cvut.fel.dao.UserDao;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.CategoryEnum;
+import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
@@ -21,13 +22,15 @@ public class BudgetService {
     private BudgetDao budgetDao;
     private BankAccountDao bankAccountDao;
     private UserDao userDao;
+    private CategoryDao categoryDao;
 
     @Autowired
     public BudgetService(BudgetDao budgetDao, BankAccountDao bankAccountDao,
-                         UserDao userDao) {
+                         UserDao userDao, CategoryDao categoryDao) {
         this.budgetDao = budgetDao;
         this.bankAccountDao = bankAccountDao;
         this.userDao = userDao;
+        this.categoryDao = categoryDao;
     }
 
     public List<Budget> getAll() {
@@ -55,7 +58,7 @@ public class BudgetService {
         return budget;
     }
 
-    public boolean persist(Budget budget, int uid, int accId, CategoryEnum category) throws UserNotFoundException,
+    public boolean persist(Budget budget, int uid, int accId, int categoryId) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException {
         if (budget == null)
             throw new NullPointerException("budget can not be Null.");
@@ -64,6 +67,9 @@ public class BudgetService {
         User u = userDao.find(uid);
         if (u == null)
             throw new UserNotFoundException();
+        Category category = categoryDao.find(categoryId);
+        if (category == null)
+            throw new CategoryNotFoundException();
         BankAccount bankAccount = bankAccountDao.find(accId);
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
@@ -89,10 +95,6 @@ public class BudgetService {
         Budget bu = getById(id);
         if (!alreadyExists(bu.getId()) || !isOwner(userId, id))
             return false;
-//        bu.setCreator(null);
-//        bu.setCategory(null);
-//        bu.setBankAccount(null);
-//        budgetDao.update(bu);
         budgetDao.remove(bu);
         return true;
     }
