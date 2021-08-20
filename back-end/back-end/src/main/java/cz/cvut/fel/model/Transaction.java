@@ -25,6 +25,7 @@ public class Transaction extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private TypeTransaction typeTransaction;
 
+    //todo cascade all?
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;

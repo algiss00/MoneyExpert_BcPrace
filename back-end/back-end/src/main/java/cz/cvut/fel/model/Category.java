@@ -20,6 +20,7 @@ public class Category extends AbstractEntity {
     @Column
     private String name;
 
+    //todo neovlivnuje nic... pokud vi ze je budget
     @OneToOne(mappedBy = "category")
     @JsonIgnore
     private Budget budget;
