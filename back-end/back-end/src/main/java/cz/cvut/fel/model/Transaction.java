@@ -9,10 +9,10 @@ import javax.persistence.*;
         @NamedQuery(
                 name = "Transaction.getAllFromAccount",
                 query = "SELECT c FROM Transaction c WHERE c.bankAccount.id = :id"),
-        //todo
-//        @NamedQuery(
-//                name = "Transaction.getAllFromCategory",
-//                query = "SELECT c FROM Transaction c WHERE c.category = :cat AND c.bankAccount.id = :accId")
+        //todo?
+        @NamedQuery(
+                name = "Transaction.getAllFromCategory",
+                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId")
 })
 
 public class Transaction extends AbstractEntity {
@@ -25,8 +25,7 @@ public class Transaction extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private TypeTransaction typeTransaction;
 
-    //todo cascade all?
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 

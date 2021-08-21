@@ -11,13 +11,13 @@ import java.util.List;
 @Table(name = "user_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "User.getAll", query = "SELECT c.email, c.lastname, c.id, c.name FROM User c"),
+        @NamedQuery(name = "User.getAll", query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c"),
         @NamedQuery(
                 name = "User.getByUsername",
-                query = "SELECT c FROM User c WHERE c.username = :name"),
+                query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c WHERE c.username = :name"),
         @NamedQuery(
                 name = "User.getByEmail",
-                query = "SELECT c FROM User c WHERE c.email = :email")
+                query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c WHERE c.email = :email")
 })
 public class User extends AbstractEntity {
     @Column

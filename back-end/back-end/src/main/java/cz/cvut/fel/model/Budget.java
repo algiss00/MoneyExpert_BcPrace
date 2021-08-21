@@ -24,7 +24,8 @@ public class Budget extends AbstractEntity {
     @Column
     private int percentNotif;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    //todo meli jsme tu cascade.Persist ale proc? bank acc uz treba exituje, nechci aby se vytvarel novy BankAcc
+    @ManyToOne
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
     private BankAccount bankAccount;
