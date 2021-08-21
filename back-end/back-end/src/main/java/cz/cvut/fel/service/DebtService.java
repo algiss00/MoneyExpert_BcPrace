@@ -4,6 +4,7 @@ import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.DebtDao;
 import cz.cvut.fel.dao.UserDao;
 import cz.cvut.fel.model.BankAccount;
+import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
@@ -54,8 +55,7 @@ public class DebtService {
         }
         return d;
     }
-
-    //todo debt add to Account
+    
     public boolean persist(Debt debt, int uid, int accId) throws UserNotFoundException, BankAccountNotFoundException {
         User u = userDao.find(uid);
         if (u == null) {
@@ -80,11 +80,10 @@ public class DebtService {
     }
 
     public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
+        Debt debt = getById(id);
+        if (!isCreator(SecurityUtils.getCurrentUser(), debt)) {
             throw new NotAuthenticatedClient();
         }
-        Debt debt = getById(id);
-
         debtDao.remove(debt);
     }
 
@@ -103,5 +102,9 @@ public class DebtService {
         da.setStartDate(debt.getStartDate());
 
         return debtDao.update(da);
+    }
+
+    private boolean isCreator(User user, Debt debt) {
+        return debt.getCreator() == user;
     }
 }

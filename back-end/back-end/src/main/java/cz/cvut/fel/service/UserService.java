@@ -98,11 +98,14 @@ public class UserService {
     }
 
     public void remove(int id) throws UserNotFoundException, NotAuthenticatedClient {
-        if (SecurityUtils.getCurrentUser() == null) {
+        if (SecurityUtils.getCurrentUser().getId() != id) {
             throw new NotAuthenticatedClient();
         }
         User user = getById(id);
         user.getAvailableBankAccounts().clear();
+        user.getMyBudgets().clear();
+        user.getMyCategories().clear();
+        user.getMyDebts().clear();
         userDao.remove(user);
     }
 }

@@ -38,7 +38,7 @@ public class UserController {
     }
 
 
-    @GetMapping(value = "/getAvailableAccounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAvailableAccounts() throws UserNotFoundException {
         List<BankAccount> accounts = userService.getAvailableAccounts(SecurityUtils.getCurrentUser().getId());
         return new ResponseEntity<>(accounts, HttpStatus.OK);
@@ -52,22 +52,22 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> updateUser(@RequestBody User user) throws Exception {
         return new ResponseEntity<>(userService.updateUser(SecurityUtils.getCurrentUser().getId(), user), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateEmail", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> updateEmail(@RequestParam String email) throws Exception {
         return new ResponseEntity<>(userService.updateEmail(email, SecurityUtils.getCurrentUser().getId()), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateUsername", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/username", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> updateUsername(@RequestParam String username) throws Exception {
         return new ResponseEntity<>(userService.updateUsername(username, SecurityUtils.getCurrentUser().getId()), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/remove/{id}")
+    @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws UserNotFoundException, NotAuthenticatedClient {
         userService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);

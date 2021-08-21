@@ -52,7 +52,6 @@ public class BankAccountController {
         return new ResponseEntity<>(b, HttpStatus.CREATED);
     }
 
-    //todo use -
     @PostMapping(value = "/owner", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<BankAccount> addNewOwner(@RequestParam int userId, @RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException {
         bankAccountService.addNewOwner(userId, accId);
@@ -64,7 +63,6 @@ public class BankAccountController {
         return new ResponseEntity<>(bankAccountService.updateAccount(accId, bankAccount), HttpStatus.CREATED);
     }
 
-    //todo vsude krome GET use REQUEST PARAM
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
         bankAccountService.remove(id);

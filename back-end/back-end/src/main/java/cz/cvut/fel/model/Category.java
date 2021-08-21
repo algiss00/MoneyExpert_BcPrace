@@ -27,7 +27,7 @@ public class Category extends AbstractEntity {
 
     @ManyToMany(mappedBy = "myCategories")
     @JsonIgnore
-    private List<User> creator;
+    private List<User> creators;
 
     @OneToMany(mappedBy = "category")
     @JsonIgnore
@@ -62,11 +62,11 @@ public class Category extends AbstractEntity {
         this.budget = budget;
     }
 
-    public List<User> getCreator() {
-        return creator;
+    public List<User> getCreators() {
+        return creators;
     }
 
-    public void setCreator(List<User> creator) {
-        this.creator = creator;
+    public void setCreators(List<User> creators) {
+        this.creators = creators;
     }
 }

@@ -37,12 +37,12 @@ public class BudgetController {
         return new ResponseEntity<>(budgetService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllAccBudgets(@RequestParam int accId) throws BankAccountNotFoundException {
+    @GetMapping(value = "/accounts/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllAccBudgets(@PathVariable int accId) throws BankAccountNotFoundException {
         return new ResponseEntity<>(budgetService.getAllAccountsBudgets(accId), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/usersBudgets", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllUsersBudgets() throws UserNotFoundException {
         return new ResponseEntity<>(budgetService.getAllUsersBudgets(SecurityUtils.getCurrentUser().getId()), HttpStatus.OK);
     }
@@ -56,7 +56,7 @@ public class BudgetController {
         return new ResponseEntity<>(b, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateBudget", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException {
         return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
     }
@@ -69,13 +69,13 @@ public class BudgetController {
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping(value = "/removeBudFromAcc")
+    @DeleteMapping(value = "/account")
     ResponseEntity<Void> removeBudgetFromAcc(@RequestParam int budId, @RequestParam int bankAcc) throws BankAccountNotFoundException, BudgetNotFoundException {
         bankAccountService.removeBudgetFromBankAcc(budId, bankAcc);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/removeBudFromCategory")
+    @DeleteMapping(value = "/category")
     ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException {
         budgetService.removeBudgetFromCategory(budId);
         return new ResponseEntity<Void>(HttpStatus.OK);

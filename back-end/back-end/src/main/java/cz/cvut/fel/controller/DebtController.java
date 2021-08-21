@@ -37,14 +37,14 @@ public class DebtController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/getAllUsersDebts", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllUsersDebts() {
         List<Debt> d = debtService.getAllUsersDebts(SecurityUtils.getCurrentUser().getId());
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/getAllAccountsDebts", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllAccountsDebts(@RequestParam int accId) throws BankAccountNotFoundException {
+    @GetMapping(value = "/account/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllAccountsDebts(@PathVariable int accId) throws BankAccountNotFoundException {
         List<Debt> d = debtService.getAllAccountsDebts(accId);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
@@ -57,7 +57,7 @@ public class DebtController {
         return new ResponseEntity<>(d, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateDebt", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException {
         return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
     }

@@ -70,7 +70,7 @@ public class TransactionService {
     public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException {
         if (transaction == null)
             throw new NullPointerException("transaction can not be Null.");
-        if (!validateIncome(transaction))
+        if (!validateAmount(transaction))
             return false;
 
         BankAccount b = bankAccountDao.find(accId);
@@ -91,7 +91,7 @@ public class TransactionService {
         return true;
     }
 
-    public boolean validateIncome(Transaction t) {
+    public boolean validateAmount(Transaction t) {
         return !(t.getAmount() <= 0);
     }
 

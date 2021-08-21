@@ -62,12 +62,12 @@ public class CategoryService {
             throw new NullPointerException("category can not be Null.");
         if (!validate(category))
             return false;
-        category.getCreator().add(u);
+        category.getCreators().add(u);
         categoryDao.persist(category);
         return true;
     }
 
-    public List<Transaction> addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException {
+    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException {
         Transaction t = transactionDao.find(transId);
         if (t == null) {
             throw new TransactionNotFoundException(transId);
@@ -78,7 +78,6 @@ public class CategoryService {
         categoryDao.update(category);
         t.setCategory(category);
         transactionDao.update(t);
-        return category.getTransactions();
     }
 
     public boolean validate(Category category) {
@@ -87,13 +86,13 @@ public class CategoryService {
 
 
     public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
-        if (SecurityUtils.getCurrentUser() == null) {
+        Category ca = getById(id);
+        if (!isCreator(SecurityUtils.getCurrentUser(), ca)) {
             throw new NotAuthenticatedClient();
         }
-        Category ca = getById(id);
         ca.getTransactions().clear();
         ca.setBudget(null);
-        ca.setCreator(null);
+        ca.setCreators(null);
         categoryDao.remove(ca);
     }
 
@@ -107,4 +106,13 @@ public class CategoryService {
         return categoryDao.update(c);
     }
 
+    private boolean isCreator(User user, Category category) {
+        List<User> creators = category.getCreators();
+        for (User creator : creators) {
+            if (creator == user) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

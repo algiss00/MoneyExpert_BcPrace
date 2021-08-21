@@ -27,8 +27,8 @@ public class TransactionController {
         this.bankAccountService = bankAccountService;
     }
 
-    @GetMapping(value = "/account", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromAcc(@RequestParam int accId) throws BankAccountNotFoundException {
+    @GetMapping(value = "/account/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws BankAccountNotFoundException {
         List<Transaction> transactions = transactionService.getAllFromAccount(accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class TransactionController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
             BankAccountNotFoundException, CategoryNotFoundException {
         if (!transactionService.persist(transaction, accId, categoryId)) {
@@ -55,14 +55,14 @@ public class TransactionController {
         return new ResponseEntity<>(transaction, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/transferTransaction")
+    @PostMapping(value = "/transfer")
     ResponseEntity<Transaction> transferTransaction(@RequestParam int accId, @RequestParam int transID) throws
             BankAccountNotFoundException, TransactionNotFoundException {
         Transaction t = transactionService.transferTransaction(accId, transID);
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/updateTransaction", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> updateTrans(@RequestParam int transId, @RequestBody Transaction transaction) throws Exception {
         return new ResponseEntity<>(transactionService.update(transId, transaction), HttpStatus.CREATED);
     }

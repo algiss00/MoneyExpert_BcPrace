@@ -100,14 +100,11 @@ public class BankAccountService {
 
     // TODO: 30.05.2021 Pridej Prava, kontrolu pro delete
     public void remove(int id) throws NotAuthenticatedClient, BankAccountNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
+        BankAccount bankAccount = getById(id);
+        if (!isUserOwnerOfBankAccount(SecurityUtils.getCurrentUser(), bankAccount)) {
             throw new NotAuthenticatedClient();
         }
-        BankAccount bankAccount = getById(id);
         bankAccount.getOwners().clear();
-//        bankAccount.getTransactions().clear();
-//        bankAccount.getBudgets().clear();
-//        bankAccount.getDebts().clear();
         bankAccountDao.remove(bankAccount);
     }
 
@@ -177,5 +174,15 @@ public class BankAccountService {
         for (Transaction t : b.getTransactions()) {
             removeTransFromAccount(t.getId(), b.getId());
         }
+    }
+
+    private boolean isUserOwnerOfBankAccount(User user, BankAccount bankAccount) {
+        List<User> owners = bankAccount.getOwners();
+        for (User owner : owners) {
+            if (owner == user) {
+                return true;
+            }
+        }
+        return false;
     }
 }
