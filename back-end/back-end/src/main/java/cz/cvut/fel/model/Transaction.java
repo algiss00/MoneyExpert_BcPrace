@@ -1,14 +1,16 @@
 package cz.cvut.fel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Table(name = "transaction_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Transaction.getAll", query = "SELECT c FROM Transaction c"),
+        @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t"),
         @NamedQuery(
                 name = "Transaction.getAllFromAccount",
-                query = "SELECT c FROM Transaction c WHERE c.bankAccount.id = :id"),
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :id"),
         //todo?
         @NamedQuery(
                 name = "Transaction.getAllFromCategory",
@@ -27,10 +29,12 @@ public class Transaction extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonIgnore
     private Category category;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bankAccount_id")
+    @JsonIgnore
     private BankAccount bankAccount;
 
     public String getJottings() {

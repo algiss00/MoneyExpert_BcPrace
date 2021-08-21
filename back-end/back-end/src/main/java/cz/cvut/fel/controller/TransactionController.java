@@ -56,9 +56,9 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/transfer")
-    ResponseEntity<Transaction> transferTransaction(@RequestParam int accId, @RequestParam int transID) throws
+    ResponseEntity<Transaction> transferTransaction(@RequestParam int fromAccId, @RequestParam int toAccId, @RequestParam int transId) throws
             BankAccountNotFoundException, TransactionNotFoundException {
-        Transaction t = transactionService.transferTransaction(accId, transID);
+        Transaction t = transactionService.transferTransaction(fromAccId, toAccId, transId);
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 

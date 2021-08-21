@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,14 +19,17 @@ public class BankAccountService {
     private TransactionDao transactionDao;
     private BudgetDao budgetDao;
     private DebtDao debtDao;
+    private CategoryDao categoryDao;
 
     @Autowired
-    public BankAccountService(BankAccountDao bankAccountDao, UserDao userDao, TransactionDao transactionDao, BudgetDao budgetDao, DebtDao debtDao) {
+    public BankAccountService(CategoryDao categoryDao, BankAccountDao bankAccountDao, UserDao userDao,
+                              TransactionDao transactionDao, BudgetDao budgetDao, DebtDao debtDao) {
         this.bankAccountDao = bankAccountDao;
         this.userDao = userDao;
         this.transactionDao = transactionDao;
         this.budgetDao = budgetDao;
         this.debtDao = debtDao;
+        this.categoryDao = categoryDao;
     }
 
     public List<BankAccount> getAll() {
@@ -53,12 +57,12 @@ public class BankAccountService {
         return b.getOwners();
     }
 
-    public boolean persist(BankAccount bankAccount, int userId) throws UserNotFoundException {
+    public boolean persist(BankAccount bankAccount, int uid) throws UserNotFoundException {
         if (bankAccount == null)
             throw new NullPointerException("bankAccount cannot be Null.");
         if (!validate(bankAccount))
             return false;
-        User u = userDao.find(userId);
+        User u = userDao.find(uid);
         if (u == null) {
             throw new UserNotFoundException();
         }
@@ -66,6 +70,7 @@ public class BankAccountService {
         bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
         userDao.update(u);
+        createStartTransaction(bankAccount, u);
         return true;
     }
 
@@ -184,5 +189,27 @@ public class BankAccountService {
             }
         }
         return false;
+    }
+
+    private Transaction createStartTransaction(BankAccount bankAccount, User user) {
+        Transaction startTransaction = new Transaction();
+
+        //todo
+        Category startCategory = new Category();
+        startCategory.getCreators().add(user);
+        startCategory.setName("Start transaction");
+        categoryDao.persist(startCategory);
+        user.getMyCategories().add(startCategory);
+        userDao.update(user);
+
+        startTransaction.setBankAccount(bankAccount);
+        startTransaction.setCategory(startCategory);
+        startTransaction.setJottings("Start transaction");
+        startTransaction.setAmount(bankAccount.getBalance());
+        startTransaction.setDate(new Date().toString());
+        startTransaction.setTypeTransaction(TypeTransaction.Income);
+
+        transactionDao.persist(startTransaction);
+        return startTransaction;
     }
 }

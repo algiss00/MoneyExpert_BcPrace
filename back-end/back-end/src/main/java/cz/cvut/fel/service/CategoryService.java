@@ -54,16 +54,19 @@ public class CategoryService {
     }
 
     public boolean persist(Category category, int uid) throws UserNotFoundException {
-        User u = userDao.find(uid);
-        if (u == null) {
-            throw new UserNotFoundException(uid);
-        }
         if (category == null)
             throw new NullPointerException("category can not be Null.");
         if (!validate(category))
             return false;
+        User u = userDao.find(uid);
+        if (u == null) {
+            throw new UserNotFoundException();
+        }
+
         category.getCreators().add(u);
         categoryDao.persist(category);
+        u.getMyCategories().add(category);
+        userDao.update(u);
         return true;
     }
 

@@ -7,13 +7,13 @@ import javax.persistence.*;
 @Table(name = "budget_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Budget.getAll", query = "SELECT c FROM Budget c"),
+        @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
         @NamedQuery(
                 name = "Budget.getAllAccountBudgets",
-                query = "SELECT c FROM Budget c WHERE c.bankAccount.id = :bankAccId"),
+                query = "SELECT b FROM Budget b WHERE b.bankAccount.id = :bankAccId"),
         @NamedQuery(
                 name = "Budget.getAllUsersBudgets",
-                query = "SELECT c FROM Budget c WHERE c.creator.id = :userId")
+                query = "SELECT b FROM Budget b WHERE b.creator.id = :userId")
 })
 
 public class Budget extends AbstractEntity {

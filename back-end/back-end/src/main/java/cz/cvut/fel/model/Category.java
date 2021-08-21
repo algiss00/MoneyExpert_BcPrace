@@ -63,6 +63,9 @@ public class Category extends AbstractEntity {
     }
 
     public List<User> getCreators() {
+        if (creators == null) {
+            setCreators(new ArrayList<>());
+        }
         return creators;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -83,6 +84,7 @@ public class TransactionService {
         }
         transaction.setBankAccount(b);
         transaction.setCategory(category);
+        transaction.setDate(new Date().toString());
         transactionDao.persist(transaction);
 
         b.getTransactions().add(transaction);
@@ -104,18 +106,34 @@ public class TransactionService {
         }
     }
 
-    public Transaction transferTransaction(int accId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException {
+    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException {
         Transaction transaction = getById(transactionId);
-        BankAccount b = bankAccountDao.find(accId);
-        if (b == null) {
+        Transaction transferTransaction = new Transaction();
+
+        BankAccount toBankAcc = bankAccountDao.find(toAccId);
+        if (toBankAcc == null) {
             throw new BankAccountNotFoundException();
         }
-        transaction.setBankAccount(b);
-        transactionDao.update(transaction);
+        BankAccount fromBankAcc = bankAccountDao.find(fromAccId);
+        if (fromBankAcc == null) {
+            throw new BankAccountNotFoundException();
+        }
 
-        b.getTransactions().add(transaction);
-        bankAccountLogic(b, transaction);
-        bankAccountDao.update(b);
+        transferTransaction.setBankAccount(toBankAcc);
+        transferTransaction.setCategory(transaction.getCategory());
+        transferTransaction.setJottings(transaction.getJottings());
+        transferTransaction.setAmount(transaction.getAmount());
+        transferTransaction.setDate(new Date().toString());
+        transferTransaction.setTypeTransaction(TypeTransaction.Income);
+
+        transactionDao.persist(transferTransaction);
+        bankAccountLogic(toBankAcc, transferTransaction);
+
+        transaction.setTypeTransaction(TypeTransaction.Expense);
+        bankAccountLogic(fromBankAcc, transaction);
+
+        toBankAcc.getTransactions().add(transferTransaction);
+        bankAccountDao.update(toBankAcc);
         return transaction;
     }
 

@@ -1,8 +1,6 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,13 +9,13 @@ import java.util.List;
 @Table(name = "user_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "User.getAll", query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c"),
+        @NamedQuery(name = "User.getAll", query = "SELECT u FROM User u"),
         @NamedQuery(
                 name = "User.getByUsername",
-                query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c WHERE c.username = :name"),
+                query = "SELECT u FROM User u WHERE u.username = :name"),
         @NamedQuery(
                 name = "User.getByEmail",
-                query = "SELECT c.email, c.lastname, c.id, c.name, c.username FROM User c WHERE c.email = :email")
+                query = "SELECT u FROM User u WHERE u.email = :email")
 })
 public class User extends AbstractEntity {
     @Column
@@ -55,10 +53,10 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<Debt> myDebts;
 
-    public User() {
-    }
-
     public List<Category> getMyCategories() {
+        if (myCategories == null) {
+            setMyCategories(new ArrayList<>());
+        }
         return myCategories;
     }
 

@@ -6,13 +6,13 @@ import java.util.Date;
 @Table(name = "debt_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Debt.getAll", query = "SELECT c FROM Debt c"),
+        @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d"),
         @NamedQuery(
                 name = "Category.getAllAccountsDebts",
-                query = "SELECT c FROM Debt c WHERE c.bankAccount.id = :accId"),
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :accId"),
         @NamedQuery(
                 name = "Category.getAllUsersDebts",
-                query = "SELECT c FROM Debt c WHERE c.creator.id = :uid")
+                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid")
 })
 
 public class Debt extends AbstractEntity {
