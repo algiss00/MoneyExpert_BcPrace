@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -60,10 +61,7 @@ public class BudgetService {
 
     public boolean persist(Budget budget, int uid, int accId, int categoryId) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException {
-        if (budget == null)
-            throw new NullPointerException("budget can not be Null.");
-        if (!validate(budget))
-            return false;
+        Objects.requireNonNull(budget);
         User u = userDao.find(uid);
         if (u == null)
             throw new UserNotFoundException();
@@ -74,17 +72,29 @@ public class BudgetService {
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
         }
+        if (!validate(budget, bankAccount))
+            return false;
         budget.setCreator(u);
         budget.setCategory(category);
         budget.setBankAccount(bankAccount);
+        budget.setSumAmount(0);
         budgetDao.persist(budget);
         bankAccount.getBudgets().add(budget);
         bankAccountDao.update(bankAccount);
         return true;
     }
 
-    public boolean validate(Budget budget) {
-        return !budget.getName().trim().isEmpty();
+    private boolean validate(Budget budget, BankAccount bankAccount) {
+        return !budget.getName().trim().isEmpty() && budget.getAmount() >= 0 && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getBudgets());
+    }
+
+    private boolean isBudgetCategoryExist(Category budCategory, List<Budget> bankAccBudgets) {
+        for (Budget budget : bankAccBudgets) {
+            if (budget.getCategory() == budCategory) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -99,7 +109,7 @@ public class BudgetService {
         return true;
     }
 
-    public boolean isOwner(int uid, int bid) throws UserNotFoundException {
+    private boolean isOwner(int uid, int bid) throws UserNotFoundException {
         User u = userDao.find(uid);
         if (u == null) {
             throw new UserNotFoundException(uid);
@@ -112,7 +122,7 @@ public class BudgetService {
         return false;
     }
 
-    public boolean alreadyExists(int budgetId) {
+    private boolean alreadyExists(int budgetId) {
         return budgetDao.find(budgetId) != null;
     }
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -54,8 +55,7 @@ public class CategoryService {
     }
 
     public boolean persist(Category category, int uid) throws UserNotFoundException {
-        if (category == null)
-            throw new NullPointerException("category can not be Null.");
+        Objects.requireNonNull(category);
         if (!validate(category))
             return false;
         User u = userDao.find(uid);

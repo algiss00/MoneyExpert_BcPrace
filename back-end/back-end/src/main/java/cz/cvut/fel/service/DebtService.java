@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -65,8 +66,7 @@ public class DebtService {
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
         }
-        if (debt == null)
-            throw new NullPointerException("debt can not be Null.");
+        Objects.requireNonNull(debt);
         if (!validate(debt))
             return false;
         debt.setCreator(u);

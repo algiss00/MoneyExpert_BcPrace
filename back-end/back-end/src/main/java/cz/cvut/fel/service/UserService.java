@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -57,8 +58,7 @@ public class UserService {
     }
 
     public boolean persist(User user) {
-        if (user == null)
-            throw new NullPointerException("User can not be Null.");
+        Objects.requireNonNull(user);
         if (alreadyExists(user) || !emailExist(user.getEmail()))
             return false;
         userDao.persist(user);

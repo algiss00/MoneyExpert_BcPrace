@@ -1,12 +1,10 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
+import cz.cvut.fel.dao.BudgetDao;
 import cz.cvut.fel.dao.CategoryDao;
 import cz.cvut.fel.dao.TransactionDao;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.Transaction;
-import cz.cvut.fel.model.TypeTransaction;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
 import cz.cvut.fel.service.exceptions.CategoryNotFoundException;
@@ -18,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -25,12 +24,14 @@ public class TransactionService {
     private TransactionDao transactionDao;
     private BankAccountDao bankAccountDao;
     private CategoryDao categoryDao;
+    private BudgetDao budgetDao;
 
     @Autowired
-    public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao, CategoryDao categoryDao) {
+    public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao, CategoryDao categoryDao, BudgetDao budgetDao) {
         this.transactionDao = transactionDao;
         this.bankAccountDao = bankAccountDao;
         this.categoryDao = categoryDao;
+        this.budgetDao = budgetDao;
     }
 
     public List<Transaction> getAll() {
@@ -69,8 +70,7 @@ public class TransactionService {
     }
 
     public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException {
-        if (transaction == null)
-            throw new NullPointerException("transaction can not be Null.");
+        Objects.requireNonNull(transaction);
         if (!validateAmount(transaction))
             return false;
 
@@ -90,7 +90,40 @@ public class TransactionService {
         b.getTransactions().add(transaction);
         bankAccountLogic(b, transaction);
         bankAccountDao.update(b);
+        budgetLogic(b, transaction);
         return true;
+    }
+
+    private void budgetLogic(BankAccount bankAccount, Transaction transaction) {
+        Category transCategory = transaction.getCategory();
+        Budget budgetForTransaction = null;
+        double transAmount = transaction.getAmount();
+
+        for (Budget budget : bankAccount.getBudgets()) {
+            if (budget.getCategory() == transCategory) {
+                budgetForTransaction = budget;
+            }
+        }
+
+        if (budgetForTransaction == null) {
+            return;
+        }
+
+        budgetForTransaction.setSumAmount(budgetForTransaction.getSumAmount() + transAmount);
+        budgetDao.update(budgetForTransaction);
+
+        if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
+            //todo notificate
+            System.out.println("trans amount is bigger then budget amount NOTIFICATE");
+        } else {
+            double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
+            if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
+                //todo notifdicate
+                System.out.println("PROCENT NOTIFICATE");
+            }
+        }
+
+
     }
 
     public boolean validateAmount(Transaction t) {
@@ -121,7 +154,7 @@ public class TransactionService {
 
         transferTransaction.setBankAccount(toBankAcc);
         transferTransaction.setCategory(transaction.getCategory());
-        transferTransaction.setJottings(transaction.getJottings());
+        transferTransaction.setJottings("Transfer transaction from " + fromBankAcc.getName());
         transferTransaction.setAmount(transaction.getAmount());
         transferTransaction.setDate(new Date().toString());
         transferTransaction.setTypeTransaction(TypeTransaction.Income);

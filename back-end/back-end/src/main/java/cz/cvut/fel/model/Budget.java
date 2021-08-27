@@ -23,6 +23,8 @@ public class Budget extends AbstractEntity {
     private String name;
     @Column
     private int percentNotif;
+    @Column
+    private double sumAmount;
 
     //todo meli jsme tu cascade.Persist ale proc? bank acc uz treba exituje, nechci aby se vytvarel novy BankAcc
     @ManyToOne
@@ -45,6 +47,14 @@ public class Budget extends AbstractEntity {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public double getSumAmount() {
+        return sumAmount;
+    }
+
+    public void setSumAmount(double sunAmount) {
+        this.sumAmount = sunAmount;
     }
 
     public double getAmount() {

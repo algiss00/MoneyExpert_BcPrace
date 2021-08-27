@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -58,8 +59,7 @@ public class BankAccountService {
     }
 
     public boolean persist(BankAccount bankAccount, int uid) throws UserNotFoundException {
-        if (bankAccount == null)
-            throw new NullPointerException("bankAccount cannot be Null.");
+        Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             return false;
         User u = userDao.find(uid);
