@@ -1,33 +1,27 @@
 package cz.cvut.fel.model;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Table(name = "debt_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d"),
-        @NamedQuery(
-                name = "Category.getAllAccountsDebts",
-                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :accId"),
-        @NamedQuery(
-                name = "Category.getAllUsersDebts",
-                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid")
+        @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d")
 })
 
 public class Debt extends AbstractEntity {
     @Column
     private double amount;
     @Column
-    private String endDate;
+    private String deadline;
     @Column
     private String name;
+    //kazdy mesic, tyden, nebo den...
     @Column
     private String replay;
     @Column
     private String description;
     @Column
-    private String startDate;
+    private String notifyDate;
 
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
@@ -53,12 +47,12 @@ public class Debt extends AbstractEntity {
         this.amount = castka;
     }
 
-    public String getEndDate() {
-        return endDate;
+    public String getDeadline() {
+        return deadline;
     }
 
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setDeadline(String endDate) {
+        this.deadline = endDate;
     }
 
     public String getName() {
@@ -85,12 +79,12 @@ public class Debt extends AbstractEntity {
         this.description = popis;
     }
 
-    public String getStartDate() {
-        return startDate;
+    public String getNotifyDate() {
+        return notifyDate;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setNotifyDate(String startDate) {
+        this.notifyDate = startDate;
     }
 
     public BankAccount getBankAccount() {

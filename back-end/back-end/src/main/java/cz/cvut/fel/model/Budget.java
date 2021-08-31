@@ -7,13 +7,7 @@ import javax.persistence.*;
 @Table(name = "budget_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
-        @NamedQuery(
-                name = "Budget.getAllAccountBudgets",
-                query = "SELECT b FROM Budget b WHERE b.bankAccount.id = :bankAccId"),
-        @NamedQuery(
-                name = "Budget.getAllUsersBudgets",
-                query = "SELECT b FROM Budget b WHERE b.creator.id = :userId")
+        @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b")
 })
 
 public class Budget extends AbstractEntity {
@@ -23,7 +17,7 @@ public class Budget extends AbstractEntity {
     private String name;
     @Column
     private int percentNotif;
-    @Column
+
     private double sumAmount;
 
     //todo meli jsme tu cascade.Persist ale proc? bank acc uz treba exituje, nechci aby se vytvarel novy BankAcc

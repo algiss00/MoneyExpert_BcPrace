@@ -1,8 +1,7 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.UserDao;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
@@ -32,34 +31,48 @@ public class UserService {
     }
 
     public boolean alreadyExists(User user) {
-        return userDao.find(user.getId()) != null || getByUsername(user.getUsername()) != null
+        return getByUsername(user.getUsername()) != null
                 || getByEmail(user.getEmail()) != null;
-    }
-
-    public boolean emailExist(String email) {
-        return getByEmail(email) == null;
     }
 
     public List<User> getAll() {
         return userDao.findAll();
     }
 
-    public User getById(int id) throws UserNotFoundException {
+    public User getById(int id) throws UserNotFoundException, NotAuthenticatedClient {
         User u = userDao.find(id);
         if (u == null) {
             throw new UserNotFoundException(id);
         }
+        if (!isLogged()) {
+            throw new NotAuthenticatedClient();
+        }
         return u;
     }
 
-    public List<BankAccount> getAvailableAccounts(int id) throws UserNotFoundException {
+    public List<BankAccount> getAvailableAccounts(int id) throws UserNotFoundException, NotAuthenticatedClient {
         User u = getById(id);
         return u.getAvailableBankAccounts();
     }
 
+    public List<Budget> getAllUsersBudgets(int uid) throws UserNotFoundException, NotAuthenticatedClient {
+        User u = getById(uid);
+        return u.getMyBudgets();
+    }
+
+    public List<Category> getAllUsersCategories(int uid) throws UserNotFoundException, NotAuthenticatedClient {
+        User u = getById(uid);
+        return u.getMyCategories();
+    }
+
+    public List<Debt> getAllUsersDebts(int uid) throws UserNotFoundException, NotAuthenticatedClient {
+        User u = getById(uid);
+        return u.getMyDebts();
+    }
+
     public boolean persist(User user) {
         Objects.requireNonNull(user);
-        if (alreadyExists(user) || !emailExist(user.getEmail()))
+        if (alreadyExists(user))
             return false;
         userDao.persist(user);
         return true;
@@ -70,7 +83,6 @@ public class UserService {
         if (alreadyExists(u)) {
             throw new Exception("User is already exists");
         }
-
         u.setEmail(user.getEmail());
         u.setUsername(user.getUsername());
         u.setName(user.getName());
@@ -81,7 +93,7 @@ public class UserService {
 
     public User updateUsername(String username, int id) throws Exception {
         User u = getById(id);
-        if (getByUsername(username) != null) {
+        if (alreadyExists(u)) {
             throw new Exception("Username is taken");
         }
         u.setUsername(username);
@@ -90,7 +102,7 @@ public class UserService {
 
     public User updateEmail(String email, int id) throws Exception {
         User u = getById(id);
-        if (getByEmail(email) != null) {
+        if (alreadyExists(u)) {
             throw new Exception("Email is taken");
         }
         u.setEmail(email);
@@ -98,7 +110,7 @@ public class UserService {
     }
 
     public void remove(int id) throws UserNotFoundException, NotAuthenticatedClient {
-        if (SecurityUtils.getCurrentUser().getId() != id) {
+        if (!isLogged()) {
             throw new NotAuthenticatedClient();
         }
         User user = getById(id);
@@ -107,5 +119,9 @@ public class UserService {
         user.getMyCategories().clear();
         user.getMyDebts().clear();
         userDao.remove(user);
+    }
+
+    private boolean isLogged() {
+        return SecurityUtils.getCurrentUser() != null;
     }
 }

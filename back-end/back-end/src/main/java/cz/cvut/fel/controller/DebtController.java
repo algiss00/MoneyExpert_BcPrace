@@ -25,11 +25,11 @@ public class DebtController {
         this.debtService = debtService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllDebts() {
-        List<Debt> cateAll = debtService.getAll();
-        return new ResponseEntity<>(cateAll, HttpStatus.OK);
-    }
+//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<?> getAllDebts() {
+//        List<Debt> cateAll = debtService.getAll();
+//        return new ResponseEntity<>(cateAll, HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException {
@@ -40,12 +40,6 @@ public class DebtController {
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllUsersDebts() {
         List<Debt> d = debtService.getAllUsersDebts(SecurityUtils.getCurrentUser().getId());
-        return new ResponseEntity<>(d, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/account/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllAccountsDebts(@PathVariable int accId) throws BankAccountNotFoundException {
-        List<Debt> d = debtService.getAllAccountsDebts(accId);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 

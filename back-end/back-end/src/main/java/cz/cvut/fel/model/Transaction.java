@@ -8,10 +8,7 @@ import javax.persistence.*;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t"),
-        @NamedQuery(
-                name = "Transaction.getAllFromAccount",
-                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :id"),
-        //todo?
+        //todo...
         @NamedQuery(
                 name = "Transaction.getAllFromCategory",
                 query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId")

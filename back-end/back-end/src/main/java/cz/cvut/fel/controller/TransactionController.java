@@ -27,12 +27,6 @@ public class TransactionController {
         this.bankAccountService = bankAccountService;
     }
 
-    @GetMapping(value = "/account/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws BankAccountNotFoundException {
-        List<Transaction> transactions = transactionService.getAllFromAccount(accId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
-    }
-
     //todo
 //    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
 //    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
@@ -75,7 +69,7 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/bankAccount")
-    ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws BankAccountNotFoundException, TransactionNotFoundException {
+    ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         bankAccountService.removeTransFromAccount(transId, bankAccountId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

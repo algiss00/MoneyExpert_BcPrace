@@ -27,19 +27,14 @@ public class BudgetController {
         this.bankAccountService = bankAccountService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllBudgets() {
-        return new ResponseEntity<>(budgetService.getAll(), HttpStatus.OK);
-    }
+//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<?> getAllBudgets() {
+//        return new ResponseEntity<>(budgetService.getAll(), HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException {
+    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.getById(id), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/accounts/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllAccBudgets(@PathVariable int accId) throws BankAccountNotFoundException {
-        return new ResponseEntity<>(budgetService.getAllAccountsBudgets(accId), HttpStatus.OK);
     }
 
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,27 +52,27 @@ public class BudgetController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException {
+    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
-        if (budgetService.remove(id, SecurityUtils.getCurrentUser().getId())) {
+        if (budgetService.remove(id)) {
             return new ResponseEntity<Void>(HttpStatus.OK);
         }
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/account")
-    ResponseEntity<Void> removeBudgetFromAcc(@RequestParam int budId, @RequestParam int bankAcc) throws BankAccountNotFoundException, BudgetNotFoundException {
+    ResponseEntity<Void> removeBudgetFromAcc(@RequestParam int budId, @RequestParam int bankAcc) throws BankAccountNotFoundException, BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         bankAccountService.removeBudgetFromBankAcc(budId, bankAcc);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException {
-        budgetService.removeBudgetFromCategory(budId);
+    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        budgetService.removeCategoryFromBudget(budId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

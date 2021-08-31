@@ -38,23 +38,13 @@ public class BudgetService {
         return budgetDao.findAll();
     }
 
-    public List<Budget> getAllAccountsBudgets(int accId) throws BankAccountNotFoundException {
-        if (bankAccountDao.find(accId) == null) {
-            throw new BankAccountNotFoundException();
-        }
-        return budgetDao.getAllAccountsBudgets(accId);
-    }
-
-    public List<Budget> getAllUsersBudgets(int uid) throws UserNotFoundException {
-        if (userDao.find(uid) == null)
-            throw new UserNotFoundException();
-        return budgetDao.getAllUsersBudgets(uid);
-    }
-
-    public Budget getById(int id) throws BudgetNotFoundException {
+    public Budget getById(int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Budget budget = budgetDao.find(id);
         if (budget == null) {
             throw new BudgetNotFoundException(id);
+        }
+        if (!isOwnerOfBudget(budget)) {
+            throw new NotAuthenticatedClient();
         }
         return budget;
     }
@@ -72,6 +62,7 @@ public class BudgetService {
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
         }
+        //todo check if bankAcc is minea and category too
         if (!validate(budget, bankAccount))
             return false;
         budget.setCreator(u);
@@ -85,7 +76,11 @@ public class BudgetService {
     }
 
     private boolean validate(Budget budget, BankAccount bankAccount) {
-        return !budget.getName().trim().isEmpty() && budget.getAmount() >= 0 && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getBudgets());
+        if (budgetDao.find(budget.getId()) != null) {
+            return false;
+        }
+        return !budget.getName().trim().isEmpty() && budget.getAmount() > 0
+                && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getBudgets());
     }
 
     private boolean isBudgetCategoryExist(Category budCategory, List<Budget> bankAccBudgets) {
@@ -98,35 +93,13 @@ public class BudgetService {
     }
 
 
-    public boolean remove(int id, int userId) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
+    public boolean remove(int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
         Budget bu = getById(id);
-        if (!alreadyExists(bu.getId()) || !isOwner(userId, id))
-            return false;
         budgetDao.remove(bu);
         return true;
     }
 
-    private boolean isOwner(int uid, int bid) throws UserNotFoundException {
-        User u = userDao.find(uid);
-        if (u == null) {
-            throw new UserNotFoundException(uid);
-        }
-        for (Budget budget : u.getMyBudgets()) {
-            if (budget.getId() == bid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean alreadyExists(int budgetId) {
-        return budgetDao.find(budgetId) != null;
-    }
-
-    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException {
+    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Budget b = getById(id);
         b.setName(budget.getName());
         b.setAmount(budget.getAmount());
@@ -136,10 +109,18 @@ public class BudgetService {
         return budgetDao.update(b);
     }
 
-    public void removeBudgetFromCategory(int buId) throws BudgetNotFoundException {
+    public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Budget budget = getById(buId);
         budget.setCategory(null);
         budgetDao.update(budget);
     }
 
+    private boolean isOwnerOfBudget(Budget budget) throws UserNotFoundException {
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        User creator = budget.getCreator();
+        return creator.getId() == user.getId();
+    }
 }

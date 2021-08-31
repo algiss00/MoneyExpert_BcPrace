@@ -3,10 +3,7 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.dao.CategoryDao;
 import cz.cvut.fel.dao.TransactionDao;
 import cz.cvut.fel.dao.UserDao;
-import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.Transaction;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.CategoryNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
@@ -37,21 +34,20 @@ public class CategoryService {
         return categoryDao.findAll();
     }
 
-    public Budget getBudget(int budId) throws CategoryNotFoundException {
-        return getById(budId).getBudget();
+    public Budget getBudget(int catId) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        return getById(catId).getBudget();
     }
 
-    //todo
-//    public List<Category> getAllUsersCategories(int uid) {
-//        return categoryDao.getAllUsersCategories(uid);
-//    }
-
-    public Category getById(int id) throws CategoryNotFoundException {
-        Category u = categoryDao.find(id);
-        if (u == null) {
+    public Category getById(int id) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        Category c = categoryDao.find(id);
+        if (c == null) {
             throw new CategoryNotFoundException(id);
         }
-        return u;
+        //todo for default categories
+        if (!isCreator(c)) {
+            throw new NotAuthenticatedClient();
+        }
+        return c;
     }
 
     public boolean persist(Category category, int uid) throws UserNotFoundException {
@@ -70,10 +66,13 @@ public class CategoryService {
         return true;
     }
 
-    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException {
+    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction t = transactionDao.find(transId);
         if (t == null) {
             throw new TransactionNotFoundException(transId);
+        }
+        if (!isOwnerOfTransaction(t)) {
+            throw new NotAuthenticatedClient();
         }
         Category category = getById(categoryId);
 
@@ -83,36 +82,58 @@ public class CategoryService {
         transactionDao.update(t);
     }
 
-    public boolean validate(Category category) {
-        return !category.getName().trim().isEmpty();
+    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException {
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
+        for (BankAccount bankAccount : bankAccounts) {
+            if (bankAccount.getId() == t.getBankAccount().getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean validate(Category category) {
+        if (category.getName().trim().isEmpty() || categoryDao.find(category.getId()) != null) {
+            return false;
+        }
+        boolean notExist = true;
+        List<Category> categories = getAll();
+        for (Category c : categories) {
+            if (c.getName().equals(category.getName())) {
+                notExist = false;
+                break;
+            }
+        }
+        return notExist;
     }
 
 
-    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         Category ca = getById(id);
-        if (!isCreator(SecurityUtils.getCurrentUser(), ca)) {
-            throw new NotAuthenticatedClient();
-        }
         ca.getTransactions().clear();
         ca.setBudget(null);
         ca.setCreators(null);
         categoryDao.remove(ca);
     }
 
-//    public boolean alreadyExists(Category category) {
-//        return categoryDao.find(category.getId()) != null;
-//    }
-
-    public Category updateCategory(int id, Category category) throws CategoryNotFoundException {
+    public Category updateCategory(int id, Category category) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Category c = getById(id);
         c.setName(category.getName());
         return categoryDao.update(c);
     }
 
-    private boolean isCreator(User user, Category category) {
+    private boolean isCreator(Category category) throws UserNotFoundException {
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
         List<User> creators = category.getCreators();
         for (User creator : creators) {
-            if (creator == user) {
+            if (creator.getId() == user.getId()) {
                 return true;
             }
         }

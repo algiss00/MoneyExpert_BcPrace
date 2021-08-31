@@ -24,18 +24,6 @@ public class BudgetDao extends AbstractDao<Budget> {
         return em.createNamedQuery("Budget.getAll").getResultList();
     }
 
-    public List<Budget> getAllAccountsBudgets(int accId) {
-        return em.createNamedQuery("Budget.getAllAccountBudgets", Budget.class)
-                .setParameter("bankAccId", accId)
-                .getResultList();
-    }
-
-    public List<Budget> getAllUsersBudgets(int uid) {
-        return em.createNamedQuery("Budget.getAllUsersBudgets", Budget.class)
-                .setParameter("userId", uid)
-                .getResultList();
-    }
-
     @Override
     public void persist(Budget entity) {
         Objects.requireNonNull(entity);

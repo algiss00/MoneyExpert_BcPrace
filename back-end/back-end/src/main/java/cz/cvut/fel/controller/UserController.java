@@ -3,6 +3,7 @@ package cz.cvut.fel.controller;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
+import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.UserService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -19,16 +20,24 @@ import java.util.logging.Logger;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final DebtService debtService;
     private static final Logger log = Logger.getLogger(User.class.getName());
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DebtService debtService) {
         this.userService = userService;
+        this.debtService = debtService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAll() {
-        List<User> usersAll = userService.getAll();
-        return new ResponseEntity<>(usersAll, HttpStatus.OK);
+//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<?> getAll() {
+//        List<User> usersAll = userService.getAll();
+//        return new ResponseEntity<>(usersAll, HttpStatus.OK);
+//    }
+
+    @PostMapping(value = "/check-debts")
+    ResponseEntity asyncFuncCheckDebts() throws UserNotFoundException, InterruptedException {
+        debtService.asyncMethodCheckingDebts();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

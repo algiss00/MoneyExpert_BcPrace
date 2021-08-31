@@ -25,18 +25,6 @@ public class DebtDao extends AbstractDao<Debt> {
         return em.createNamedQuery("Debt.getAll").getResultList();
     }
 
-    public List<Debt> getAllAccountsDebts(int accId) {
-        return em.createNamedQuery("Category.getAllAccountsDebts", Debt.class)
-                .setParameter("accId", accId)
-                .getResultList();
-    }
-
-    public List<Debt> getAllUsersDebts(int uid) {
-        return em.createNamedQuery("Category.getAllUsersDebts", Debt.class)
-                .setParameter("uid", uid)
-                .getResultList();
-    }
-
     @Override
     public void persist(Debt entity) {
         Objects.requireNonNull(entity);

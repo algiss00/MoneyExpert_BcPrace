@@ -36,9 +36,9 @@ public class CategoryController {
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/budget/{budId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudget(@PathVariable int budId) throws CategoryNotFoundException {
-        Budget budget = categoryService.getBudget(budId);
+    @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getBudget(@PathVariable int catId) throws CategoryNotFoundException {
+        Budget budget = categoryService.getBudget(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
 
@@ -59,7 +59,7 @@ public class CategoryController {
 
     @PostMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> addTransactionToCategory(@RequestParam int transId, @RequestParam int categoryId) throws CategoryNotFoundException,
-            TransactionNotFoundException {
+            TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         categoryService.addTransactionToCategory(transId, categoryId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

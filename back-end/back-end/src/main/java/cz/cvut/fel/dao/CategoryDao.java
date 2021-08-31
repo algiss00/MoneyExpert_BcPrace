@@ -23,13 +23,6 @@ public class CategoryDao extends AbstractDao<Category> {
         return em.createNamedQuery("Category.getAll").getResultList();
     }
 
-    //todo
-//    public List<Category> getAllUsersCategories(int uid) {
-//        return em.createNamedQuery("Category.getAllUsersCategories", Category.class)
-//                .setParameter("uid", uid)
-//                .getResultList();
-//    }
-
     @Override
     public void persist(Category entity) {
         Objects.requireNonNull(entity);
