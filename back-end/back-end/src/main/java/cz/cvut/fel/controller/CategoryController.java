@@ -31,13 +31,13 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getCategoryById(@PathVariable int id) throws CategoryNotFoundException {
+    ResponseEntity<?> getCategoryById(@PathVariable int id) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Category c = categoryService.getById(id);
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
 
     @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudget(@PathVariable int catId) throws CategoryNotFoundException {
+    ResponseEntity<?> getBudget(@PathVariable int catId) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Budget budget = categoryService.getBudget(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
@@ -50,8 +50,8 @@ public class CategoryController {
 //    }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Category> add(@RequestBody Category category) throws UserNotFoundException {
-        if (!categoryService.persist(category, SecurityUtils.getCurrentUser().getId())) {
+    ResponseEntity<Category> add(@RequestBody Category category) throws UserNotFoundException, NotAuthenticatedClient {
+        if (!categoryService.persist(category)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(category, HttpStatus.CREATED);
@@ -65,12 +65,12 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Category> updateCat(@RequestParam int catId, @RequestBody Category category) throws CategoryNotFoundException {
+    ResponseEntity<Category> updateCat(@RequestParam int catId, @RequestBody Category category) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(categoryService.updateCategory(catId, category), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws CategoryNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         categoryService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

@@ -37,15 +37,10 @@ public class BudgetController {
         return new ResponseEntity<>(budgetService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllUsersBudgets() throws UserNotFoundException {
-        return new ResponseEntity<>(budgetService.getAllUsersBudgets(SecurityUtils.getCurrentUser().getId()), HttpStatus.OK);
-    }
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws UserNotFoundException,
-            BankAccountNotFoundException, CategoryNotFoundException {
-        if (!budgetService.persist(b, SecurityUtils.getCurrentUser().getId(), accId, categoryId)) {
+            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+        if (!budgetService.persist(b, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(b, HttpStatus.CREATED);

@@ -92,11 +92,6 @@ public class TransactionService {
         b.getTransactions().add(transaction);
         bankAccountLogic(b, transaction);
         bankAccountDao.update(b);
-
-        if (transaction.getTypeTransaction().equals(TypeTransaction.Expense)) {
-            budgetLogic(b, transaction);
-        }
-
         return true;
     }
 
@@ -128,8 +123,6 @@ public class TransactionService {
                 System.out.println("PROCENT NOTIFICATE");
             }
         }
-
-
     }
 
     private boolean validate(Transaction t) {
@@ -142,6 +135,7 @@ public class TransactionService {
     private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) {
         if (transaction.getTypeTransaction() == TypeTransaction.Expense) {
             bankAccount.setBalance(bankAccount.getBalance() - transaction.getAmount());
+            budgetLogic(bankAccount, transaction);
         }
         if (transaction.getTypeTransaction() == TypeTransaction.Income) {
             bankAccount.setBalance(bankAccount.getBalance() + transaction.getAmount());
@@ -185,11 +179,45 @@ public class TransactionService {
 
     public Transaction update(int id, Transaction t) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getById(id);
+        BankAccount transBankAcc = transaction.getBankAccount();
+
 
         transaction.setAmount(t.getAmount());
+        //todo!!!
+        //updatedTransactionLogic(transaction, t, transBankAcc);
+
+        transaction.setTypeTransaction(t.getTypeTransaction());
+
+
         transaction.setDate(t.getDate());
         transaction.setJottings(t.getJottings());
         return transactionDao.update(transaction);
+    }
+
+    private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
+        double balance = transBankAcc.getBalance();
+        if (oldTransaction.getAmount() != updatedTransaction.getAmount()
+                && oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
+                && oldTransaction.getTypeTransaction() == TypeTransaction.Expense) {
+            transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
+            bankAccountDao.update(transBankAcc);
+        } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Income) {
+            transBankAcc.setBalance(balance - oldTransaction.getAmount() + updatedTransaction.getAmount());
+            bankAccountDao.update(transBankAcc);
+        }
+    }
+
+    private void updatedTypeTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
+        double balance = transBankAcc.getBalance();
+        if (oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
+                && updatedTransaction.getTypeTransaction() == TypeTransaction.Expense) {
+            transBankAcc.setBalance(balance - updatedTransaction.getAmount());
+            bankAccountDao.update(transBankAcc);
+        } else if (oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
+                && updatedTransaction.getTypeTransaction() == TypeTransaction.Income) {
+            transBankAcc.setBalance(balance + updatedTransaction.getAmount());
+            bankAccountDao.update(transBankAcc);
+        }
     }
 
     public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
@@ -205,11 +233,8 @@ public class TransactionService {
         transactionDao.update(t);
     }
 
-    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
@@ -219,11 +244,8 @@ public class TransactionService {
         return false;
     }
 
-    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
@@ -233,11 +255,8 @@ public class TransactionService {
         return false;
     }
 
-    private boolean isCreatorOfCategory(Category category) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isCreatorOfCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<User> creators = category.getCreators();
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
@@ -245,5 +264,16 @@ public class TransactionService {
             }
         }
         return false;
+    }
+
+    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

@@ -49,12 +49,10 @@ public class BudgetService {
         return budget;
     }
 
-    public boolean persist(Budget budget, int uid, int accId, int categoryId) throws UserNotFoundException,
-            BankAccountNotFoundException, CategoryNotFoundException {
+    public boolean persist(Budget budget, int accId, int categoryId) throws UserNotFoundException,
+            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(budget);
-        User u = userDao.find(uid);
-        if (u == null)
-            throw new UserNotFoundException();
+        User u = isLogged();
         Category category = categoryDao.find(categoryId);
         if (category == null)
             throw new CategoryNotFoundException();
@@ -62,7 +60,9 @@ public class BudgetService {
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
         }
-        //todo check if bankAcc is minea and category too
+        if (!isOwnOfBankAcc(bankAccount) || !isOwnCategory(category)) {
+            throw new NotAuthenticatedClient();
+        }
         if (!validate(budget, bankAccount))
             return false;
         budget.setCreator(u);
@@ -73,6 +73,28 @@ public class BudgetService {
         bankAccount.getBudgets().add(budget);
         bankAccountDao.update(bankAccount);
         return true;
+    }
+
+    private boolean isOwnCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
+        List<User> creators = category.getCreators();
+        for (User creator : creators) {
+            if (creator.getId() == user.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isOwnOfBankAcc(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
+        List<User> owners = bankAccount.getOwners();
+        for (User owner : owners) {
+            if (owner.getId() == user.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean validate(Budget budget, BankAccount bankAccount) {
@@ -115,12 +137,20 @@ public class BudgetService {
         budgetDao.update(budget);
     }
 
-    private boolean isOwnerOfBudget(Budget budget) throws UserNotFoundException {
+    private boolean isOwnerOfBudget(Budget budget) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
+        User creator = budget.getCreator();
+        return creator.getId() == user.getId();
+    }
+
+    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
         User user = userDao.find(SecurityUtils.getCurrentUser().getId());
         if (user == null) {
             throw new UserNotFoundException();
         }
-        User creator = budget.getCreator();
-        return creator.getId() == user.getId();
+        return user;
     }
 }

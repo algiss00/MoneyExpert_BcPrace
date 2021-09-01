@@ -50,14 +50,11 @@ public class CategoryService {
         return c;
     }
 
-    public boolean persist(Category category, int uid) throws UserNotFoundException {
+    public boolean persist(Category category) throws UserNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(category);
         if (!validate(category))
             return false;
-        User u = userDao.find(uid);
-        if (u == null) {
-            throw new UserNotFoundException();
-        }
+        User u = isLogged();
 
         category.getCreators().add(u);
         categoryDao.persist(category);
@@ -82,11 +79,8 @@ public class CategoryService {
         transactionDao.update(t);
     }
 
-    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
@@ -126,11 +120,8 @@ public class CategoryService {
         return categoryDao.update(c);
     }
 
-    private boolean isCreator(Category category) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isCreator(Category category) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<User> creators = category.getCreators();
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
@@ -138,5 +129,16 @@ public class CategoryService {
             }
         }
         return false;
+    }
+
+    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

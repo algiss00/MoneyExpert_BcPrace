@@ -32,32 +32,32 @@ public class DebtController {
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException {
+    ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Debt d = debtService.getById(id);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllUsersDebts() {
-        List<Debt> d = debtService.getAllUsersDebts(SecurityUtils.getCurrentUser().getId());
-        return new ResponseEntity<>(d, HttpStatus.OK);
-    }
-
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws UserNotFoundException, BankAccountNotFoundException {
-        if (!debtService.persist(d, SecurityUtils.getCurrentUser().getId(), accId)) {
+    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+        if (!debtService.persist(d, accId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(d, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException {
+    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
     }
 
+    @PostMapping(value = "/check-debts")
+    ResponseEntity<Void> asyncFuncCheckDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
+        debtService.asyncMethodCheckingDebts();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         debtService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

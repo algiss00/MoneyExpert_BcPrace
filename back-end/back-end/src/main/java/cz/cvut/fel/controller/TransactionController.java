@@ -19,12 +19,10 @@ import java.util.logging.Logger;
 @RequestMapping("/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
-    private final BankAccountService bankAccountService;
     private static final Logger log = Logger.getLogger(User.class.getName());
 
-    public TransactionController(TransactionService transactionService, BankAccountService bankAccountService) {
+    public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
-        this.bankAccountService = bankAccountService;
     }
 
     //todo
@@ -35,14 +33,14 @@ public class TransactionController {
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException {
+    ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction u = transactionService.getById(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
-            BankAccountNotFoundException, CategoryNotFoundException {
+            BankAccountNotFoundException, CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         if (!transactionService.persist(transaction, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -51,7 +49,7 @@ public class TransactionController {
 
     @PostMapping(value = "/transfer")
     ResponseEntity<Transaction> transferTransaction(@RequestParam int fromAccId, @RequestParam int toAccId, @RequestParam int transId) throws
-            BankAccountNotFoundException, TransactionNotFoundException {
+            BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction t = transactionService.transferTransaction(fromAccId, toAccId, transId);
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
@@ -62,23 +60,15 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         transactionService.remove(id);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-
-    }
-
-    @DeleteMapping(value = "/bankAccount")
-    ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        bankAccountService.removeTransFromAccount(transId, bankAccountId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws CategoryNotFoundException, TransactionNotFoundException {
+    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws CategoryNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         transactionService.removeFromCategory(transId);
         return new ResponseEntity<Void>(HttpStatus.OK);
-
     }
 
     @ExceptionHandler({

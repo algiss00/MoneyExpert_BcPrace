@@ -50,13 +50,6 @@ public class BankAccountController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    //All my accounts
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllUserAcc() throws UserNotFoundException {
-        List<BankAccount> u = bankAccountService.getAllUsersAccounts(SecurityUtils.getCurrentUser().getId());
-        return new ResponseEntity<>(u, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/owners", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getOwners(@RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         List<User> u = bankAccountService.getAllOwners(accId);
@@ -64,8 +57,8 @@ public class BankAccountController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<BankAccount> add(@RequestBody BankAccount b) throws UserNotFoundException {
-        if (!bankAccountService.persist(b, SecurityUtils.getCurrentUser().getId())) {
+    ResponseEntity<BankAccount> add(@RequestBody BankAccount b) throws UserNotFoundException, NotAuthenticatedClient {
+        if (!bankAccountService.persist(b)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(b, HttpStatus.CREATED);
@@ -94,7 +87,13 @@ public class BankAccountController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/transactions")
+    @DeleteMapping(value = "/transaction")
+    ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        bankAccountService.removeTransFromAccount(transId, bankAccountId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/all-transactions")
     ResponseEntity<Void> removeAllTransactions(@RequestParam int accId) throws BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         bankAccountService.removeAllTrans(accId);
         return new ResponseEntity<Void>(HttpStatus.OK);

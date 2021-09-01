@@ -53,11 +53,8 @@ public class DebtService {
         return d;
     }
 
-    public boolean persist(Debt debt, int uid, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
-        User u = userDao.find(uid);
-        if (u == null) {
-            throw new UserNotFoundException(uid);
-        }
+    public boolean persist(Debt debt, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+        User u = isLogged();
         BankAccount bankAccount = bankAccountDao.find(accId);
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
@@ -76,33 +73,27 @@ public class DebtService {
 
     //todo return http response, only by date its simple
     @Async
-    public void asyncMethodCheckingDebts() throws UserNotFoundException, InterruptedException {
+    public void asyncMethodCheckingDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
         System.out.println("Execute method asynchronously. "
                 + Thread.currentThread().getName());
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");
+        User user = isLogged();
         while (SecurityUtils.getCurrentUser() != null) {
-            User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-            if (user == null) {
-                throw new UserNotFoundException();
-            }
-
             List<Debt> debts = user.getMyDebts();
             for (Debt d : debts) {
                 if (d.getNotifyDate().equals(format.format(new Date()))) {
                     System.out.println("NOTIFY DEBT!");
                 } else if (d.getDeadline().equals(format.format(new Date()))) {
+                    //todo if date >= deadline
                     System.out.println("DEADLINE DEBT!");
                 }
             }
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         }
     }
 
     private boolean validate(Debt debt) {
-        if (debt.getName().trim().isEmpty()) {
-            return false;
-        }
-        if (debtDao.find(debt.getId()) != null) {
+        if (debt.getName().trim().isEmpty() || debtDao.find(debt.getId()) != null) {
             return false;
         }
         boolean notExist = true;
@@ -134,19 +125,13 @@ public class DebtService {
         return debtDao.update(da);
     }
 
-    private boolean isCreator(Debt debt) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isCreator(Debt debt) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         return debt.getCreator().getId() == user.getId();
     }
 
-    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
@@ -154,5 +139,16 @@ public class DebtService {
             }
         }
         return false;
+    }
+
+    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
     }
 }

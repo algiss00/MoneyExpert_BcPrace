@@ -69,14 +69,11 @@ public class BankAccountService {
         return b.getOwners();
     }
 
-    public boolean persist(BankAccount bankAccount, int uid) throws UserNotFoundException {
+    public boolean persist(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             return false;
-        User u = userDao.find(uid);
-        if (u == null) {
-            throw new UserNotFoundException();
-        }
+        User u = isLogged();
         bankAccount.getOwners().add(u);
         bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
@@ -85,13 +82,23 @@ public class BankAccountService {
         return true;
     }
 
+    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+        if (SecurityUtils.getCurrentUser() == null) {
+            throw new NotAuthenticatedClient();
+        }
+        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+        return user;
+    }
+
     public void addNewOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+        BankAccount b = getById(accId);
         User u = userDao.find(userId);
         if (u == null) {
             throw new UserNotFoundException();
         }
-        BankAccount b = getById(accId);
-
         b.getOwners().add(u);
         u.getAvailableBankAccounts().add(b);
         bankAccountDao.update(b);
@@ -121,18 +128,16 @@ public class BankAccountService {
     }
 
     public void removeOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+        BankAccount b = getById(accId);
         User u = userDao.find(userId);
         if (u == null) {
             throw new UserNotFoundException();
         }
-        BankAccount b = getById(accId);
-
         b.getOwners().remove(u);
         u.getAvailableBankAccounts().remove(b);
         bankAccountDao.update(b);
         userDao.update(u);
     }
-
 
     public void removeTransFromAccount(int transId, int accId) throws TransactionNotFoundException, BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         BankAccount b = getById(accId);
@@ -140,11 +145,23 @@ public class BankAccountService {
         if (t == null) {
             throw new TransactionNotFoundException();
         }
-        //todo check if this transaction in BAcc
+        if (!isTransactionInBankAcc(b, t)) {
+            throw new NotAuthenticatedClient();
+        }
         b.getTransactions().remove(t);
         t.setBankAccount(null);
         bankAccountDao.update(b);
         transactionDao.update(t);
+    }
+
+    private boolean isTransactionInBankAcc(BankAccount bankAccount, Transaction t) {
+        List<Transaction> transactions = bankAccount.getTransactions();
+        for (Transaction transaction : transactions) {
+            if (transaction.getId() == t.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeBudgetFromBankAcc(int budgetId, int accId) throws BankAccountNotFoundException, BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
@@ -152,12 +169,34 @@ public class BankAccountService {
         if (budget == null) {
             throw new BudgetNotFoundException();
         }
-        //todo check if budget exist in this BAcc
         BankAccount bankAccount = getById(accId);
+        if (!isBudgetInBankAcc(bankAccount, budget)) {
+            throw new NotAuthenticatedClient();
+        }
         bankAccount.getBudgets().remove(budget);
         budget.setBankAccount(null);
         budgetDao.update(budget);
         bankAccountDao.update(bankAccount);
+    }
+
+    private boolean isBudgetInBankAcc(BankAccount bankAccount, Budget budget) {
+        List<Budget> budgets = bankAccount.getBudgets();
+        for (Budget b : budgets) {
+            if (b.getId() == budget.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isDebtInBankAcc(BankAccount bankAccount, Debt d) {
+        List<Debt> debts = bankAccount.getDebts();
+        for (Debt debt : debts) {
+            if (debt.getId() == d.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeDebt(int id, int accId) throws DebtNotFoundException, BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
@@ -166,7 +205,9 @@ public class BankAccountService {
             throw new DebtNotFoundException();
         }
         BankAccount bankAccount = getById(accId);
-        //todo check if debt exist in this BAcc
+        if (!isDebtInBankAcc(bankAccount, debt)) {
+            throw new NotAuthenticatedClient();
+        }
         bankAccount.getDebts().remove(debt);
         debt.setCreator(null);
         debt.setBankAccount(null);
@@ -181,11 +222,8 @@ public class BankAccountService {
         }
     }
 
-    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException {
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
+        User user = isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
