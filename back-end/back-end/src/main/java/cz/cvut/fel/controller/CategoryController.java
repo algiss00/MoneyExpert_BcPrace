@@ -41,13 +41,12 @@ public class CategoryController {
         Budget budget = categoryService.getBudget(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
-
-    //todo
-//    @GetMapping(value = "/getAllUsersCategories", produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> getAllUsersCategories() {
-//        List<Category> c = categoryService.getAllUsersCategories(SecurityUtils.getCurrentUser().getId());
-//        return new ResponseEntity<>(c, HttpStatus.OK);
-//    }
+    
+    @GetMapping(value = "/transactions/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransactions(@PathVariable int catId) throws UserNotFoundException, NotAuthenticatedClient, CategoryNotFoundException {
+        List<Transaction> c = categoryService.getTransactions(catId);
+        return new ResponseEntity<>(c, HttpStatus.OK);
+    }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Category> add(@RequestBody Category category) throws UserNotFoundException, NotAuthenticatedClient {

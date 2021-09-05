@@ -38,6 +38,10 @@ public class CategoryService {
         return getById(catId).getBudget();
     }
 
+    public List<Transaction> getTransactions(int catId) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        return getById(catId).getTransactions();
+    }
+
     public Category getById(int id) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Category c = categoryDao.find(id);
         if (c == null) {

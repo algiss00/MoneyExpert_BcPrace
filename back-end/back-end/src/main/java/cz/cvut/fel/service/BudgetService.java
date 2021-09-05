@@ -124,6 +124,7 @@ public class BudgetService {
     public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Budget b = getById(id);
         b.setName(budget.getName());
+        //todo logic of amount
         b.setAmount(budget.getAmount());
         b.setPercentNotif(budget.getPercentNotif());
         b.setCategory(budget.getCategory());

@@ -34,7 +34,6 @@ public class Category extends AbstractEntity {
         if (transactions == null) {
             setTransactions(new ArrayList<>());
         }
-
         return transactions;
     }
 

@@ -1,6 +1,7 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Transaction;
+import cz.cvut.fel.model.TypeTransaction;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.TransactionService;
@@ -58,6 +59,12 @@ public class TransactionController {
     ResponseEntity<Transaction> updateTrans(@RequestParam int transId, @RequestBody Transaction transaction) throws Exception {
         return new ResponseEntity<>(transactionService.update(transId, transaction), HttpStatus.CREATED);
     }
+
+    @PostMapping(value = "/update-type", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Transaction> updateTransType(@RequestParam int transId, @RequestBody TypeTransaction typeTransaction) throws Exception {
+        return new ResponseEntity<>(transactionService.updateTransactionType(transId, typeTransaction), HttpStatus.CREATED);
+    }
+
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {

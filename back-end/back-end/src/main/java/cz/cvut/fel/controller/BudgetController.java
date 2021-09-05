@@ -59,12 +59,6 @@ public class BudgetController {
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping(value = "/account")
-    ResponseEntity<Void> removeBudgetFromAcc(@RequestParam int budId, @RequestParam int bankAcc) throws BankAccountNotFoundException, BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        bankAccountService.removeBudgetFromBankAcc(budId, bankAcc);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     @DeleteMapping(value = "/category")
     ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         budgetService.removeCategoryFromBudget(budId);

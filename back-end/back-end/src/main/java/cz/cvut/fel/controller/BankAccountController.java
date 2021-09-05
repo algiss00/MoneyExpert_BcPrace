@@ -81,6 +81,12 @@ public class BankAccountController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/budget")
+    ResponseEntity<Void> removeBudgetFromAcc(@RequestParam int budId, @RequestParam int bankAcc) throws BankAccountNotFoundException, BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        bankAccountService.removeBudgetFromBankAcc(budId, bankAcc);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/owner")
     ResponseEntity<Void> removeOwner(@RequestParam int userId, @RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         bankAccountService.removeOwner(userId, accId);
@@ -96,6 +102,13 @@ public class BankAccountController {
     @DeleteMapping(value = "/all-transactions")
     ResponseEntity<Void> removeAllTransactions(@RequestParam int accId) throws BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         bankAccountService.removeAllTrans(accId);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "debt")
+    ResponseEntity<Void> removeDebt(@RequestParam int debtId, @RequestParam int accId) throws BankAccountNotFoundException,
+            UserNotFoundException, NotAuthenticatedClient, DebtNotFoundException {
+        bankAccountService.removeDebt(debtId, accId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

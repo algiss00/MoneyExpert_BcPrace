@@ -181,41 +181,42 @@ public class TransactionService {
         Transaction transaction = getById(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
+        updatedTransactionLogic(transaction, t, transBankAcc);
 
         transaction.setAmount(t.getAmount());
-        //todo!!!
-        //updatedTransactionLogic(transaction, t, transBankAcc);
-
-        transaction.setTypeTransaction(t.getTypeTransaction());
-
-
         transaction.setDate(t.getDate());
         transaction.setJottings(t.getJottings());
         return transactionDao.update(transaction);
     }
 
-    private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
+    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+        Transaction transaction = getById(id);
+        BankAccount transBankAcc = transaction.getBankAccount();
+
+        updateTransactionTypeLogic(transaction, typeTransaction, transBankAcc);
+
+        transaction.setTypeTransaction(typeTransaction);
+        return transactionDao.update(transaction);
+    }
+
+    private void updateTransactionTypeLogic(Transaction oldTransaction, TypeTransaction typeTransaction, BankAccount transBankAcc) {
         double balance = transBankAcc.getBalance();
-        if (oldTransaction.getAmount() != updatedTransaction.getAmount()
-                && oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
-                && oldTransaction.getTypeTransaction() == TypeTransaction.Expense) {
-            transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
+        if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.Expense) {
+            transBankAcc.setBalance(balance - oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
-        } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Income) {
-            transBankAcc.setBalance(balance - oldTransaction.getAmount() + updatedTransaction.getAmount());
+        } else if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.Income) {
+            transBankAcc.setBalance(balance + oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         }
     }
 
-    private void updatedTypeTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
+    private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
         double balance = transBankAcc.getBalance();
-        if (oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
-                && updatedTransaction.getTypeTransaction() == TypeTransaction.Expense) {
-            transBankAcc.setBalance(balance - updatedTransaction.getAmount());
+        if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Expense) {
+            transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
-        } else if (oldTransaction.getTypeTransaction() != updatedTransaction.getTypeTransaction()
-                && updatedTransaction.getTypeTransaction() == TypeTransaction.Income) {
-            transBankAcc.setBalance(balance + updatedTransaction.getAmount());
+        } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Income) {
+            transBankAcc.setBalance(balance - oldTransaction.getAmount() + updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         }
     }

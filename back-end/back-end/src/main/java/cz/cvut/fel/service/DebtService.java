@@ -80,10 +80,18 @@ public class DebtService {
         User user = isLogged();
         while (SecurityUtils.getCurrentUser() != null) {
             List<Debt> debts = user.getMyDebts();
+
             for (Debt d : debts) {
-                if (d.getNotifyDate().equals(format.format(new Date()))) {
+                String notifyDate = d.getNotifyDate();
+                String deadlineDate = d.getDeadline();
+                int resultNotifyDate = notifyDate.compareTo(format.format(new Date()));
+                int resultDeadlineDate = deadlineDate.compareTo(format.format(new Date()));
+                System.out.println("NOTIFY: " + resultNotifyDate);
+                System.out.println("NOTIFY: " + resultDeadlineDate);
+
+                if (resultNotifyDate >= 0) {
                     System.out.println("NOTIFY DEBT!");
-                } else if (d.getDeadline().equals(format.format(new Date()))) {
+                } else if (resultDeadlineDate >= 0) {
                     //todo if date >= deadline
                     System.out.println("DEADLINE DEBT!");
                 }
