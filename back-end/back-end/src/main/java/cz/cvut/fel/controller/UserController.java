@@ -2,7 +2,6 @@ package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
-import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.UserService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -37,6 +36,12 @@ public class UserController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/current-user", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getCurrentUser() throws UserNotFoundException {
+        User u = userService.getById(SecurityUtils.getCurrentUser().getId());
+        return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAvailableAccounts() throws UserNotFoundException, NotAuthenticatedClient {
         List<BankAccount> accounts = userService.getAvailableAccounts();
@@ -62,16 +67,16 @@ public class UserController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<User> add(@RequestBody User user) throws UserNotFoundException {
+    ResponseEntity<User> add(@RequestBody User user) {
         if (!userService.persist(user)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/basic-info", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> updateUser(@RequestBody User user) throws Exception {
-        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.updateUserBasic(user), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/email", produces = MediaType.APPLICATION_JSON_VALUE)

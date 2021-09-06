@@ -1,5 +1,7 @@
 package cz.cvut.fel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Table(name = "debt_table")
@@ -25,10 +27,12 @@ public class Debt extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
+    @JsonIgnore
     private BankAccount bankAccount;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User creator;
 
     public User getCreator() {

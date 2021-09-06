@@ -89,9 +89,9 @@ public class DebtService {
                 System.out.println("NOTIFY: " + resultNotifyDate);
                 System.out.println("NOTIFY: " + resultDeadlineDate);
 
-                if (resultNotifyDate >= 0) {
+                if (resultNotifyDate <= 0) {
                     System.out.println("NOTIFY DEBT!");
-                } else if (resultDeadlineDate >= 0) {
+                } else if (resultDeadlineDate <= 0) {
                     //todo if date >= deadline
                     System.out.println("DEADLINE DEBT!");
                 }

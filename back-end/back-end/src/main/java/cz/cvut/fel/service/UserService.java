@@ -30,9 +30,9 @@ public class UserService {
         return userDao.getByEmail(email);
     }
 
-    public boolean alreadyExists(User user) throws UserNotFoundException {
+    public boolean alreadyExists(User user) {
         return getByUsername(user.getUsername()) != null
-                || getByEmail(user.getEmail()) != null || getById(user.getId()) != null;
+                || getByEmail(user.getEmail()) != null || userDao.find(user.getId()) != null;
     }
 
     public List<User> getAll() {
@@ -67,7 +67,7 @@ public class UserService {
         return u.getMyDebts();
     }
 
-    public boolean persist(User user) throws UserNotFoundException {
+    public boolean persist(User user) {
         Objects.requireNonNull(user);
         if (alreadyExists(user))
             return false;
@@ -75,13 +75,8 @@ public class UserService {
         return true;
     }
 
-    public User updateUser(User user) throws Exception {
+    public User updateUserBasic(User user) throws Exception {
         User u = isLogged();
-        if (alreadyExists(u)) {
-            throw new Exception("User is already exists");
-        }
-        u.setEmail(user.getEmail());
-        u.setUsername(user.getUsername());
         u.setName(user.getName());
         u.setLastname(user.getLastname());
         return userDao.update(u);
@@ -90,7 +85,7 @@ public class UserService {
 
     public User updateUsername(String username) throws Exception {
         User u = isLogged();
-        if (alreadyExists(u)) {
+        if (getByUsername(username) != null) {
             throw new Exception("Username is taken");
         }
         u.setUsername(username);
@@ -99,7 +94,7 @@ public class UserService {
 
     public User updateEmail(String email) throws Exception {
         User u = isLogged();
-        if (alreadyExists(u)) {
+        if (getByEmail(email) != null) {
             throw new Exception("Email is taken");
         }
         u.setEmail(email);
