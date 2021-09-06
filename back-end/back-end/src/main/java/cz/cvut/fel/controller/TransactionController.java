@@ -65,7 +65,6 @@ public class TransactionController {
         return new ResponseEntity<>(transactionService.updateTransactionType(transId, typeTransaction), HttpStatus.CREATED);
     }
 
-
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         transactionService.remove(id);

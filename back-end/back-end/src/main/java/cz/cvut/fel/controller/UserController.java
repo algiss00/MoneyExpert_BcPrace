@@ -84,7 +84,7 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUsername(username), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/delete")
+    @DeleteMapping(value = "/delete-account")
     ResponseEntity<Void> remove() throws UserNotFoundException, NotAuthenticatedClient {
         userService.remove();
         return new ResponseEntity<Void>(HttpStatus.OK);

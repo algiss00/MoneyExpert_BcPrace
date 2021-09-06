@@ -50,8 +50,8 @@ public class BankAccountController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/owners", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getOwners(@RequestParam int accId) throws BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    @GetMapping(value = "/owners/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getOwners(@PathVariable int accId) throws BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         List<User> u = bankAccountService.getAllOwners(accId);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
