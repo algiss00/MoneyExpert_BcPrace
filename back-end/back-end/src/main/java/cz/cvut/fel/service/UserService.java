@@ -15,9 +15,8 @@ import java.util.Objects;
 @Service
 @Transactional
 public class UserService {
-    private UserDao userDao;
+    private final UserDao userDao;
 
-    @Autowired
     public UserService(UserDao userDao) {
         this.userDao = userDao;
     }

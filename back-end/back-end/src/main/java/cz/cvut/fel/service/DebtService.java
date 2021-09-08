@@ -14,6 +14,7 @@ import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,34 +72,45 @@ public class DebtService {
         return true;
     }
 
-    //todo return http response, only by date its simple
-    @Async
-    public void asyncMethodCheckingDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
-        System.out.println("Execute method asynchronously. "
-                + Thread.currentThread().getName());
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");
-        User user = isLogged();
-        while (SecurityUtils.getCurrentUser() != null) {
-            List<Debt> debts = user.getMyDebts();
-
-            for (Debt d : debts) {
-                String notifyDate = d.getNotifyDate();
-                String deadlineDate = d.getDeadline();
-                int resultNotifyDate = notifyDate.compareTo(format.format(new Date()));
-                int resultDeadlineDate = deadlineDate.compareTo(format.format(new Date()));
-                System.out.println("NOTIFY: " + resultNotifyDate);
-                System.out.println("NOTIFY: " + resultDeadlineDate);
-
-                if (resultNotifyDate <= 0) {
-                    System.out.println("NOTIFY DEBT!");
-                } else if (resultDeadlineDate <= 0) {
-                    //todo if date >= deadline
-                    System.out.println("DEADLINE DEBT!");
-                }
-            }
-            Thread.sleep(5000);
-        }
+    //todo v sql request
+    //todo fetch debts new table
+    //@Scheduled(cron = "0 */6 * * * ")
+    //@Scheduled(cron = "*/5 * * * * *")
+    public void checkNotifyDates(){
+        System.out.println("DEBT");
+        //todo new table/entity debt_id creator typeNotification
+        //check if exists, maybe every 12 hours notificate check
+        //try catch pouzij
     }
+
+
+//    @Async
+//    public void asyncMethodCheckingDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
+//        System.out.println("Execute method asynchronously. "
+//                + Thread.currentThread().getName());
+//        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY");
+//        User user = isLogged();
+//        while (SecurityUtils.getCurrentUser() != null) {
+//            List<Debt> debts = user.getMyDebts();
+//
+//            for (Debt d : debts) {
+//                String notifyDate = d.getNotifyDate();
+//                String deadlineDate = d.getDeadline();
+//                int resultNotifyDate = notifyDate.compareTo(format.format(new Date()));
+//                int resultDeadlineDate = deadlineDate.compareTo(format.format(new Date()));
+//                System.out.println("NOTIFY: " + resultNotifyDate);
+//                System.out.println("NOTIFY: " + resultDeadlineDate);
+//
+//                if (resultNotifyDate <= 0) {
+//                    System.out.println("NOTIFY DEBT!");
+//                } else if (resultDeadlineDate <= 0) {
+//                    //todo if date >= deadline
+//                    System.out.println("DEADLINE DEBT!");
+//                }
+//            }
+//            Thread.sleep(5000);
+//        }
+//    }
 
     private boolean validate(Debt debt) {
         if (debt.getName().trim().isEmpty() || debtDao.find(debt.getId()) != null) {

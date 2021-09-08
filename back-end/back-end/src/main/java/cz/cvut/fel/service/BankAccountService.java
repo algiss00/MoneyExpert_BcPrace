@@ -23,7 +23,7 @@ public class BankAccountService {
     private DebtDao debtDao;
     private CategoryDao categoryDao;
 
-    @Autowired
+
     public BankAccountService(CategoryDao categoryDao, BankAccountDao bankAccountDao, UserDao userDao,
                               TransactionDao transactionDao, BudgetDao budgetDao, DebtDao debtDao) {
         this.bankAccountDao = bankAccountDao;

@@ -50,11 +50,11 @@ public class DebtController {
         return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/check-debts")
-    ResponseEntity<Void> asyncFuncCheckDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
-        debtService.asyncMethodCheckingDebts();
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @PostMapping(value = "/check-debts")
+//    ResponseEntity<Void> asyncFuncCheckDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
+//        debtService.asyncMethodCheckingDebts();
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient, UserNotFoundException {
