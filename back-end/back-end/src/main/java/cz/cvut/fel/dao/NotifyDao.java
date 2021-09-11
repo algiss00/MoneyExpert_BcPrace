@@ -1,7 +1,6 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Debt;
+import cz.cvut.fel.model.Notify;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,40 +8,35 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class DebtDao extends AbstractDao<Debt> {
-
-    DebtDao(EntityManager em) {
+public class NotifyDao extends AbstractDao<Notify> {
+    NotifyDao(EntityManager em) {
         super(em);
     }
 
     @Override
-    public Debt find(int id) {
-        return em.find(Debt.class, id);
+    public Notify find(int id) {
+        return em.find(Notify.class, id);
     }
 
     @Override
-    public List<Debt> findAll() {
-        return em.createNamedQuery("Debt.getAll").getResultList();
-    }
-
-    public List<Debt> getNotifyDebts() {
-        return em.createNamedQuery("getNotifyDebts").getResultList();
+    public List<Notify> findAll() {
+        return em.createNamedQuery("Notify.getAll").getResultList();
     }
 
     @Override
-    public void persist(Debt entity) {
+    public void persist(Notify entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
     }
 
     @Override
-    public Debt update(Debt entity) {
+    public Notify update(Notify entity) {
         Objects.requireNonNull(entity);
         return em.merge(entity);
     }
 
     @Override
-    public void remove(Debt entity) {
+    public void remove(Notify entity) {
         Objects.requireNonNull(entity);
         em.remove(em.contains(entity) ? entity : em.merge(entity));
     }

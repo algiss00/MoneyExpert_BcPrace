@@ -2,17 +2,16 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.DebtDao;
+import cz.cvut.fel.dao.NotifyDao;
 import cz.cvut.fel.dao.UserDao;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.Debt;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
 import cz.cvut.fel.service.exceptions.DebtNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,12 +30,14 @@ public class DebtService {
     private DebtDao debtDao;
     private UserDao userDao;
     private BankAccountDao bankAccountDao;
+    private NotifyDao notifyDao;
 
     @Autowired
-    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao) {
+    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao, NotifyDao notifyDao) {
         this.debtDao = debtDao;
         this.userDao = userDao;
         this.bankAccountDao = bankAccountDao;
+        this.notifyDao = notifyDao;
     }
 
     public List<Debt> getAll() {
@@ -74,15 +75,35 @@ public class DebtService {
 
     //todo v sql request
     //todo fetch debts new table
-    //@Scheduled(cron = "0 */6 * * * ")
-    //@Scheduled(cron = "*/5 * * * * *")
-    public void checkNotifyDates(){
+    //every 12 hours
+    @Scheduled(cron = "0 */12 * * * ")
+    public void checkNotifyDates() {
         System.out.println("DEBT");
         //todo new table/entity debt_id creator typeNotification
         //check if exists, maybe every 12 hours notificate check
         //try catch pouzij
+        try {
+            List<Debt> notifyDebts = debtDao.getNotifyDebts();
+            for (Debt notifiedDebt : notifyDebts) {
+                Notify notifyEntity = new Notify();
+                notifyEntity.setCreator(notifiedDebt.getCreator());
+                notifyEntity.setDebt(notifiedDebt);
+                notifyEntity.setTypeNotification(TypeNotification.NOTIFY);
+
+                notifyDao.persist(notifyEntity);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
+    @Scheduled(cron = "0 */12 * * * ")
+    public void checkDeadlineDates() {
+        System.out.println("DEADLINE");
+        //todo new table/entity debt_id creator typeNotification
+        //check if exists, maybe every 12 hours notificate check
+        //try catch pouzij
+    }
 
 //    @Async
 //    public void asyncMethodCheckingDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {

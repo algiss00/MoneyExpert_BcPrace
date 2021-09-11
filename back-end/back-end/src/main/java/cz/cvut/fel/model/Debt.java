@@ -9,6 +9,7 @@ import javax.persistence.*;
 @NamedQueries({
         @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d")
 })
+@NamedNativeQuery(name = "getNotifyDebts", query = "SELECT * FROM debt_table WHERE CAST(notify_date as Date) <= CURRENT_DATE AND CAST(deadline as Date) > CURRENT_DATE")
 
 public class Debt extends AbstractEntity {
     @Column
@@ -34,6 +35,18 @@ public class Debt extends AbstractEntity {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User creator;
+
+    @OneToOne(mappedBy = "debt")
+    @JsonIgnore
+    private Notify notify;
+
+    public Notify getNotify() {
+        return notify;
+    }
+
+    public void setNotify(Notify notify) {
+        this.notify = notify;
+    }
 
     public User getCreator() {
         return creator;

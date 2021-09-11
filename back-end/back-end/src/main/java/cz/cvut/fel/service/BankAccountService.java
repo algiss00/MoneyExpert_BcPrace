@@ -4,7 +4,6 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -250,7 +249,7 @@ public class BankAccountService {
         startTransaction.setJottings("Start transaction");
         startTransaction.setAmount(bankAccount.getBalance());
         startTransaction.setDate(format.format(new Date()));
-        startTransaction.setTypeTransaction(TypeTransaction.Income);
+        startTransaction.setTypeTransaction(TypeTransaction.INCOME);
 
         transactionDao.persist(startTransaction);
     }

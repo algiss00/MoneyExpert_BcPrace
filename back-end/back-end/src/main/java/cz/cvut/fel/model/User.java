@@ -53,6 +53,18 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<Debt> myDebts;
 
+    @OneToOne(mappedBy = "creator")
+    @JsonIgnore
+    private Notify notify;
+
+    public Notify getNotify() {
+        return notify;
+    }
+
+    public void setNotify(Notify notify) {
+        this.notify = notify;
+    }
+
     public List<Category> getMyCategories() {
         if (myCategories == null) {
             setMyCategories(new ArrayList<>());

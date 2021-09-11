@@ -133,11 +133,11 @@ public class TransactionService {
     }
 
     private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) {
-        if (transaction.getTypeTransaction() == TypeTransaction.Expense) {
+        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             bankAccount.setBalance(bankAccount.getBalance() - transaction.getAmount());
             budgetLogic(bankAccount, transaction);
         }
-        if (transaction.getTypeTransaction() == TypeTransaction.Income) {
+        if (transaction.getTypeTransaction() == TypeTransaction.INCOME) {
             bankAccount.setBalance(bankAccount.getBalance() + transaction.getAmount());
         }
     }
@@ -164,12 +164,12 @@ public class TransactionService {
         transferTransaction.setJottings("Transfer transaction from " + fromBankAcc.getName());
         transferTransaction.setAmount(transaction.getAmount());
         transferTransaction.setDate(format.format(new Date()));
-        transferTransaction.setTypeTransaction(TypeTransaction.Income);
+        transferTransaction.setTypeTransaction(TypeTransaction.INCOME);
 
         transactionDao.persist(transferTransaction);
         bankAccountLogic(toBankAcc, transferTransaction);
 
-        transaction.setTypeTransaction(TypeTransaction.Expense);
+        transaction.setTypeTransaction(TypeTransaction.EXPENSE);
         bankAccountLogic(fromBankAcc, transaction);
 
         toBankAcc.getTransactions().add(transferTransaction);
@@ -201,10 +201,10 @@ public class TransactionService {
 
     private void updateTransactionTypeLogic(Transaction oldTransaction, TypeTransaction typeTransaction, BankAccount transBankAcc) {
         double balance = transBankAcc.getBalance();
-        if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.Expense) {
+        if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.EXPENSE) {
             transBankAcc.setBalance(balance - oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
-        } else if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.Income) {
+        } else if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.INCOME) {
             transBankAcc.setBalance(balance + oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         }
@@ -212,10 +212,10 @@ public class TransactionService {
 
     private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
         double balance = transBankAcc.getBalance();
-        if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Expense) {
+        if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
-        } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.Income) {
+        } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.INCOME) {
             transBankAcc.setBalance(balance - oldTransaction.getAmount() + updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         }
