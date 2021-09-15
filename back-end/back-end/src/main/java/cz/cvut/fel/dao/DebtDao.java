@@ -26,7 +26,11 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     public List<Debt> getNotifyDebts() {
-        return em.createNamedQuery("getNotifyDebts").getResultList();
+        return em.createNamedQuery("Debt.getNotifyDebts", Debt.class).getResultList();
+    }
+
+    public List<Debt> getDeadlineDebts() {
+        return em.createNamedQuery("Debt.getDeadlineDebts", Debt.class).getResultList();
     }
 
     @Override

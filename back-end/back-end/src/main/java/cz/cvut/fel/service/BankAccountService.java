@@ -77,7 +77,9 @@ public class BankAccountService {
         bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
         userDao.update(u);
-        createStartTransaction(bankAccount, u);
+        if (bankAccount.getBalance() != 0) {
+            createStartTransaction(bankAccount, u);
+        }
         return true;
     }
 
@@ -243,7 +245,7 @@ public class BankAccountService {
         user.getMyCategories().add(startCategory);
         userDao.update(user);
 
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm");
         startTransaction.setBankAccount(bankAccount);
         startTransaction.setCategory(startCategory);
         startTransaction.setJottings("Start transaction");

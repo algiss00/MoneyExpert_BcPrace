@@ -11,16 +11,10 @@ import cz.cvut.fel.service.exceptions.DebtNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,33 +70,64 @@ public class DebtService {
     //todo v sql request
     //todo fetch debts new table
     //every 12 hours
-    @Scheduled(cron = "0 */12 * * * ")
+    @Scheduled(cron = "5 * * * * * ")
     public void checkNotifyDates() {
-        System.out.println("DEBT");
+        System.out.println("NOTiFY");
         //todo new table/entity debt_id creator typeNotification
         //check if exists, maybe every 12 hours notificate check
         //try catch pouzij
-        try {
-            List<Debt> notifyDebts = debtDao.getNotifyDebts();
-            for (Debt notifiedDebt : notifyDebts) {
-                Notify notifyEntity = new Notify();
-                notifyEntity.setCreator(notifiedDebt.getCreator());
-                notifyEntity.setDebt(notifiedDebt);
-                notifyEntity.setTypeNotification(TypeNotification.NOTIFY);
-
-                notifyDao.persist(notifyEntity);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        List<Debt> notifyDebts = debtDao.getNotifyDebts();
+        if (notifyDebts.isEmpty()) {
+            System.out.println("EMPTY");
+            return;
         }
+        notifyDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
+
+        //todo kontrol if exist this debt...
+        for (Debt notifiedDebt : notifyDebts) {
+            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.NOTIFY)) {
+                System.out.println("Already exists");
+                continue;
+            }
+            Notify notifyEntity = new Notify();
+            notifyEntity.setCreator(notifiedDebt.getCreator());
+            notifyEntity.setDebt(notifiedDebt);
+            notifyEntity.setTypeNotification(TypeNotification.NOTIFY);
+
+            notifyDao.persist(notifyEntity);
+            System.out.println("ADDED TO NOTIFY " + notifyEntity.getDebt().getName());
+        }
+
     }
 
-    @Scheduled(cron = "0 */12 * * * ")
+    private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) {
+        return notifyDao.alreadyExistsDebt(notifiedDebtId, type) != null;
+    }
+
+    @Scheduled(cron = "6 * * * * * ")
     public void checkDeadlineDates() {
         System.out.println("DEADLINE");
-        //todo new table/entity debt_id creator typeNotification
-        //check if exists, maybe every 12 hours notificate check
-        //try catch pouzij
+        List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
+        if (deadlineDebts.isEmpty()) {
+            System.out.println("EMPTY");
+            return;
+        }
+        deadlineDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
+
+        //todo kontrol if exist this debt...
+        for (Debt notifiedDebt : deadlineDebts) {
+            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEADLINE)) {
+                System.out.println("Already exists");
+                continue;
+            }
+            Notify notifyEntity = new Notify();
+            notifyEntity.setCreator(notifiedDebt.getCreator());
+            notifyEntity.setDebt(notifiedDebt);
+            notifyEntity.setTypeNotification(TypeNotification.DEADLINE);
+
+            notifyDao.persist(notifyEntity);
+            System.out.println("ADDED TO NOTIFY " + notifyEntity.getDebt().getName());
+        }
     }
 
 //    @Async

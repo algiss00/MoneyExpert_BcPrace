@@ -3,28 +3,35 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Table(name = "debt_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d")
+        @NamedQuery(name = "Debt.getAll", query = "SELECT d FROM Debt d"),
+        @NamedQuery(name = "Debt.getNotifyDebts",
+                query = "SELECT d FROM Debt d WHERE d.notifyDate <= CURRENT_DATE AND d.deadline > CURRENT_DATE"),
+        @NamedQuery(name = "Debt.getDeadlineDebts",
+                query = "SELECT d FROM Debt d WHERE d.deadline <= CURRENT_DATE")
 })
-@NamedNativeQuery(name = "getNotifyDebts", query = "SELECT * FROM debt_table WHERE CAST(notify_date as Date) <= CURRENT_DATE AND CAST(deadline as Date) > CURRENT_DATE")
+//@NamedNativeQuery(name = "getNotifyDebts", query = "SELECT * FROM debt_table WHERE CAST(notify_date as Date) <= CURRENT_DATE AND CAST(deadline as Date) > CURRENT_DATE")
 
 public class Debt extends AbstractEntity {
     @Column
     private double amount;
     @Column
-    private String deadline;
+    private Date deadline;
     @Column
     private String name;
     //kazdy mesic, tyden, nebo den...
-    @Column
-    private String replay;
+    @Enumerated(EnumType.STRING)
+    private TypeReplay replay;
     @Column
     private String description;
     @Column
-    private String notifyDate;
+    private Date notifyDate;
 
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
@@ -36,15 +43,18 @@ public class Debt extends AbstractEntity {
     @JsonIgnore
     private User creator;
 
-    @OneToOne(mappedBy = "debt")
+    @OneToMany(mappedBy = "debt")
     @JsonIgnore
-    private Notify notify;
+    private List<Notify> notify;
 
-    public Notify getNotify() {
+    public List<Notify> getNotify() {
+        if (notify == null) {
+            setNotify(new ArrayList<>());
+        }
         return notify;
     }
 
-    public void setNotify(Notify notify) {
+    public void setNotify(List<Notify> notify) {
         this.notify = notify;
     }
 
@@ -64,11 +74,11 @@ public class Debt extends AbstractEntity {
         this.amount = castka;
     }
 
-    public String getDeadline() {
+    public Date getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(String endDate) {
+    public void setDeadline(Date endDate) {
         this.deadline = endDate;
     }
 
@@ -80,11 +90,11 @@ public class Debt extends AbstractEntity {
         this.name = name;
     }
 
-    public String getReplay() {
+    public TypeReplay getReplay() {
         return replay;
     }
 
-    public void setReplay(String replay) {
+    public void setReplay(TypeReplay replay) {
         this.replay = replay;
     }
 
@@ -96,11 +106,11 @@ public class Debt extends AbstractEntity {
         this.description = popis;
     }
 
-    public String getNotifyDate() {
+    public Date getNotifyDate() {
         return notifyDate;
     }
 
-    public void setNotifyDate(String startDate) {
+    public void setNotifyDate(Date startDate) {
         this.notifyDate = startDate;
     }
 

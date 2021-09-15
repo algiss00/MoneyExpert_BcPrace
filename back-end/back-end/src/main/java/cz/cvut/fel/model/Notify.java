@@ -5,14 +5,15 @@ import javax.persistence.*;
 @Table(name = "notify_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Notify.getAll", query = "SELECT n FROM Notify n")
+        @NamedQuery(name = "Notify.getAll", query = "SELECT n FROM Notify n"),
+        @NamedQuery(name = "Notify.alreadyExists", query = "SELECT n FROM Notify n WHERE n.debt.id = :debtId AND n.typeNotification = :type")
 })
 public class Notify extends AbstractEntity {
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "debt_id")
     private Debt debt;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User creator;
 
