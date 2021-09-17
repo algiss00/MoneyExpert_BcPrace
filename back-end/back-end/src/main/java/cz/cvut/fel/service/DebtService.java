@@ -2,7 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.BankAccountDao;
 import cz.cvut.fel.dao.DebtDao;
-import cz.cvut.fel.dao.NotifyDao;
+import cz.cvut.fel.dao.NotifyDebtDao;
 import cz.cvut.fel.dao.UserDao;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
@@ -24,14 +24,14 @@ public class DebtService {
     private DebtDao debtDao;
     private UserDao userDao;
     private BankAccountDao bankAccountDao;
-    private NotifyDao notifyDao;
+    private NotifyDebtDao notifyDebtDao;
+    private UserService userService = new UserService(userDao);
 
-    @Autowired
-    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao, NotifyDao notifyDao) {
+    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao, NotifyDebtDao notifyDebtDao) {
         this.debtDao = debtDao;
         this.userDao = userDao;
         this.bankAccountDao = bankAccountDao;
-        this.notifyDao = notifyDao;
+        this.notifyDebtDao = notifyDebtDao;
     }
 
     public List<Debt> getAll() {
@@ -50,7 +50,7 @@ public class DebtService {
     }
 
     public boolean persist(Debt debt, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
-        User u = isLogged();
+        User u = userService.isLogged();
         BankAccount bankAccount = bankAccountDao.find(accId);
         if (bankAccount == null) {
             throw new BankAccountNotFoundException();
@@ -85,23 +85,23 @@ public class DebtService {
 
         //todo kontrol if exist this debt...
         for (Debt notifiedDebt : notifyDebts) {
-            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.NOTIFY)) {
+            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_NOTIFY)) {
                 System.out.println("Already exists");
                 continue;
             }
-            Notify notifyEntity = new Notify();
-            notifyEntity.setCreator(notifiedDebt.getCreator());
-            notifyEntity.setDebt(notifiedDebt);
-            notifyEntity.setTypeNotification(TypeNotification.NOTIFY);
+            NotifyDebt notifyDebtEntity = new NotifyDebt();
+            notifyDebtEntity.setCreator(notifiedDebt.getCreator());
+            notifyDebtEntity.setDebt(notifiedDebt);
+            notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_NOTIFY);
 
-            notifyDao.persist(notifyEntity);
-            System.out.println("ADDED TO NOTIFY " + notifyEntity.getDebt().getName());
+            notifyDebtDao.persist(notifyDebtEntity);
+            System.out.println("ADDED TO NOTIFY " + notifyDebtEntity.getDebt().getName());
         }
 
     }
 
     private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) {
-        return notifyDao.alreadyExistsDebt(notifiedDebtId, type) != null;
+        return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
     @Scheduled(cron = "6 * * * * * ")
@@ -116,17 +116,17 @@ public class DebtService {
 
         //todo kontrol if exist this debt...
         for (Debt notifiedDebt : deadlineDebts) {
-            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEADLINE)) {
+            if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_DEADLINE)) {
                 System.out.println("Already exists");
                 continue;
             }
-            Notify notifyEntity = new Notify();
-            notifyEntity.setCreator(notifiedDebt.getCreator());
-            notifyEntity.setDebt(notifiedDebt);
-            notifyEntity.setTypeNotification(TypeNotification.DEADLINE);
+            NotifyDebt notifyDebtEntity = new NotifyDebt();
+            notifyDebtEntity.setCreator(notifiedDebt.getCreator());
+            notifyDebtEntity.setDebt(notifiedDebt);
+            notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_DEADLINE);
 
-            notifyDao.persist(notifyEntity);
-            System.out.println("ADDED TO NOTIFY " + notifyEntity.getDebt().getName());
+            notifyDebtDao.persist(notifyDebtEntity);
+            System.out.println("ADDED TO NOTIFY " + notifyDebtEntity.getDebt().getName());
         }
     }
 
@@ -192,12 +192,12 @@ public class DebtService {
     }
 
     private boolean isCreator(Debt debt) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         return debt.getCreator().getId() == user.getId();
     }
 
     private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
@@ -205,16 +205,5 @@ public class DebtService {
             }
         }
         return false;
-    }
-
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
     }
 }

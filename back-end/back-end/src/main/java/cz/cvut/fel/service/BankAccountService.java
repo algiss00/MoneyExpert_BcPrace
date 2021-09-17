@@ -21,7 +21,7 @@ public class BankAccountService {
     private BudgetDao budgetDao;
     private DebtDao debtDao;
     private CategoryDao categoryDao;
-
+    private UserService userService = new UserService(userDao);
 
     public BankAccountService(CategoryDao categoryDao, BankAccountDao bankAccountDao, UserDao userDao,
                               TransactionDao transactionDao, BudgetDao budgetDao, DebtDao debtDao) {
@@ -72,7 +72,7 @@ public class BankAccountService {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             return false;
-        User u = isLogged();
+        User u = userService.isLogged();
         bankAccount.getOwners().add(u);
         bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
@@ -81,17 +81,6 @@ public class BankAccountService {
             createStartTransaction(bankAccount, u);
         }
         return true;
-    }
-
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
     }
 
     public void addNewOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
@@ -224,7 +213,7 @@ public class BankAccountService {
     }
 
     private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {

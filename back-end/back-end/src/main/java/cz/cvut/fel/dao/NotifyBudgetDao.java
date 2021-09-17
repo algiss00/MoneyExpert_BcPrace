@@ -1,7 +1,6 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.Debt;
-import cz.cvut.fel.model.Notify;
+import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.TypeNotification;
 import org.springframework.stereotype.Repository;
 
@@ -10,24 +9,24 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class NotifyDao extends AbstractDao<Notify> {
-    NotifyDao(EntityManager em) {
+public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
+    NotifyBudgetDao(EntityManager em) {
         super(em);
     }
 
     @Override
-    public Notify find(int id) {
-        return em.find(Notify.class, id);
+    public NotifyBudget find(int id) {
+        return em.find(NotifyBudget.class, id);
     }
 
     @Override
-    public List<Notify> findAll() {
-        return em.createNamedQuery("Notify.getAll").getResultList();
+    public List<NotifyBudget> findAll() {
+        return em.createNamedQuery("NotifyBudget.getAll").getResultList();
     }
 
-    public Notify alreadyExistsDebt(int debtId, TypeNotification type) {
-        return em.createNamedQuery("Notify.alreadyExists", Notify.class)
-                .setParameter("debtId", debtId)
+    public NotifyBudget alreadyExistsDebt(int debtId, TypeNotification type) {
+        return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
+                .setParameter("budgetId", debtId)
                 .setParameter("type", type)
                 .setMaxResults(1)
                 .getResultList()
@@ -35,19 +34,19 @@ public class NotifyDao extends AbstractDao<Notify> {
     }
 
     @Override
-    public void persist(Notify entity) {
+    public void persist(NotifyBudget entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
     }
 
     @Override
-    public Notify update(Notify entity) {
+    public NotifyBudget update(NotifyBudget entity) {
         Objects.requireNonNull(entity);
         return em.merge(entity);
     }
 
     @Override
-    public void remove(Notify entity) {
+    public void remove(NotifyBudget entity) {
         Objects.requireNonNull(entity);
         em.remove(em.contains(entity) ? entity : em.merge(entity));
     }

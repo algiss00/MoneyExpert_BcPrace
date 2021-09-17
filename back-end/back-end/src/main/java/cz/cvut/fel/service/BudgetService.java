@@ -24,8 +24,8 @@ public class BudgetService {
     private BankAccountDao bankAccountDao;
     private UserDao userDao;
     private CategoryDao categoryDao;
+    private UserService userService = new UserService(userDao);
 
-    @Autowired
     public BudgetService(BudgetDao budgetDao, BankAccountDao bankAccountDao,
                          UserDao userDao, CategoryDao categoryDao) {
         this.budgetDao = budgetDao;
@@ -52,7 +52,7 @@ public class BudgetService {
     public boolean persist(Budget budget, int accId, int categoryId) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(budget);
-        User u = isLogged();
+        User u = userService.isLogged();
         Category category = categoryDao.find(categoryId);
         if (category == null)
             throw new CategoryNotFoundException();
@@ -76,7 +76,7 @@ public class BudgetService {
     }
 
     private boolean isOwnCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> creators = category.getCreators();
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
@@ -87,7 +87,7 @@ public class BudgetService {
     }
 
     private boolean isOwnOfBankAcc(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
@@ -114,7 +114,6 @@ public class BudgetService {
         return false;
     }
 
-
     public boolean remove(int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
         Budget bu = getById(id);
         budgetDao.remove(bu);
@@ -139,19 +138,9 @@ public class BudgetService {
     }
 
     private boolean isOwnerOfBudget(Budget budget) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         User creator = budget.getCreator();
         return creator.getId() == user.getId();
     }
 
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
-    }
 }

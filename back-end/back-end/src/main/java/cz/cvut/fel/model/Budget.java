@@ -3,6 +3,8 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "budget_table")
 @Entity
@@ -34,6 +36,21 @@ public class Budget extends AbstractEntity {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User creator;
+
+    @OneToMany(mappedBy = "budget")
+    @JsonIgnore
+    private List<NotifyBudget> notifyBudget;
+
+    public List<NotifyBudget> getNotifyBudget() {
+        if (notifyBudget == null) {
+            setNotifyBudget(new ArrayList<>());
+        }
+        return notifyBudget;
+    }
+
+    public void setNotifyBudget(List<NotifyBudget> notifyBudget) {
+        this.notifyBudget = notifyBudget;
+    }
 
     public User getCreator() {
         return creator;

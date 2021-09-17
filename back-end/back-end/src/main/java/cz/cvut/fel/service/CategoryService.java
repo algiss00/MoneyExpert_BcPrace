@@ -22,8 +22,8 @@ public class CategoryService {
     private CategoryDao categoryDao;
     private UserDao userDao;
     private TransactionDao transactionDao;
+    private UserService userService = new UserService(userDao);
 
-    @Autowired
     public CategoryService(CategoryDao categoryDao, UserDao userDao, TransactionDao transactionDao) {
         this.categoryDao = categoryDao;
         this.userDao = userDao;
@@ -58,7 +58,7 @@ public class CategoryService {
         Objects.requireNonNull(category);
         if (!validate(category))
             return false;
-        User u = isLogged();
+        User u = userService.isLogged();
 
         category.getCreators().add(u);
         categoryDao.persist(category);
@@ -84,7 +84,7 @@ public class CategoryService {
     }
 
     private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
@@ -125,7 +125,7 @@ public class CategoryService {
     }
 
     private boolean isCreator(Category category) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> creators = category.getCreators();
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
@@ -133,16 +133,5 @@ public class CategoryService {
             }
         }
         return false;
-    }
-
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
     }
 }

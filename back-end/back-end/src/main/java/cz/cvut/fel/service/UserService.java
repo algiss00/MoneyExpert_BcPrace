@@ -5,7 +5,6 @@ import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,7 +108,7 @@ public class UserService {
         userDao.remove(user);
     }
 
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
+    public User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
         if (SecurityUtils.getCurrentUser() == null) {
             throw new NotAuthenticatedClient();
         }

@@ -2,9 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +19,17 @@ public class TransactionService {
     private CategoryDao categoryDao;
     private BudgetDao budgetDao;
     private UserDao userDao;
+    private NotifyBudgetDao notifyBudgetDao;
+    private UserService userService = new UserService(userDao);
 
-    @Autowired
     public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao,
-                              UserDao userDao, CategoryDao categoryDao, BudgetDao budgetDao) {
+                              UserDao userDao, CategoryDao categoryDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao) {
         this.transactionDao = transactionDao;
         this.bankAccountDao = bankAccountDao;
         this.categoryDao = categoryDao;
         this.budgetDao = budgetDao;
         this.userDao = userDao;
+        this.notifyBudgetDao = notifyBudgetDao;
     }
 
     public List<Transaction> getAll() {
@@ -100,6 +100,7 @@ public class TransactionService {
         Budget budgetForTransaction = null;
         double transAmount = transaction.getAmount();
 
+        //todo with sql request!!!
         for (Budget budget : bankAccount.getBudgets()) {
             if (budget.getCategory() == transCategory) {
                 budgetForTransaction = budget;
@@ -116,11 +117,25 @@ public class TransactionService {
         if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
             //todo notificate
             System.out.println("trans amount is bigger or equal then budget amount NOTIFICATE");
+            NotifyBudget notifyBudgetEntity = new NotifyBudget();
+            notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
+            notifyBudgetEntity.setBudget(budgetForTransaction);
+            notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_AMOUNT);
+
+            notifyBudgetDao.persist(notifyBudgetEntity);
+            System.out.println("ADDED TO BUDGET AMOUNT " + notifyBudgetEntity.getBudget().getName());
         } else {
             double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
             if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
                 //todo notifdicate
                 System.out.println("PROCENT NOTIFICATE");
+                NotifyBudget notifyBudgetEntity = new NotifyBudget();
+                notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
+                notifyBudgetEntity.setBudget(budgetForTransaction);
+                notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_PERCENT);
+
+                notifyBudgetDao.persist(notifyBudgetEntity);
+                System.out.println("ADDED TO BUDGET PERCENT " + notifyBudgetEntity.getBudget().getName());
             }
         }
     }
@@ -235,7 +250,7 @@ public class TransactionService {
     }
 
     private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
@@ -246,7 +261,7 @@ public class TransactionService {
     }
 
     private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> owners = bankAccount.getOwners();
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
@@ -257,7 +272,7 @@ public class TransactionService {
     }
 
     private boolean isCreatorOfCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = isLogged();
+        User user = userService.isLogged();
         List<User> creators = category.getCreators();
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
@@ -265,16 +280,5 @@ public class TransactionService {
             }
         }
         return false;
-    }
-
-    private User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
-            throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
     }
 }
