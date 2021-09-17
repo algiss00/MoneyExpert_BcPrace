@@ -45,22 +45,22 @@ public class UserService {
         return u;
     }
 
-    public List<BankAccount> getAvailableAccounts() throws UserNotFoundException, NotAuthenticatedClient {
+    public List<BankAccount> getAvailableAccounts() throws NotAuthenticatedClient {
         User u = isLogged();
         return u.getAvailableBankAccounts();
     }
 
-    public List<Budget> getAllUsersBudgets() throws UserNotFoundException, NotAuthenticatedClient {
+    public List<Budget> getAllUsersBudgets() throws NotAuthenticatedClient {
         User u = isLogged();
         return u.getMyBudgets();
     }
 
-    public List<Category> getAllUsersCategories() throws UserNotFoundException, NotAuthenticatedClient {
+    public List<Category> getAllUsersCategories() throws NotAuthenticatedClient {
         User u = isLogged();
         return u.getMyCategories();
     }
 
-    public List<Debt> getAllUsersDebts() throws UserNotFoundException, NotAuthenticatedClient {
+    public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {
         User u = isLogged();
         return u.getMyDebts();
     }
@@ -99,7 +99,7 @@ public class UserService {
         return userDao.update(u);
     }
 
-    public void remove() throws UserNotFoundException, NotAuthenticatedClient {
+    public void remove() throws NotAuthenticatedClient {
         User user = isLogged();
         user.getAvailableBankAccounts().clear();
         user.getMyBudgets().clear();
@@ -108,13 +108,15 @@ public class UserService {
         userDao.remove(user);
     }
 
-    public User isLogged() throws NotAuthenticatedClient, UserNotFoundException {
-        if (SecurityUtils.getCurrentUser() == null) {
+    public User isLogged() throws NotAuthenticatedClient {
+        User user;
+        try {
+            user = userDao.find(SecurityUtils.getCurrentUser().getId());
+            if (user == null) {
+                throw new UserNotFoundException();
+            }
+        } catch (Exception ex) {
             throw new NotAuthenticatedClient();
-        }
-        User user = userDao.find(SecurityUtils.getCurrentUser().getId());
-        if (user == null) {
-            throw new UserNotFoundException();
         }
         return user;
     }

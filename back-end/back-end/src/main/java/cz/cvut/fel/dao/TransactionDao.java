@@ -24,7 +24,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
         return em.createNamedQuery("Transaction.getAll").getResultList();
     }
 
-    //todo
     public List<Transaction> getAllTransFromCategory(int catId, int accountId) {
         return em.createNamedQuery("Transaction.getAllFromCategory", Transaction.class)
                 .setParameter("catId", catId)

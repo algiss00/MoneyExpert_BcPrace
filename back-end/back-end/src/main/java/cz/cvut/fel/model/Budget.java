@@ -9,7 +9,9 @@ import java.util.List;
 @Table(name = "budget_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b")
+        @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
+        @NamedQuery(name = "Budget.getBudgetByCategory", query = "SELECT b FROM Budget b where b.category.id = :categoryId" +
+                " and b.bankAccount.id = :bankAccId")
 })
 
 public class Budget extends AbstractEntity {

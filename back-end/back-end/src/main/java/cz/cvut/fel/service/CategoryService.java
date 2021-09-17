@@ -1,15 +1,10 @@
 package cz.cvut.fel.service;
 
-import cz.cvut.fel.dao.CategoryDao;
-import cz.cvut.fel.dao.TransactionDao;
-import cz.cvut.fel.dao.UserDao;
+import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.CategoryNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.TransactionNotFoundException;
-import cz.cvut.fel.service.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,27 +17,32 @@ public class CategoryService {
     private CategoryDao categoryDao;
     private UserDao userDao;
     private TransactionDao transactionDao;
-    private UserService userService = new UserService(userDao);
+    private UserService userService;
+    private TransactionService transactionService;
 
-    public CategoryService(CategoryDao categoryDao, UserDao userDao, TransactionDao transactionDao) {
+    public CategoryService(CategoryDao categoryDao, UserDao userDao, TransactionDao transactionDao,
+                           BankAccountDao bankAccountDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao, DebtDao debtDao) {
         this.categoryDao = categoryDao;
         this.userDao = userDao;
         this.transactionDao = transactionDao;
+        this.userService = new UserService(userDao);
+        this.transactionService = new TransactionService(transactionDao, bankAccountDao, userDao,
+                categoryDao, budgetDao, notifyBudgetDao, debtDao);
     }
 
     public List<Category> getAll() {
         return categoryDao.findAll();
     }
 
-    public Budget getBudget(int catId) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Budget getBudget(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
         return getById(catId).getBudget();
     }
 
-    public List<Transaction> getTransactions(int catId) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public List<Transaction> getTransactions(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
         return getById(catId).getTransactions();
     }
 
-    public Category getById(int id) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Category getById(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category c = categoryDao.find(id);
         if (c == null) {
             throw new CategoryNotFoundException(id);
@@ -54,7 +54,7 @@ public class CategoryService {
         return c;
     }
 
-    public boolean persist(Category category) throws UserNotFoundException, NotAuthenticatedClient {
+    public boolean persist(Category category) throws NotAuthenticatedClient {
         Objects.requireNonNull(category);
         if (!validate(category))
             return false;
@@ -67,14 +67,8 @@ public class CategoryService {
         return true;
     }
 
-    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        Transaction t = transactionDao.find(transId);
-        if (t == null) {
-            throw new TransactionNotFoundException(transId);
-        }
-        if (!isOwnerOfTransaction(t)) {
-            throw new NotAuthenticatedClient();
-        }
+    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+        Transaction t = transactionService.getById(transId);
         Category category = getById(categoryId);
 
         category.getTransactions().add(t);
@@ -83,23 +77,13 @@ public class CategoryService {
         transactionDao.update(t);
     }
 
-    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
-        for (BankAccount bankAccount : bankAccounts) {
-            if (bankAccount.getId() == t.getBankAccount().getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean validate(Category category) {
         if (category.getName().trim().isEmpty() || categoryDao.find(category.getId()) != null) {
             return false;
         }
         boolean notExist = true;
         List<Category> categories = getAll();
+        //todo sql
         for (Category c : categories) {
             if (c.getName().equals(category.getName())) {
                 notExist = false;
@@ -109,8 +93,7 @@ public class CategoryService {
         return notExist;
     }
 
-
-    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient, UserNotFoundException {
+    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category ca = getById(id);
         ca.getTransactions().clear();
         ca.setBudget(null);
@@ -118,15 +101,16 @@ public class CategoryService {
         categoryDao.remove(ca);
     }
 
-    public Category updateCategory(int id, Category category) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Category updateCategory(int id, Category category) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category c = getById(id);
         c.setName(category.getName());
         return categoryDao.update(c);
     }
 
-    private boolean isCreator(Category category) throws UserNotFoundException, NotAuthenticatedClient {
+    private boolean isCreator(Category category) throws NotAuthenticatedClient {
         User user = userService.isLogged();
         List<User> creators = category.getCreators();
+        //todo sql
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
                 return true;

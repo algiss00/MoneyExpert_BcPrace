@@ -29,7 +29,6 @@ public class Category extends AbstractEntity {
     @JsonIgnore
     private List<Transaction> transactions;
 
-    //todo get only transactions for auth user
     public List<Transaction> getTransactions() {
         if (transactions == null) {
             setTransactions(new ArrayList<>());

@@ -1,16 +1,11 @@
 package cz.cvut.fel.service;
 
-import cz.cvut.fel.dao.BankAccountDao;
-import cz.cvut.fel.dao.BudgetDao;
-import cz.cvut.fel.dao.CategoryDao;
-import cz.cvut.fel.dao.UserDao;
+import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.User;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +19,26 @@ public class BudgetService {
     private BankAccountDao bankAccountDao;
     private UserDao userDao;
     private CategoryDao categoryDao;
-    private UserService userService = new UserService(userDao);
+    private UserService userService;
+    private CategoryService categoryService;
+    private BankAccountService bankAccountService;
 
-    public BudgetService(BudgetDao budgetDao, BankAccountDao bankAccountDao,
-                         UserDao userDao, CategoryDao categoryDao) {
+    public BudgetService(CategoryDao categoryDao, UserDao userDao, TransactionDao transactionDao,
+                         BankAccountDao bankAccountDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao, DebtDao debtDao) {
         this.budgetDao = budgetDao;
         this.bankAccountDao = bankAccountDao;
         this.userDao = userDao;
         this.categoryDao = categoryDao;
+        this.userService = new UserService(userDao);
+        this.categoryService = new CategoryService(categoryDao, userDao, transactionDao, bankAccountDao, budgetDao, notifyBudgetDao, debtDao);
+        this.bankAccountService = new BankAccountService(categoryDao, bankAccountDao, userDao, transactionDao, budgetDao, debtDao, notifyBudgetDao);
     }
 
     public List<Budget> getAll() {
         return budgetDao.findAll();
     }
 
-    public Budget getById(int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Budget getById(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget budget = budgetDao.find(id);
         if (budget == null) {
             throw new BudgetNotFoundException(id);
@@ -49,20 +49,13 @@ public class BudgetService {
         return budget;
     }
 
-    public boolean persist(Budget budget, int accId, int categoryId) throws UserNotFoundException,
+    public boolean persist(Budget budget, int accId, int categoryId) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(budget);
         User u = userService.isLogged();
-        Category category = categoryDao.find(categoryId);
-        if (category == null)
-            throw new CategoryNotFoundException();
-        BankAccount bankAccount = bankAccountDao.find(accId);
-        if (bankAccount == null) {
-            throw new BankAccountNotFoundException();
-        }
-        if (!isOwnOfBankAcc(bankAccount) || !isOwnCategory(category)) {
-            throw new NotAuthenticatedClient();
-        }
+        Category category = categoryService.getById(categoryId);
+
+        BankAccount bankAccount = bankAccountService.getById(accId);
         if (!validate(budget, bankAccount))
             return false;
         budget.setCreator(u);
@@ -75,28 +68,6 @@ public class BudgetService {
         return true;
     }
 
-    private boolean isOwnCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<User> creators = category.getCreators();
-        for (User creator : creators) {
-            if (creator.getId() == user.getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isOwnOfBankAcc(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<User> owners = bankAccount.getOwners();
-        for (User owner : owners) {
-            if (owner.getId() == user.getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean validate(Budget budget, BankAccount bankAccount) {
         if (budgetDao.find(budget.getId()) != null) {
             return false;
@@ -106,6 +77,7 @@ public class BudgetService {
     }
 
     private boolean isBudgetCategoryExist(Category budCategory, List<Budget> bankAccBudgets) {
+        //todo sql
         for (Budget budget : bankAccBudgets) {
             if (budget.getCategory() == budCategory) {
                 return true;
@@ -114,13 +86,13 @@ public class BudgetService {
         return false;
     }
 
-    public boolean remove(int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
+    public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget bu = getById(id);
         budgetDao.remove(bu);
         return true;
     }
 
-    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget b = getById(id);
         b.setName(budget.getName());
         //todo logic of amount
@@ -131,16 +103,15 @@ public class BudgetService {
         return budgetDao.update(b);
     }
 
-    public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget budget = getById(buId);
         budget.setCategory(null);
         budgetDao.update(budget);
     }
 
-    private boolean isOwnerOfBudget(Budget budget) throws UserNotFoundException, NotAuthenticatedClient {
+    private boolean isOwnerOfBudget(Budget budget) throws NotAuthenticatedClient {
         User user = userService.isLogged();
         User creator = budget.getCreator();
         return creator.getId() == user.getId();
     }
-
 }

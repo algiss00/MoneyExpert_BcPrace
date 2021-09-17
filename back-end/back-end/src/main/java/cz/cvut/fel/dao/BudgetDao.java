@@ -2,6 +2,8 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
+import cz.cvut.fel.model.NotifyBudget;
+import cz.cvut.fel.model.TypeNotification;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -22,6 +24,15 @@ public class BudgetDao extends AbstractDao<Budget> {
     @Override
     public List<Budget> findAll() {
         return em.createNamedQuery("Budget.getAll").getResultList();
+    }
+
+    public Budget getByCategory(int categoryId, int bankAccId) {
+        return em.createNamedQuery("Budget.getBudgetByCategory", Budget.class)
+                .setParameter("categoryId", categoryId)
+                .setParameter("bankAccId", bankAccId)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     @Override

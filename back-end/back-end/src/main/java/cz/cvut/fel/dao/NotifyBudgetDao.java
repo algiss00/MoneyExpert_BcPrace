@@ -24,13 +24,13 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         return em.createNamedQuery("NotifyBudget.getAll").getResultList();
     }
 
-    public NotifyBudget alreadyExistsDebt(int debtId, TypeNotification type) {
+    public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) {
         return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
-                .setParameter("budgetId", debtId)
+                .setParameter("budgetId", budgetId)
                 .setParameter("type", type)
                 .setMaxResults(1)
                 .getResultList()
-                .stream().findFirst().orElse(null);
+                .stream().findFirst().orElse(null) != null;
     }
 
     @Override

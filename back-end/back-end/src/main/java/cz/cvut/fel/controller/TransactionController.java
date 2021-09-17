@@ -26,12 +26,11 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    //todo
-//    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException {
-//        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
-//        return new ResponseEntity<>(transactions, HttpStatus.OK);
-//    }
+    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {

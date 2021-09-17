@@ -20,40 +20,35 @@ public class TransactionService {
     private BudgetDao budgetDao;
     private UserDao userDao;
     private NotifyBudgetDao notifyBudgetDao;
-    private UserService userService = new UserService(userDao);
+    private UserService userService;
+    private BankAccountService bankAccountService;
+    private CategoryService categoryService;
 
     public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao,
-                              UserDao userDao, CategoryDao categoryDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao) {
+                              UserDao userDao, CategoryDao categoryDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao, DebtDao debtDao) {
         this.transactionDao = transactionDao;
         this.bankAccountDao = bankAccountDao;
         this.categoryDao = categoryDao;
         this.budgetDao = budgetDao;
         this.userDao = userDao;
         this.notifyBudgetDao = notifyBudgetDao;
+        this.userService = new UserService(userDao);
+        this.bankAccountService = new BankAccountService(categoryDao, bankAccountDao, userDao, transactionDao, budgetDao, debtDao, notifyBudgetDao);
+        this.categoryService = new CategoryService(categoryDao, userDao, transactionDao, bankAccountDao, budgetDao, notifyBudgetDao, debtDao);
     }
 
     public List<Transaction> getAll() {
         return transactionDao.findAll();
     }
 
-    //todo get all trans from category which are in BankAcc
-//    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
-//            BankAccountNotFoundException, CategoryNotFoundException {
-//        if (bankAccountDao.find(accountId) == null) {
-//            throw new BankAccountNotFoundException();
-//        }
-//        Category category = categoryDao.find(catId);
-//        if (category == null) {
-//            throw new CategoryNotFoundException(catId);
-//        }
-//        if (bankAccountDao.find(accountId) == null) {
-//            throw new BankAccountNotFoundException();
-//        }
-//
-//        return transactionDao.getAllTransFromCategory(cat, accountId);
-//    }
+    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
+            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+        BankAccount bankAccount = bankAccountService.getById(accountId);
+        Category category = categoryService.getById(catId);
+        return transactionDao.getAllTransFromCategory(catId, accountId);
+    }
 
-    public Transaction getById(int id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Transaction getById(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction t = transactionDao.find(id);
         if (t == null) {
             throw new TransactionNotFoundException(id);
@@ -64,25 +59,15 @@ public class TransactionService {
         return t;
     }
 
-    public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient, UserNotFoundException {
+    public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(transaction);
         if (!validate(transaction))
             return false;
 
-        BankAccount b = bankAccountDao.find(accId);
-        if (b == null) {
-            throw new BankAccountNotFoundException();
-        }
-        Category category = categoryDao.find(categoryId);
-        if (category == null) {
-            throw new CategoryNotFoundException();
-        }
+        BankAccount b = bankAccountService.getById(accId);
+        Category category = categoryService.getById(categoryId);
 
-        if (!isUserOwnerOfBankAccount(b) || !isCreatorOfCategory(category)) {
-            throw new NotAuthenticatedClient();
-        }
-
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         transaction.setBankAccount(b);
         transaction.setCategory(category);
@@ -97,26 +82,25 @@ public class TransactionService {
 
     private void budgetLogic(BankAccount bankAccount, Transaction transaction) {
         Category transCategory = transaction.getCategory();
-        Budget budgetForTransaction = null;
         double transAmount = transaction.getAmount();
 
-        //todo with sql request!!!
-        for (Budget budget : bankAccount.getBudgets()) {
-            if (budget.getCategory() == transCategory) {
-                budgetForTransaction = budget;
-            }
-        }
-
+        Budget budgetForTransaction = budgetDao.getByCategory(transCategory.getId(), bankAccount.getId());
         if (budgetForTransaction == null) {
+            System.out.println("NO BUDGET FOR THIS CATEGORY");
             return;
         }
 
         budgetForTransaction.setSumAmount(budgetForTransaction.getSumAmount() + transAmount);
         budgetDao.update(budgetForTransaction);
+        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
 
         if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
             //todo notificate
             System.out.println("trans amount is bigger or equal then budget amount NOTIFICATE");
+            if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_AMOUNT)) {
+                System.out.println("EXISTS");
+                return;
+            }
             NotifyBudget notifyBudgetEntity = new NotifyBudget();
             notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
             notifyBudgetEntity.setBudget(budgetForTransaction);
@@ -124,19 +108,20 @@ public class TransactionService {
 
             notifyBudgetDao.persist(notifyBudgetEntity);
             System.out.println("ADDED TO BUDGET AMOUNT " + notifyBudgetEntity.getBudget().getName());
-        } else {
-            double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
-            if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
-                //todo notifdicate
-                System.out.println("PROCENT NOTIFICATE");
-                NotifyBudget notifyBudgetEntity = new NotifyBudget();
-                notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
-                notifyBudgetEntity.setBudget(budgetForTransaction);
-                notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_PERCENT);
-
-                notifyBudgetDao.persist(notifyBudgetEntity);
-                System.out.println("ADDED TO BUDGET PERCENT " + notifyBudgetEntity.getBudget().getName());
+        } else if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
+            //todo notifdicate
+            System.out.println("PROCENT NOTIFICATE");
+            if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_PERCENT)) {
+                System.out.println("EXISTS");
+                return;
             }
+            NotifyBudget notifyBudgetEntity = new NotifyBudget();
+            notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
+            notifyBudgetEntity.setBudget(budgetForTransaction);
+            notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_PERCENT);
+
+            notifyBudgetDao.persist(notifyBudgetEntity);
+            System.out.println("ADDED TO BUDGET PERCENT " + notifyBudgetEntity.getBudget().getName());
         }
     }
 
@@ -157,26 +142,22 @@ public class TransactionService {
         }
     }
 
-    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getById(transactionId);
         Transaction transferTransaction = new Transaction();
 
-        BankAccount toBankAcc = bankAccountDao.find(toAccId);
-        if (toBankAcc == null) {
-            throw new BankAccountNotFoundException();
-        }
-        BankAccount fromBankAcc = bankAccountDao.find(fromAccId);
-        if (fromBankAcc == null) {
-            throw new BankAccountNotFoundException();
-        }
-        if (!isUserOwnerOfBankAccount(toBankAcc) || !isUserOwnerOfBankAccount(fromBankAcc)) {
-            throw new NotAuthenticatedClient();
-        }
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-YYYY HH:mm");
+        BankAccount toBankAcc = bankAccountService.getById(toAccId);
+        BankAccount fromBankAcc = bankAccountService.getById(fromAccId);
+
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         transferTransaction.setBankAccount(toBankAcc);
         transferTransaction.setCategory(transaction.getCategory());
-        transferTransaction.setJottings("Transfer transaction from " + fromBankAcc.getName());
+        if (transaction.getJottings().isEmpty()) {
+            transferTransaction.setJottings("Transfer transaction from " + fromBankAcc.getName());
+        } else {
+            transferTransaction.setJottings(transaction.getJottings());
+        }
         transferTransaction.setAmount(transaction.getAmount());
         transferTransaction.setDate(format.format(new Date()));
         transferTransaction.setTypeTransaction(TypeTransaction.INCOME);
@@ -192,7 +173,7 @@ public class TransactionService {
         return transaction;
     }
 
-    public Transaction update(int id, Transaction t) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Transaction update(int id, Transaction t) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getById(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -204,7 +185,7 @@ public class TransactionService {
         return transactionDao.update(transaction);
     }
 
-    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getById(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -236,46 +217,25 @@ public class TransactionService {
         }
     }
 
-    public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
+    public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getById(id);
         transaction.setCategory(null);
         transaction.setBankAccount(null);
         transactionDao.remove(transaction);
     }
 
-    public void removeFromCategory(int transId) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    public void removeFromCategory(int transId) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction t = getById(transId);
         t.setCategory(null);
         transactionDao.update(t);
     }
 
-    private boolean isOwnerOfTransaction(Transaction t) throws UserNotFoundException, NotAuthenticatedClient {
+    //todo sql
+    private boolean isOwnerOfTransaction(Transaction t) throws NotAuthenticatedClient {
         User user = userService.isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<User> owners = bankAccount.getOwners();
-        for (User owner : owners) {
-            if (owner.getId() == user.getId()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isCreatorOfCategory(Category category) throws UserNotFoundException, NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<User> creators = category.getCreators();
-        for (User creator : creators) {
-            if (creator.getId() == user.getId()) {
                 return true;
             }
         }
