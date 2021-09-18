@@ -2,7 +2,6 @@ package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.User;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.BudgetService;
 import cz.cvut.fel.service.exceptions.*;
@@ -34,7 +33,7 @@ public class BudgetController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        return new ResponseEntity<>(budgetService.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(budgetService.getByIdBudget(id), HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

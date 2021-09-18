@@ -3,7 +3,6 @@ package cz.cvut.fel.controller;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.TypeTransaction;
 import cz.cvut.fel.model.User;
-import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.TransactionService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,7 @@ public class TransactionController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        Transaction u = transactionService.getById(id);
+        Transaction u = transactionService.getByIdTransaction(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 

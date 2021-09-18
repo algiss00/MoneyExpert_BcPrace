@@ -1,10 +1,8 @@
 package cz.cvut.fel.service;
 
-import cz.cvut.fel.dao.UserDao;
+import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
-import cz.cvut.fel.service.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +11,12 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class UserService {
-    private final UserDao userDao;
+public class UserService extends AbstractServiceHelper {
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
+    public UserService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
+                       BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
+                       NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+        super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
     public User getByUsername(String username) {
@@ -35,14 +34,6 @@ public class UserService {
 
     public List<User> getAll() {
         return userDao.findAll();
-    }
-
-    public User getById(int id) throws UserNotFoundException {
-        User u = userDao.find(id);
-        if (u == null) {
-            throw new UserNotFoundException(id);
-        }
-        return u;
     }
 
     public List<BankAccount> getAvailableAccounts() throws NotAuthenticatedClient {
@@ -106,18 +97,5 @@ public class UserService {
         user.getMyCategories().clear();
         user.getMyDebts().clear();
         userDao.remove(user);
-    }
-
-    public User isLogged() throws NotAuthenticatedClient {
-        User user;
-        try {
-            user = userDao.find(SecurityUtils.getCurrentUser().getId());
-            if (user == null) {
-                throw new UserNotFoundException();
-            }
-        } catch (Exception ex) {
-            throw new NotAuthenticatedClient();
-        }
-        return user;
     }
 }

@@ -32,14 +32,19 @@ public class UserController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getUserById(@PathVariable int id) throws UserNotFoundException {
-        User u = userService.getById(id);
+        User u = userService.getByIdUser(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
     @GetMapping(value = "/current-user", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCurrentUser() throws UserNotFoundException {
-        User u = userService.getById(SecurityUtils.getCurrentUser().getId());
-        return new ResponseEntity<>(u, HttpStatus.OK);
+        User user;
+        try {
+            user = userService.getByIdUser(SecurityUtils.getCurrentUser().getId());
+        } catch (Exception ex) {
+            throw new UserNotFoundException();
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -14,48 +14,25 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class BudgetService {
-    private BudgetDao budgetDao;
-    private BankAccountDao bankAccountDao;
-    private UserDao userDao;
-    private CategoryDao categoryDao;
-    private UserService userService;
-    private CategoryService categoryService;
-    private BankAccountService bankAccountService;
+public class BudgetService extends AbstractServiceHelper {
 
-    public BudgetService(CategoryDao categoryDao, UserDao userDao, TransactionDao transactionDao,
-                         BankAccountDao bankAccountDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao, DebtDao debtDao) {
-        this.budgetDao = budgetDao;
-        this.bankAccountDao = bankAccountDao;
-        this.userDao = userDao;
-        this.categoryDao = categoryDao;
-        this.userService = new UserService(userDao);
-        this.categoryService = new CategoryService(categoryDao, userDao, transactionDao, bankAccountDao, budgetDao, notifyBudgetDao, debtDao);
-        this.bankAccountService = new BankAccountService(categoryDao, bankAccountDao, userDao, transactionDao, budgetDao, debtDao, notifyBudgetDao);
+    public BudgetService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
+                         BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
+                         NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+        super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
     public List<Budget> getAll() {
         return budgetDao.findAll();
     }
 
-    public Budget getById(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
-        Budget budget = budgetDao.find(id);
-        if (budget == null) {
-            throw new BudgetNotFoundException(id);
-        }
-        if (!isOwnerOfBudget(budget)) {
-            throw new NotAuthenticatedClient();
-        }
-        return budget;
-    }
-
     public boolean persist(Budget budget, int accId, int categoryId) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(budget);
-        User u = userService.isLogged();
-        Category category = categoryService.getById(categoryId);
+        User u = isLogged();
+        Category category = getByIdCategory(categoryId);
 
-        BankAccount bankAccount = bankAccountService.getById(accId);
+        BankAccount bankAccount = getByIdBankAccount(accId);
         if (!validate(budget, bankAccount))
             return false;
         budget.setCreator(u);
@@ -87,13 +64,13 @@ public class BudgetService {
     }
 
     public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
-        Budget bu = getById(id);
+        Budget bu = getByIdBudget(id);
         budgetDao.remove(bu);
         return true;
     }
 
     public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
-        Budget b = getById(id);
+        Budget b = getByIdBudget(id);
         b.setName(budget.getName());
         //todo logic of amount
         b.setAmount(budget.getAmount());
@@ -104,14 +81,8 @@ public class BudgetService {
     }
 
     public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, NotAuthenticatedClient {
-        Budget budget = getById(buId);
+        Budget budget = getByIdBudget(buId);
         budget.setCategory(null);
         budgetDao.update(budget);
-    }
-
-    private boolean isOwnerOfBudget(Budget budget) throws NotAuthenticatedClient {
-        User user = userService.isLogged();
-        User creator = budget.getCreator();
-        return creator.getId() == user.getId();
     }
 }

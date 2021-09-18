@@ -4,7 +4,6 @@ import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.User;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -29,7 +28,7 @@ public class BankAccountController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAccountById(@PathVariable int id) throws BankAccountNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        BankAccount u = bankAccountService.getById(id);
+        BankAccount u = bankAccountService.getByIdBankAccount(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 

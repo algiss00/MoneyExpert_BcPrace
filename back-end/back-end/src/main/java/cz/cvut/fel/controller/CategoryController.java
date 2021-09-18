@@ -1,7 +1,6 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.CategoryService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,7 @@ public class CategoryController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCategoryById(@PathVariable int id) throws CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        Category c = categoryService.getById(id);
+        Category c = categoryService.getByIdCategory(id);
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
 

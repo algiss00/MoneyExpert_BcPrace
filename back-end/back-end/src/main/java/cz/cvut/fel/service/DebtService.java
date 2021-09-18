@@ -14,42 +14,21 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class DebtService {
-    private DebtDao debtDao;
-    private UserDao userDao;
-    private BankAccountDao bankAccountDao;
-    private NotifyDebtDao notifyDebtDao;
-    private UserService userService;
-    private BankAccountService bankAccountService;
+public class DebtService extends AbstractServiceHelper {
 
-    public DebtService(DebtDao debtDao, UserDao userDao, BankAccountDao bankAccountDao, NotifyDebtDao notifyDebtDao,
-                       CategoryDao categoryDao, TransactionDao transactionDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao) {
-        this.debtDao = debtDao;
-        this.userDao = userDao;
-        this.bankAccountDao = bankAccountDao;
-        this.notifyDebtDao = notifyDebtDao;
-        this.userService = new UserService(userDao);
-        this.bankAccountService = new BankAccountService(categoryDao, bankAccountDao, userDao, transactionDao, budgetDao, debtDao, notifyBudgetDao);
+    public DebtService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
+                       BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
+                       NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+        super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
     public List<Debt> getAll() {
         return debtDao.findAll();
     }
 
-    public Debt getById(int id) throws DebtNotFoundException, NotAuthenticatedClient {
-        Debt d = debtDao.find(id);
-        if (d == null) {
-            throw new DebtNotFoundException(id);
-        }
-        if (!isCreator(d)) {
-            throw new NotAuthenticatedClient();
-        }
-        return d;
-    }
-
     public boolean persist(Debt debt, int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
-        User u = userService.isLogged();
-        BankAccount bankAccount = bankAccountService.getById(accId);
+        User u = isLogged();
+        BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
         if (!validate(debt))
             return false;
@@ -133,12 +112,12 @@ public class DebtService {
     }
 
     public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {
-        Debt debt = getById(id);
+        Debt debt = getByIdDebt(id);
         debtDao.remove(debt);
     }
 
     public Debt updateDebt(int id, Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
-        Debt da = getById(id);
+        Debt da = getByIdDebt(id);
 
         da.setName(debt.getName());
         da.setAmount(debt.getAmount());
@@ -148,10 +127,5 @@ public class DebtService {
         da.setNotifyDate(debt.getNotifyDate());
 
         return debtDao.update(da);
-    }
-
-    private boolean isCreator(Debt debt) throws NotAuthenticatedClient {
-        User user = userService.isLogged();
-        return debt.getCreator().getId() == user.getId();
     }
 }

@@ -2,7 +2,6 @@ package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -33,7 +31,7 @@ public class DebtController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException, UserNotFoundException, NotAuthenticatedClient {
-        Debt d = debtService.getById(id);
+        Debt d = debtService.getByIdDebt(id);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 

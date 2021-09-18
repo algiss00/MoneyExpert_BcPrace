@@ -13,28 +13,12 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class TransactionService {
-    private TransactionDao transactionDao;
-    private BankAccountDao bankAccountDao;
-    private CategoryDao categoryDao;
-    private BudgetDao budgetDao;
-    private UserDao userDao;
-    private NotifyBudgetDao notifyBudgetDao;
-    private UserService userService;
-    private BankAccountService bankAccountService;
-    private CategoryService categoryService;
+public class TransactionService extends AbstractServiceHelper {
 
-    public TransactionService(TransactionDao transactionDao, BankAccountDao bankAccountDao,
-                              UserDao userDao, CategoryDao categoryDao, BudgetDao budgetDao, NotifyBudgetDao notifyBudgetDao, DebtDao debtDao) {
-        this.transactionDao = transactionDao;
-        this.bankAccountDao = bankAccountDao;
-        this.categoryDao = categoryDao;
-        this.budgetDao = budgetDao;
-        this.userDao = userDao;
-        this.notifyBudgetDao = notifyBudgetDao;
-        this.userService = new UserService(userDao);
-        this.bankAccountService = new BankAccountService(categoryDao, bankAccountDao, userDao, transactionDao, budgetDao, debtDao, notifyBudgetDao);
-        this.categoryService = new CategoryService(categoryDao, userDao, transactionDao, bankAccountDao, budgetDao, notifyBudgetDao, debtDao);
+    public TransactionService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
+                              BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
+                              NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+        super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
     public List<Transaction> getAll() {
@@ -43,20 +27,9 @@ public class TransactionService {
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
-        BankAccount bankAccount = bankAccountService.getById(accountId);
-        Category category = categoryService.getById(catId);
+        getByIdBankAccount(accountId);
+        getByIdCategory(catId);
         return transactionDao.getAllTransFromCategory(catId, accountId);
-    }
-
-    public Transaction getById(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
-        Transaction t = transactionDao.find(id);
-        if (t == null) {
-            throw new TransactionNotFoundException(id);
-        }
-        if (!isOwnerOfTransaction(t)) {
-            throw new NotAuthenticatedClient();
-        }
-        return t;
     }
 
     public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
@@ -64,8 +37,8 @@ public class TransactionService {
         if (!validate(transaction))
             return false;
 
-        BankAccount b = bankAccountService.getById(accId);
-        Category category = categoryService.getById(categoryId);
+        BankAccount b = getByIdBankAccount(accId);
+        Category category = getByIdCategory(categoryId);
 
         SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
@@ -143,11 +116,11 @@ public class TransactionService {
     }
 
     public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
-        Transaction transaction = getById(transactionId);
+        Transaction transaction = getByIdTransaction(transactionId);
         Transaction transferTransaction = new Transaction();
 
-        BankAccount toBankAcc = bankAccountService.getById(toAccId);
-        BankAccount fromBankAcc = bankAccountService.getById(fromAccId);
+        BankAccount toBankAcc = getByIdBankAccount(toAccId);
+        BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
 
         SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
@@ -174,7 +147,7 @@ public class TransactionService {
     }
 
     public Transaction update(int id, Transaction t) throws TransactionNotFoundException, NotAuthenticatedClient {
-        Transaction transaction = getById(id);
+        Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
         updatedTransactionLogic(transaction, t, transBankAcc);
@@ -186,7 +159,7 @@ public class TransactionService {
     }
 
     public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, NotAuthenticatedClient {
-        Transaction transaction = getById(id);
+        Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
         updateTransactionTypeLogic(transaction, typeTransaction, transBankAcc);
@@ -218,27 +191,15 @@ public class TransactionService {
     }
 
     public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
-        Transaction transaction = getById(id);
+        Transaction transaction = getByIdTransaction(id);
         transaction.setCategory(null);
         transaction.setBankAccount(null);
         transactionDao.remove(transaction);
     }
 
     public void removeFromCategory(int transId) throws TransactionNotFoundException, NotAuthenticatedClient {
-        Transaction t = getById(transId);
+        Transaction t = getByIdTransaction(transId);
         t.setCategory(null);
         transactionDao.update(t);
-    }
-
-    //todo sql
-    private boolean isOwnerOfTransaction(Transaction t) throws NotAuthenticatedClient {
-        User user = userService.isLogged();
-        List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
-        for (BankAccount bankAccount : bankAccounts) {
-            if (bankAccount.getId() == t.getBankAccount().getId()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
