@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class BudgetController {
     private final BudgetService budgetService;
     private final BankAccountService bankAccountService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(BudgetController.class.getName());
 
     public BudgetController(BudgetService budgetService, BankAccountService bankAccountService) {
         this.budgetService = budgetService;
@@ -72,6 +72,8 @@ public class BudgetController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

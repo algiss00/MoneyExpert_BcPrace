@@ -31,6 +31,15 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
+    public Transaction getFromBankAcc(int accountId, int transId) {
+        return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
+                .setParameter("bankAccId", accountId)
+                .setParameter("transId", transId)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
+    }
+
     @Override
     public void persist(Transaction entity) {
         Objects.requireNonNull(entity);

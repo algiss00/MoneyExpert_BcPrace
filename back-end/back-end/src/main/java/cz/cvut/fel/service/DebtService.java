@@ -30,7 +30,7 @@ public class DebtService extends AbstractServiceHelper {
         User u = isLogged();
         BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
-        if (!validate(debt))
+        if (!validate(debt, u))
             return false;
         debt.setCreator(u);
         debt.setBankAccount(bankAccount);
@@ -95,14 +95,15 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
-    private boolean validate(Debt debt) {
+    private boolean validate(Debt debt, User user) {
         if (debt.getName().trim().isEmpty() || debtDao.find(debt.getId()) != null) {
             return false;
         }
         boolean notExist = true;
-        List<Debt> debts = getAll();
+        // check if debt name is not exist in users debts
+        List<Debt> usersDebts = user.getMyDebts();
         //todo sql
-        for (Debt d : debts) {
+        for (Debt d : usersDebts) {
             if (d.getName().equals(debt.getName())) {
                 notExist = false;
                 break;

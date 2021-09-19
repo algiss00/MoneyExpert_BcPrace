@@ -110,7 +110,7 @@ abstract class AbstractServiceHelper {
     public boolean isCreatorOfCategory(Category category) throws NotAuthenticatedClient {
         User user = isLogged();
         List<User> creators = category.getCreators();
-        //todo sql
+        // todo sql
         for (User creator : creators) {
             if (creator.getId() == user.getId()) {
                 return true;
@@ -133,7 +133,7 @@ abstract class AbstractServiceHelper {
     public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws NotAuthenticatedClient {
         User user = isLogged();
         List<User> owners = bankAccount.getOwners();
-        //todo sql
+        // todo sql
         for (User owner : owners) {
             if (owner.getId() == user.getId()) {
                 return true;
@@ -142,10 +142,10 @@ abstract class AbstractServiceHelper {
         return false;
     }
 
-    //todo sql
     public boolean isOwnerOfTransaction(Transaction t) throws NotAuthenticatedClient {
         User user = isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
+        // todo sql
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
                 return true;

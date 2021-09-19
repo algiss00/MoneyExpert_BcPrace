@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @RequestMapping("/category")
 public class CategoryController {
     private final CategoryService categoryService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(CategoryController.class.getName());
 
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
@@ -81,6 +81,8 @@ public class CategoryController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

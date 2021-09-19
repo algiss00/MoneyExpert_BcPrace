@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "bankAccount_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "BankAccount.getAll", query = "SELECT b FROM BankAccount b"),
+        @NamedQuery(name = "BankAccount.getAll", query = "SELECT b FROM BankAccount b")
 })
 public class BankAccount extends AbstractEntity {
     @Column

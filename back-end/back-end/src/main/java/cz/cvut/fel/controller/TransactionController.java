@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 @RequestMapping("/transaction")
 public class TransactionController {
     private final TransactionService transactionService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(TransactionController.class.getName());
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
@@ -83,6 +83,8 @@ public class TransactionController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

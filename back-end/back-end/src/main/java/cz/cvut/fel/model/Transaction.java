@@ -3,6 +3,7 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "transaction_table")
 @Entity
@@ -10,14 +11,17 @@ import javax.persistence.*;
         @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t"),
         @NamedQuery(
                 name = "Transaction.getAllFromCategory",
-                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId")
+                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId"),
+        @NamedQuery(
+                name = "Transaction.getFromBankAccount",
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.id = :transId")
 })
 
 public class Transaction extends AbstractEntity {
     @Column
     private double amount;
     @Column
-    private String date;
+    private Date date;
     @Column
     private String jottings;
     @Enumerated(EnumType.STRING)
@@ -49,12 +53,12 @@ public class Transaction extends AbstractEntity {
         this.amount = castka;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String datum) {
-        this.date = datum;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public TypeTransaction getTypeTransaction() {

@@ -35,10 +35,9 @@ public class CategoryService extends AbstractServiceHelper {
 
     public boolean persist(Category category) throws NotAuthenticatedClient {
         Objects.requireNonNull(category);
-        if (!validate(category))
-            return false;
         User u = isLogged();
-
+        if (!validate(category, u))
+            return false;
         category.getCreators().add(u);
         categoryDao.persist(category);
         u.getMyCategories().add(category);
@@ -56,14 +55,15 @@ public class CategoryService extends AbstractServiceHelper {
         transactionDao.update(t);
     }
 
-    private boolean validate(Category category) {
+    private boolean validate(Category category, User user) {
         if (category.getName().trim().isEmpty() || categoryDao.find(category.getId()) != null) {
             return false;
         }
         boolean notExist = true;
-        List<Category> categories = getAll();
-        //todo sql
-        for (Category c : categories) {
+        // kontrol if category name is not exist in users categories
+        List<Category> usersCategories = user.getMyCategories();
+        //todo sql - get by name from users categories
+        for (Category c : usersCategories) {
             if (c.getName().equals(category.getName())) {
                 notExist = false;
                 break;

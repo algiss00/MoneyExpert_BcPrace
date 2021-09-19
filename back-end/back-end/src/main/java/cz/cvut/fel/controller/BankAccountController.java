@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 @RequestMapping("/account")
 public class BankAccountController {
     private final BankAccountService bankAccountService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(BankAccountController.class.getName());
 
     public BankAccountController(BankAccountService bankAccountService) {
         this.bankAccountService = bankAccountService;
@@ -119,6 +119,8 @@ public class BankAccountController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

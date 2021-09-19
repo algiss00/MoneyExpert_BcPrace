@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(UserController.class.getName());
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -108,6 +108,8 @@ public class UserController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

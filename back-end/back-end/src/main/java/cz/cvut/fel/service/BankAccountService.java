@@ -105,7 +105,7 @@ public class BankAccountService extends AbstractServiceHelper {
     public void removeTransFromAccount(int transId, int accId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount b = getByIdBankAccount(accId);
         Transaction t = getByIdTransaction(transId);
-        if (!isTransactionInBankAcc(b, t)) {
+        if (!isTransactionInBankAcc(b.getId(), t.getId())) {
             throw new NotAuthenticatedClient();
         }
         b.getTransactions().remove(t);
@@ -114,15 +114,8 @@ public class BankAccountService extends AbstractServiceHelper {
         transactionDao.update(t);
     }
 
-    private boolean isTransactionInBankAcc(BankAccount bankAccount, Transaction t) {
-        List<Transaction> transactions = bankAccount.getTransactions();
-        //todo sql
-        for (Transaction transaction : transactions) {
-            if (transaction.getId() == t.getId()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isTransactionInBankAcc(int bankAccountId, int transactionId) {
+        return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 
     public void removeBudgetFromBankAcc(int budgetId, int accId) throws BankAccountNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
@@ -195,12 +188,12 @@ public class BankAccountService extends AbstractServiceHelper {
         user.getMyCategories().add(startCategory);
         userDao.update(user);
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         startTransaction.setBankAccount(bankAccount);
         startTransaction.setCategory(startCategory);
         startTransaction.setJottings("Start transaction");
         startTransaction.setAmount(bankAccount.getBalance());
-        startTransaction.setDate(format.format(new Date()));
+        startTransaction.setDate(new Date());
         startTransaction.setTypeTransaction(TypeTransaction.INCOME);
 
         transactionDao.persist(startTransaction);

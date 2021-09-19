@@ -1,5 +1,7 @@
 package cz.cvut.fel.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Table(name = "notifyBudget_table")
@@ -12,10 +14,12 @@ import javax.persistence.*;
 public class NotifyBudget extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "budget_id")
+    @JsonIgnore
     private Budget budget;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User creator;
 
     @Enumerated(EnumType.STRING)

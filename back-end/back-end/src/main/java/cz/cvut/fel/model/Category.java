@@ -10,7 +10,9 @@ import java.util.List;
 @Table(name = "category_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c")
+        @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c"),
+        // todo get by name and by creator
+        // @NamedQuery(name = "Category.getByName", query = "SELECT c FROM Category c where c.name = :name")
 })
 public class Category extends AbstractEntity {
     @Column

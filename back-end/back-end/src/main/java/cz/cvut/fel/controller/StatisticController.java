@@ -22,7 +22,7 @@
 //    private final TransactionService transactionService;
 //    private final UserService userService;
 //
-//    private static final Logger log = Logger.getLogger(User.class.getName());
+//    private static final Logger log = Logger.getLogger(StatisticController.class.getName());
 //
 //    public StatisticController(BankAccountService bankAccountService, BudgetService budgetService, DebtService debtService, TransactionService transactionService, UserService userService) {
 //        this.bankAccountService = bankAccountService;
@@ -45,6 +45,8 @@
 //            CategoryNotFoundException.class,
 //            DebtNotFoundException.class,
 //            NotAuthenticatedClient.class,
+//            NotifyBudgetNotFoundException.class,
+//            NotifyDebtNotFoundException.class,
 //            Exception.class})
 //    void handleExceptions(HttpServletResponse response, Exception exception)
 //            throws IOException {

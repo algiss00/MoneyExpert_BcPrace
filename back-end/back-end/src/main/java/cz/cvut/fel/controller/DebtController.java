@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @RequestMapping("/debt")
 public class DebtController {
     private final DebtService debtService;
-    private static final Logger log = Logger.getLogger(User.class.getName());
+    private static final Logger log = Logger.getLogger(DebtController.class.getName());
 
     public DebtController(DebtService debtService) {
         this.debtService = debtService;
@@ -68,6 +68,8 @@ public class DebtController {
             CategoryNotFoundException.class,
             DebtNotFoundException.class,
             NotAuthenticatedClient.class,
+            NotifyBudgetNotFoundException.class,
+            NotifyDebtNotFoundException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

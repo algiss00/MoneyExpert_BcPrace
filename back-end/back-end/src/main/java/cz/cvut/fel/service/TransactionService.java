@@ -40,11 +40,11 @@ public class TransactionService extends AbstractServiceHelper {
         BankAccount b = getByIdBankAccount(accId);
         Category category = getByIdCategory(categoryId);
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         transaction.setBankAccount(b);
         transaction.setCategory(category);
-        transaction.setDate(format.format(new Date()));
+        transaction.setDate(new Date());
         transactionDao.persist(transaction);
 
         b.getTransactions().add(transaction);
@@ -122,7 +122,7 @@ public class TransactionService extends AbstractServiceHelper {
         BankAccount toBankAcc = getByIdBankAccount(toAccId);
         BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         transferTransaction.setBankAccount(toBankAcc);
         transferTransaction.setCategory(transaction.getCategory());
@@ -132,7 +132,7 @@ public class TransactionService extends AbstractServiceHelper {
             transferTransaction.setJottings(transaction.getJottings());
         }
         transferTransaction.setAmount(transaction.getAmount());
-        transferTransaction.setDate(format.format(new Date()));
+        transferTransaction.setDate(new Date());
         transferTransaction.setTypeTransaction(TypeTransaction.INCOME);
 
         transactionDao.persist(transferTransaction);

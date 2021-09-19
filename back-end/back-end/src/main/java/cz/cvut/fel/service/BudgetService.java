@@ -50,17 +50,11 @@ public class BudgetService extends AbstractServiceHelper {
             return false;
         }
         return !budget.getName().trim().isEmpty() && budget.getAmount() > 0
-                && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getBudgets());
+                && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getId());
     }
 
-    private boolean isBudgetCategoryExist(Category budCategory, List<Budget> bankAccBudgets) {
-        //todo sql
-        for (Budget budget : bankAccBudgets) {
-            if (budget.getCategory() == budCategory) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isBudgetCategoryExist(Category budCategory, int bankAccId) {
+        return budgetDao.getByCategory(budCategory.getId(), bankAccId) != null;
     }
 
     public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
