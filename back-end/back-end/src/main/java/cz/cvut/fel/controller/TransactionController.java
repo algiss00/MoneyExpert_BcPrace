@@ -26,19 +26,19 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam String catId, @RequestParam String accId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getTransactionById(@PathVariable String id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction u = transactionService.getByIdTransaction(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> add(@RequestParam String accId, @RequestParam String categoryId, @RequestBody Transaction transaction) throws
+    ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
             BankAccountNotFoundException, CategoryNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         if (!transactionService.persist(transaction, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -47,30 +47,30 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/transfer")
-    ResponseEntity<Transaction> transferTransaction(@RequestParam String fromAccId, @RequestParam String toAccId, @RequestParam String transId) throws
+    ResponseEntity<Transaction> transferTransaction(@RequestParam int fromAccId, @RequestParam int toAccId, @RequestParam int transId) throws
             BankAccountNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         Transaction t = transactionService.transferTransaction(fromAccId, toAccId, transId);
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> updateTrans(@RequestParam String transId, @RequestBody Transaction transaction) throws Exception {
+    ResponseEntity<Transaction> updateTrans(@RequestParam int transId, @RequestBody Transaction transaction) throws Exception {
         return new ResponseEntity<>(transactionService.update(transId, transaction), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update-type", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> updateTransType(@RequestParam String transId, @RequestBody TypeTransaction typeTransaction) throws Exception {
+    ResponseEntity<Transaction> updateTransType(@RequestParam int transId, @RequestBody TypeTransaction typeTransaction) throws Exception {
         return new ResponseEntity<>(transactionService.updateTransactionType(transId, typeTransaction), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable String id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
+    ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient, UserNotFoundException {
         transactionService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeFromCategory(@RequestParam String transId) throws CategoryNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws CategoryNotFoundException, TransactionNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         transactionService.removeFromCategory(transId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

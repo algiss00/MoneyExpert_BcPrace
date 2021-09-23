@@ -3,7 +3,7 @@ package cz.cvut.fel.service.exceptions;
 public class BankAccountNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public BankAccountNotFoundException(String id) {
+    public BankAccountNotFoundException(int id) {
         super("No account with id = " + id);
     }
 

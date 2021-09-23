@@ -17,7 +17,7 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     @Override
-    public Budget find(String id) {
+    public Budget find(int id) {
         return em.find(Budget.class, id);
     }
 
@@ -26,7 +26,7 @@ public class BudgetDao extends AbstractDao<Budget> {
         return em.createNamedQuery("Budget.getAll").getResultList();
     }
 
-    public Budget getByCategory(String categoryId, String bankAccId) {
+    public Budget getByCategory(int categoryId, int bankAccId) {
         return em.createNamedQuery("Budget.getBudgetByCategory", Budget.class)
                 .setParameter("categoryId", categoryId)
                 .setParameter("bankAccId", bankAccId)

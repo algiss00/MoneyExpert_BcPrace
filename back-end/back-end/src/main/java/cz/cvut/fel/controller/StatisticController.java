@@ -33,7 +33,7 @@
 //    }
 //
 ////    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-////    ResponseEntity<?> getAccountById(@RequestParam String catId) {
+////    ResponseEntity<?> getAccountById(@RequestParam int catId) {
 ////
 ////    }
 //

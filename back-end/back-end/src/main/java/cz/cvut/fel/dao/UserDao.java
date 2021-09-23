@@ -15,7 +15,7 @@ public class UserDao extends AbstractDao<User> {
     }
 
     @Override
-    public User find(String id) {
+    public User find(int id) {
         return em.find(User.class, id);
     }
 

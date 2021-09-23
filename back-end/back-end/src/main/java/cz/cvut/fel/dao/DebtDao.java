@@ -16,7 +16,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     @Override
-    public Debt find(String id) {
+    public Debt find(int id) {
         return em.find(Debt.class, id);
     }
 

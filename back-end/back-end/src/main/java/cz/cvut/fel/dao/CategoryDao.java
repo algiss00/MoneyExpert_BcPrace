@@ -14,7 +14,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     @Override
-    public Category find(String id) {
+    public Category find(int id) {
         return em.find(Category.class, id);
     }
 

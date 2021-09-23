@@ -26,7 +26,7 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.findAll();
     }
 
-    public boolean persist(Budget budget, String accId, String categoryId) throws
+    public boolean persist(Budget budget, int accId, int categoryId) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(budget);
         User u = isLogged();
@@ -53,17 +53,17 @@ public class BudgetService extends AbstractServiceHelper {
                 && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getId());
     }
 
-    private boolean isBudgetCategoryExist(Category budCategory, String bankAccId) {
+    private boolean isBudgetCategoryExist(Category budCategory, int bankAccId) {
         return budgetDao.getByCategory(budCategory.getId(), bankAccId) != null;
     }
 
-    public boolean remove(String id) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget bu = getByIdBudget(id);
         budgetDao.remove(bu);
         return true;
     }
 
-    public Budget updateBudget(String id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget b = getByIdBudget(id);
         b.setName(budget.getName());
         //todo logic of amount
@@ -74,7 +74,7 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.update(b);
     }
 
-    public void removeCategoryFromBudget(String buId) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget budget = getByIdBudget(buId);
         budget.setCategory(null);
         budgetDao.update(budget);

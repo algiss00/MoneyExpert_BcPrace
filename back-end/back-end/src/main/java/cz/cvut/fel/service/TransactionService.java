@@ -25,14 +25,14 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.findAll();
     }
 
-    public List<Transaction> getAllTransFromCategoryFromBankAcc(String catId, String accountId) throws
+    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         getByIdBankAccount(accountId);
         getByIdCategory(catId);
         return transactionDao.getAllTransFromCategory(catId, accountId);
     }
 
-    public boolean persist(Transaction transaction, String accId, String categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+    public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Objects.requireNonNull(transaction);
         if (!validate(transaction))
             return false;
@@ -115,7 +115,7 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public Transaction transferTransaction(String fromAccId, String toAccId, String transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getByIdTransaction(transactionId);
         Transaction transferTransaction = new Transaction();
 
@@ -146,7 +146,7 @@ public class TransactionService extends AbstractServiceHelper {
         return transaction;
     }
 
-    public Transaction update(String id, Transaction t) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction update(int id, Transaction t) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -158,7 +158,7 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.update(transaction);
     }
 
-    public Transaction updateTransactionType(String id, TypeTransaction typeTransaction) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -190,14 +190,14 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public void remove(String id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction transaction = getByIdTransaction(id);
         transaction.setCategory(null);
         transaction.setBankAccount(null);
         transactionDao.remove(transaction);
     }
 
-    public void removeFromCategory(String transId) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public void removeFromCategory(int transId) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction t = getByIdTransaction(transId);
         t.setCategory(null);
         transactionDao.update(t);

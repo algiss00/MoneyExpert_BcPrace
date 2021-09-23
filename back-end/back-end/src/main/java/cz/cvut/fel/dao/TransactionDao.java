@@ -15,7 +15,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     @Override
-    public Transaction find(String id) {
+    public Transaction find(int id) {
         return em.find(Transaction.class, id);
     }
 
@@ -24,14 +24,14 @@ public class TransactionDao extends AbstractDao<Transaction> {
         return em.createNamedQuery("Transaction.getAll").getResultList();
     }
 
-    public List<Transaction> getAllTransFromCategory(String catId, String accountId) {
+    public List<Transaction> getAllTransFromCategory(int catId, int accountId) {
         return em.createNamedQuery("Transaction.getAllFromCategory", Transaction.class)
                 .setParameter("catId", catId)
                 .setParameter("accId", accountId)
                 .getResultList();
     }
 
-    public Transaction getFromBankAcc(String accountId, String transId) {
+    public Transaction getFromBankAcc(int accountId, int transId) {
         return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
                 .setParameter("bankAccId", accountId)
                 .setParameter("transId", transId)

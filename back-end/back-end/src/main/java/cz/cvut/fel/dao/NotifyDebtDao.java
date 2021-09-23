@@ -15,7 +15,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     @Override
-    public NotifyDebt find(String id) {
+    public NotifyDebt find(int id) {
         return em.find(NotifyDebt.class, id);
     }
 
@@ -24,7 +24,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         return em.createNamedQuery("Notify.getAll").getResultList();
     }
 
-    public NotifyDebt alreadyExistsDebt(String debtId, TypeNotification type) {
+    public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) {
         return em.createNamedQuery("Notify.alreadyExists", NotifyDebt.class)
                 .setParameter("debtId", debtId)
                 .setParameter("type", type)

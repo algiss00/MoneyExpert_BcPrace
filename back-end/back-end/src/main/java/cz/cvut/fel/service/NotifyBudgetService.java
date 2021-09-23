@@ -21,7 +21,7 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         return notifyBudgetDao.findAll();
     }
 
-    public NotifyBudget getByIdNotifyBudget(String id) throws NotifyBudgetNotFoundException {
+    public NotifyBudget getByIdNotifyBudget(int id) throws NotifyBudgetNotFoundException {
         NotifyBudget notifyBudget = notifyBudgetDao.find(id);
         if (notifyBudget == null) {
             throw new NotifyBudgetNotFoundException();
@@ -40,7 +40,7 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         return notifyBudget.getBudget() != null && notifyBudget.getCreator() != null && notifyBudget.getTypeNotification() != null;
     }
 
-    public void updateNotifyBudget(String notifyBudgetId, NotifyBudget updatedNotifyBudget) throws Exception {
+    public void updateNotifyBudget(int notifyBudgetId, NotifyBudget updatedNotifyBudget) throws Exception {
         NotifyBudget notifyDebt = getByIdNotifyBudget(notifyBudgetId);
         if (!validateNotifyBudget(updatedNotifyBudget)) {
             throw new Exception("Not valid NotifyDebt");
@@ -51,7 +51,7 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         notifyBudgetDao.update(notifyDebt);
     }
 
-    public void removeNotifyBudget(String notifyBudgetId) throws Exception {
+    public void removeNotifyBudget(int notifyBudgetId) throws Exception {
         NotifyBudget notifyBudget = getByIdNotifyBudget(notifyBudgetId);
         notifyBudgetDao.remove(notifyBudget);
     }

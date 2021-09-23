@@ -30,7 +30,7 @@ public class NotifyDebtController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getById(@PathVariable String id) throws NotifyDebtNotFoundException {
+    ResponseEntity<?> getById(@PathVariable int id) throws NotifyDebtNotFoundException {
         NotifyDebt notifyDebt = notifyDebtService.getByIdNotifyDebt(id);
         return new ResponseEntity<>(notifyDebt, HttpStatus.OK);
     }
