@@ -31,7 +31,7 @@ public class NotifyBudgetController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getById(@PathVariable int id) throws NotifyBudgetNotFoundException {
+    ResponseEntity<?> getById(@PathVariable String id) throws NotifyBudgetNotFoundException {
         NotifyBudget notifyBudget = notifyBudgetService.getByIdNotifyBudget(id);
         return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }

@@ -21,7 +21,7 @@ public class NotifyDebtService extends AbstractServiceHelper {
         return notifyDebtDao.findAll();
     }
 
-    public NotifyDebt getByIdNotifyDebt(int id) throws NotifyDebtNotFoundException {
+    public NotifyDebt getByIdNotifyDebt(String id) throws NotifyDebtNotFoundException {
         NotifyDebt notifyDebt = notifyDebtDao.find(id);
         if (notifyDebt == null) {
             throw new NotifyDebtNotFoundException();
@@ -40,7 +40,7 @@ public class NotifyDebtService extends AbstractServiceHelper {
         return notifyDebt.getDebt() != null && notifyDebt.getCreator() != null && notifyDebt.getTypeNotification() != null;
     }
 
-    public void updateNotifyDebt(int notifyDebtId, NotifyDebt updatedNotifyDebt) throws Exception {
+    public void updateNotifyDebt(String notifyDebtId, NotifyDebt updatedNotifyDebt) throws Exception {
         NotifyDebt notifyDebt = getByIdNotifyDebt(notifyDebtId);
         if (!validateNotifyDebt(updatedNotifyDebt)) {
             throw new Exception("Not valid NotifyDebt");
@@ -51,7 +51,7 @@ public class NotifyDebtService extends AbstractServiceHelper {
         notifyDebtDao.update(notifyDebt);
     }
 
-    public void removeNotifyDebt(int notifyDebtId) throws Exception {
+    public void removeNotifyDebt(String notifyDebtId) throws Exception {
         NotifyDebt notifyDebt = getByIdNotifyDebt(notifyDebtId);
         notifyDebtDao.remove(notifyDebt);
     }

@@ -32,12 +32,12 @@ public class BudgetController {
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getBudgetById(@PathVariable String id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.getByIdBudget(id), HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws UserNotFoundException,
+    ResponseEntity<Budget> add(@RequestParam String accId, @RequestParam String categoryId, @RequestBody Budget b) throws UserNotFoundException,
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         if (!budgetService.persist(b, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -46,12 +46,12 @@ public class BudgetController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Budget> updateBudget(@RequestParam String budId, @RequestBody Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable String id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
         if (budgetService.remove(id)) {
             return new ResponseEntity<Void>(HttpStatus.OK);
         }
@@ -59,7 +59,7 @@ public class BudgetController {
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam String budId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
         budgetService.removeCategoryFromBudget(budId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

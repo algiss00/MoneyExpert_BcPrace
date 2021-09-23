@@ -15,7 +15,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     @Override
-    public NotifyBudget find(int id) {
+    public NotifyBudget find(String id) {
         return em.find(NotifyBudget.class, id);
     }
 
@@ -24,7 +24,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         return em.createNamedQuery("NotifyBudget.getAll").getResultList();
     }
 
-    public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) {
+    public Boolean alreadyExistsBudget(String budgetId, TypeNotification type) {
         return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
                 .setParameter("budgetId", budgetId)
                 .setParameter("type", type)

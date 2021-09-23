@@ -12,13 +12,13 @@ import java.util.Map;
 public class AbstractEntity implements Serializable {
     @Id
     @GeneratedValue
-    private int id;
+    private String id;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

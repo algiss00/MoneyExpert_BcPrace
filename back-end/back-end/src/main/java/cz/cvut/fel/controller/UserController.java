@@ -31,7 +31,7 @@ public class UserController {
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUserById(@PathVariable int id) throws UserNotFoundException {
+    ResponseEntity<?> getUserById(@PathVariable String id) throws UserNotFoundException {
         User u = userService.getByIdUser(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }

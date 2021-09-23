@@ -43,7 +43,7 @@ abstract class AbstractServiceHelper {
         return user;
     }
 
-    public User getByIdUser(int id) throws UserNotFoundException {
+    public User getByIdUser(String id) throws UserNotFoundException {
         User u = userDao.find(id);
         if (u == null) {
             throw new UserNotFoundException(id);
@@ -51,7 +51,7 @@ abstract class AbstractServiceHelper {
         return u;
     }
 
-    public Category getByIdCategory(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Category getByIdCategory(String id) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category c = categoryDao.find(id);
         if (c == null) {
             throw new CategoryNotFoundException(id);
@@ -63,7 +63,7 @@ abstract class AbstractServiceHelper {
         return c;
     }
 
-    public Debt getByIdDebt(int id) throws DebtNotFoundException, NotAuthenticatedClient {
+    public Debt getByIdDebt(String id) throws DebtNotFoundException, NotAuthenticatedClient {
         Debt d = debtDao.find(id);
         if (d == null) {
             throw new DebtNotFoundException(id);
@@ -74,7 +74,7 @@ abstract class AbstractServiceHelper {
         return d;
     }
 
-    public Budget getByIdBudget(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public Budget getByIdBudget(String id) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget budget = budgetDao.find(id);
         if (budget == null) {
             throw new BudgetNotFoundException(id);
@@ -88,15 +88,15 @@ abstract class AbstractServiceHelper {
     public boolean isOwnerOfBudget(Budget budget) throws NotAuthenticatedClient {
         User user = isLogged();
         User creator = budget.getCreator();
-        return creator.getId() == user.getId();
+        return creator.getId().equals(user.getId());
     }
 
     public boolean isCreatorOfDebt(Debt debt) throws NotAuthenticatedClient {
         User user = isLogged();
-        return debt.getCreator().getId() == user.getId();
+        return debt.getCreator().getId().equals(user.getId());
     }
 
-    public Transaction getByIdTransaction(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction getByIdTransaction(String id) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction t = transactionDao.find(id);
         if (t == null) {
             throw new TransactionNotFoundException(id);
@@ -112,14 +112,14 @@ abstract class AbstractServiceHelper {
         List<User> creators = category.getCreators();
         // todo sql
         for (User creator : creators) {
-            if (creator.getId() == user.getId()) {
+            if (creator.getId().equals(user.getId())) {
                 return true;
             }
         }
         return false;
     }
 
-    public BankAccount getByIdBankAccount(int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public BankAccount getByIdBankAccount(String id) throws BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount bankAccount = bankAccountDao.find(id);
         if (bankAccount == null) {
             throw new BankAccountNotFoundException(id);
@@ -135,7 +135,7 @@ abstract class AbstractServiceHelper {
         List<User> owners = bankAccount.getOwners();
         // todo sql
         for (User owner : owners) {
-            if (owner.getId() == user.getId()) {
+            if (owner.getId().equals(user.getId())) {
                 return true;
             }
         }
@@ -147,7 +147,7 @@ abstract class AbstractServiceHelper {
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
         // todo sql
         for (BankAccount bankAccount : bankAccounts) {
-            if (bankAccount.getId() == t.getBankAccount().getId()) {
+            if (bankAccount.getId().equals(t.getBankAccount().getId())) {
                 return true;
             }
         }

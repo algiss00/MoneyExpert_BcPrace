@@ -3,7 +3,7 @@ package cz.cvut.fel.service.exceptions;
 public class TransactionNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 
-    public TransactionNotFoundException(int id) {
+    public TransactionNotFoundException(String id) {
         super("No Transaction with id = " + id);
     }
 

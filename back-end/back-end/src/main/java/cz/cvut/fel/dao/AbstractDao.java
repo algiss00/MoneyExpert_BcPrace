@@ -12,7 +12,7 @@ public abstract class AbstractDao<T> {
         this.em = em;
     }
 
-    abstract public T find(int id);
+    abstract public T find(String id);
 
     abstract public List<T> findAll();
 

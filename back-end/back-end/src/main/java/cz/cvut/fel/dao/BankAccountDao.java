@@ -15,7 +15,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     @Override
-    public BankAccount find(int id) {
+    public BankAccount find(String id) {
         return em.find(BankAccount.class, id);
     }
 

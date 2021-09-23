@@ -25,11 +25,11 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.findAll();
     }
 
-    public Budget getBudget(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Budget getBudget(String catId) throws CategoryNotFoundException, NotAuthenticatedClient {
         return getByIdCategory(catId).getBudget();
     }
 
-    public List<Transaction> getTransactions(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public List<Transaction> getTransactions(String catId) throws CategoryNotFoundException, NotAuthenticatedClient {
         return getByIdCategory(catId).getTransactions();
     }
 
@@ -45,7 +45,7 @@ public class CategoryService extends AbstractServiceHelper {
         return true;
     }
 
-    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+    public void addTransactionToCategory(String transId, String categoryId) throws TransactionNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         Transaction t = getByIdTransaction(transId);
         Category category = getByIdCategory(categoryId);
 
@@ -72,7 +72,7 @@ public class CategoryService extends AbstractServiceHelper {
         return notExist;
     }
 
-    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public void remove(String id) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category ca = getByIdCategory(id);
         ca.getTransactions().clear();
         ca.setBudget(null);
@@ -80,7 +80,7 @@ public class CategoryService extends AbstractServiceHelper {
         categoryDao.remove(ca);
     }
 
-    public Category updateCategory(int id, Category category) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Category updateCategory(String id, Category category) throws CategoryNotFoundException, NotAuthenticatedClient {
         Category c = getByIdCategory(id);
         c.setName(category.getName());
         return categoryDao.update(c);

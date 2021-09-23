@@ -26,7 +26,7 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.findAll();
     }
 
-    public boolean persist(Debt debt, int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public boolean persist(Debt debt, String accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         User u = isLogged();
         BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
@@ -66,7 +66,7 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
-    private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) {
+    private boolean notifyDebtExits(String notifiedDebtId, TypeNotification type) {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
@@ -112,12 +112,12 @@ public class DebtService extends AbstractServiceHelper {
         return notExist;
     }
 
-    public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {
+    public void remove(String id) throws NotAuthenticatedClient, DebtNotFoundException {
         Debt debt = getByIdDebt(id);
         debtDao.remove(debt);
     }
 
-    public Debt updateDebt(int id, Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
+    public Debt updateDebt(String id, Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
         Debt da = getByIdDebt(id);
 
         da.setName(debt.getName());
