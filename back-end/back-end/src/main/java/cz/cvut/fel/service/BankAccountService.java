@@ -24,7 +24,6 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.findAll();
     }
 
-
     public List<Budget> getAllAccountsBudgets(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount b = getByIdBankAccount(accId);
         return b.getBudgets();
