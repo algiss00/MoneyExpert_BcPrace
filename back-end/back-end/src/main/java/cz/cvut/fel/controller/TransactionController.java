@@ -41,8 +41,43 @@ public class TransactionController {
 
     @GetMapping(value = "/sorted-transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getTransactionSorted(@PathVariable int accId, @RequestParam SortAttribute by,
-                                           @RequestParam SortOrder order) throws BankAccountNotFoundException, NotAuthenticatedClient {
+                                           @RequestParam SortOrder order) throws Exception {
         List<Transaction> transactions = transactionService.getSorted(by, order, accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sorted-transactions-month/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionSortedByMonth(@PathVariable int bankAccId, @RequestParam int month)
+            throws Exception {
+        List<Transaction> transactions = transactionService.getSortedByMonth(month, bankAccId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sum-expense/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getSumExpenseInMonth(@PathVariable int bankAccId, @RequestParam int month)
+            throws Exception {
+        double transactions = transactionService.getSumOfExpenseOnMonth(month, bankAccId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sum-income/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getSumIncomeInMonth(@PathVariable int bankAccId, @RequestParam int month)
+            throws Exception {
+        double transactions = transactionService.getSumOfIncomeOnMonth(month, bankAccId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sum-expense-category/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getSumExpenseWithCategory(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int categoryId)
+            throws Exception {
+        double transactions = transactionService.getSumOfExpenseWithCategory(month, bankAccId, categoryId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sum-income-category/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getSumIncomeWithCategory(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int categoryId)
+            throws Exception {
+        double transactions = transactionService.getSumOfIncomeWithCategory(month, bankAccId, categoryId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
@@ -98,7 +133,7 @@ public class TransactionController {
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {
         log.info(() ->
-                "REST /account... returned error: " + exception.getMessage());
+                "REST /transaction... returned error: " + exception.getMessage());
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 }

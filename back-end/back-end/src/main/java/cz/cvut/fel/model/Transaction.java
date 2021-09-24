@@ -31,7 +31,6 @@ public class Transaction extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    @JsonIgnore
     private Category category;
 
     @ManyToOne(cascade = CascadeType.ALL)

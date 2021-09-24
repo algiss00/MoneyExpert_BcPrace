@@ -49,7 +49,7 @@ public class NotifyDebtController {
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {
         log.info(() ->
-                "REST /account... returned error: " + exception.getMessage());
+                "REST /notify-debt... returned error: " + exception.getMessage());
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 }

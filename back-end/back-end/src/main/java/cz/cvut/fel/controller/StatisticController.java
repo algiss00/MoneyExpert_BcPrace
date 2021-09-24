@@ -51,7 +51,7 @@
 //    void handleExceptions(HttpServletResponse response, Exception exception)
 //            throws IOException {
 //        log.info(() ->
-//                "REST /account... returned error: " + exception.getMessage());
+//                "REST /statistic... returned error: " + exception.getMessage());
 //        response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
 //    }
 //}

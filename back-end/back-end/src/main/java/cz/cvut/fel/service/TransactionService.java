@@ -27,8 +27,30 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     public List<Transaction> getSorted(SortAttribute sortAttribute, SortOrder sortOrder, int bankAccId) throws
-            BankAccountNotFoundException, NotAuthenticatedClient {
+            Exception {
         return transactionDao.getAllSorted(sortAttribute, sortOrder, getByIdBankAccount(bankAccId));
+    }
+
+    public List<Transaction> getSortedByMonth(int month, int bankAccId) throws Exception {
+        return transactionDao.getByMonthSorted(month, getByIdBankAccount(bankAccId).getId());
+    }
+
+    public double getSumOfExpenseOnMonth(int month, int bankAccId) throws Exception {
+        return transactionDao.getExpenseSum(month, getByIdBankAccount(bankAccId).getId());
+    }
+
+    public double getSumOfIncomeOnMonth(int month, int bankAccId) throws Exception {
+        return transactionDao.getIncomeSum(month, getByIdBankAccount(bankAccId).getId());
+    }
+
+    public double getSumOfExpenseWithCategory(int month, int bankAccId, int catId)
+            throws Exception {
+        return transactionDao.getExpenseSumWithCategory(month, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
+    }
+
+    public double getSumOfIncomeWithCategory(int month, int bankAccId, int catId)
+            throws Exception {
+        return transactionDao.getIncomeSumWithCategory(month, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws

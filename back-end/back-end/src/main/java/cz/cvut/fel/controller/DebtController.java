@@ -67,7 +67,7 @@ public class DebtController {
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {
         log.info(() ->
-                "REST /account... returned error: " + exception.getMessage());
+                "REST /debt... returned error: " + exception.getMessage());
         response.sendError(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
     }
 }
