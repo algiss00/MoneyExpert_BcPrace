@@ -1,5 +1,7 @@
 package cz.cvut.fel.controller;
 
+import cz.cvut.fel.dto.SortAttribute;
+import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.TypeTransaction;
 import cz.cvut.fel.service.TransactionService;
@@ -35,6 +37,13 @@ public class TransactionController {
     ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient {
         Transaction u = transactionService.getByIdTransaction(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sorted-transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionSorted(@PathVariable int accId, @RequestParam SortAttribute by,
+                                           @RequestParam SortOrder order) throws BankAccountNotFoundException, NotAuthenticatedClient {
+        List<Transaction> transactions = transactionService.getSorted(by, order, accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

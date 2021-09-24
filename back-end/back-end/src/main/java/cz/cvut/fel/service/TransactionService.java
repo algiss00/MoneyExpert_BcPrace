@@ -1,6 +1,8 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.SortAttribute;
+import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,11 @@ public class TransactionService extends AbstractServiceHelper {
 
     public List<Transaction> getAll() {
         return transactionDao.findAll();
+    }
+
+    public List<Transaction> getSorted(SortAttribute sortAttribute, SortOrder sortOrder, int bankAccId) throws
+            BankAccountNotFoundException, NotAuthenticatedClient {
+        return transactionDao.getAllSorted(sortAttribute, sortOrder, getByIdBankAccount(bankAccId));
     }
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws

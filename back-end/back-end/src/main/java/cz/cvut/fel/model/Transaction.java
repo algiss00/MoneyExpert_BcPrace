@@ -2,6 +2,7 @@ package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.validation.constraints.Min;
 import javax.persistence.*;
 import java.util.Date;
 
@@ -19,6 +20,7 @@ import java.util.Date;
 
 public class Transaction extends AbstractEntity {
     @Column
+    @Min(value = 0, message = "amount should not be less than 0")
     private double amount;
     @Column
     private Date date;
