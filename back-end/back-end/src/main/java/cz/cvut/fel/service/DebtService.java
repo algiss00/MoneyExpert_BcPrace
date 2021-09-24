@@ -38,8 +38,6 @@ public class DebtService extends AbstractServiceHelper {
         return true;
     }
 
-    //todo v sql request
-    //todo fetch debts new table
     //every 12 hours
     @Scheduled(cron = "5 * * * * * ")
     public void checkNotifyDates() {
@@ -50,6 +48,7 @@ public class DebtService extends AbstractServiceHelper {
             System.out.println("EMPTY");
             return;
         }
+        // test
         notifyDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
         for (Debt notifiedDebt : notifyDebts) {
             if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_NOTIFY)) {
@@ -99,17 +98,7 @@ public class DebtService extends AbstractServiceHelper {
         if (debt.getName().trim().isEmpty() || debtDao.find(debt.getId()) != null) {
             return false;
         }
-        boolean notExist = true;
-        // check if debt name is not exist in users debts
-        List<Debt> usersDebts = user.getMyDebts();
-        //todo sql
-        for (Debt d : usersDebts) {
-            if (d.getName().equals(debt.getName())) {
-                notExist = false;
-                break;
-            }
-        }
-        return notExist;
+        return debtDao.getByName(user.getId(), debt.getName()) == null;
     }
 
     public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {

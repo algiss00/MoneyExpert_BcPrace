@@ -1,7 +1,6 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Debt;
-import cz.cvut.fel.model.User;
 import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -25,18 +24,18 @@ public class DebtController {
 
 //    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 //    ResponseEntity<?> getAllDebts() {
-//        List<Debt> cateAll = debtService.getAll();
-//        return new ResponseEntity<>(cateAll, HttpStatus.OK);
+//        List<Debt> debtAll = debtService.getAll();
+//        return new ResponseEntity<>(dabtAll, HttpStatus.OK);
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
         Debt d = debtService.getByIdDebt(id);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         if (!debtService.persist(d, accId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -44,18 +43,12 @@ public class DebtController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
     }
 
-//    @PostMapping(value = "/check-debts")
-//    ResponseEntity<Void> asyncFuncCheckDebts() throws UserNotFoundException, InterruptedException, NotAuthenticatedClient {
-//        debtService.asyncMethodCheckingDebts();
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient, UserNotFoundException {
+    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
         debtService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

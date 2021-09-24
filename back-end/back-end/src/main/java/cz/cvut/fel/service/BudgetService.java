@@ -66,7 +66,6 @@ public class BudgetService extends AbstractServiceHelper {
     public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget b = getByIdBudget(id);
         b.setName(budget.getName());
-        //todo logic of amount
         b.setAmount(budget.getAmount());
         b.setPercentNotif(budget.getPercentNotif());
         b.setCategory(budget.getCategory());

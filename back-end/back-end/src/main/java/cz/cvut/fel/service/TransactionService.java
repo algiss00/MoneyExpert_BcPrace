@@ -6,7 +6,6 @@ import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -39,9 +38,6 @@ public class TransactionService extends AbstractServiceHelper {
 
         BankAccount b = getByIdBankAccount(accId);
         Category category = getByIdCategory(categoryId);
-
-        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-
         transaction.setBankAccount(b);
         transaction.setCategory(category);
         transaction.setDate(new Date());
@@ -68,7 +64,6 @@ public class TransactionService extends AbstractServiceHelper {
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
 
         if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
-            //todo notificate
             System.out.println("trans amount is bigger or equal then budget amount NOTIFICATE");
             if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_AMOUNT)) {
                 System.out.println("EXISTS");
@@ -82,7 +77,6 @@ public class TransactionService extends AbstractServiceHelper {
             notifyBudgetDao.persist(notifyBudgetEntity);
             System.out.println("ADDED TO BUDGET AMOUNT " + notifyBudgetEntity.getBudget().getName());
         } else if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
-            //todo notifdicate
             System.out.println("PROCENT NOTIFICATE");
             if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_PERCENT)) {
                 System.out.println("EXISTS");
@@ -121,8 +115,6 @@ public class TransactionService extends AbstractServiceHelper {
 
         BankAccount toBankAcc = getByIdBankAccount(toAccId);
         BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
-
-        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 
         transferTransaction.setBankAccount(toBankAcc);
         transferTransaction.setCategory(transaction.getCategory());

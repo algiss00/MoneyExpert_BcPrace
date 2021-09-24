@@ -57,9 +57,9 @@ abstract class AbstractServiceHelper {
             throw new CategoryNotFoundException(id);
         }
         //todo for default categories
-        if (!isCreatorOfCategory(c)) {
-            throw new NotAuthenticatedClient();
-        }
+//        if (!isCreatorOfCategory(c)) {
+//            throw new NotAuthenticatedClient();
+//        }
         return c;
     }
 
@@ -110,13 +110,7 @@ abstract class AbstractServiceHelper {
     public boolean isCreatorOfCategory(Category category) throws NotAuthenticatedClient {
         User user = isLogged();
         List<User> creators = category.getCreators();
-        // todo sql
-        for (User creator : creators) {
-            if (creator.getId() == user.getId()) {
-                return true;
-            }
-        }
-        return false;
+        return creators.contains(user);
     }
 
     public BankAccount getByIdBankAccount(int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
@@ -133,19 +127,12 @@ abstract class AbstractServiceHelper {
     public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws NotAuthenticatedClient {
         User user = isLogged();
         List<User> owners = bankAccount.getOwners();
-        // todo sql
-        for (User owner : owners) {
-            if (owner.getId() == user.getId()) {
-                return true;
-            }
-        }
-        return false;
+        return owners.contains(user);
     }
 
     public boolean isOwnerOfTransaction(Transaction t) throws NotAuthenticatedClient {
         User user = isLogged();
         List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
-        // todo sql
         for (BankAccount bankAccount : bankAccounts) {
             if (bankAccount.getId() == t.getBankAccount().getId()) {
                 return true;

@@ -14,10 +14,10 @@ import java.util.List;
         @NamedQuery(name = "Debt.getNotifyDebts",
                 query = "SELECT d FROM Debt d WHERE d.notifyDate <= CURRENT_DATE AND d.deadline > CURRENT_DATE"),
         @NamedQuery(name = "Debt.getDeadlineDebts",
-                query = "SELECT d FROM Debt d WHERE d.deadline <= CURRENT_DATE")
+                query = "SELECT d FROM Debt d WHERE d.deadline <= CURRENT_DATE"),
+        @NamedQuery(name = "Debt.getByName",
+                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid and d.name = :debtName")
 })
-//@NamedNativeQuery(name = "getNotifyDebts", query = "SELECT * FROM debt_table WHERE CAST(notify_date as Date) <= CURRENT_DATE AND CAST(deadline as Date) > CURRENT_DATE")
-
 public class Debt extends AbstractEntity {
     @Column
     private double amount;

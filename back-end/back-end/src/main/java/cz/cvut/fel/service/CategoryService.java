@@ -38,6 +38,10 @@ public class CategoryService extends AbstractServiceHelper {
         User u = isLogged();
         if (!validate(category, u))
             return false;
+        // todo
+//        int newId = getAll().size() + 1;
+//        System.out.println("NEW ID " + newId);
+        //category.setId(newId);
         category.getCreators().add(u);
         categoryDao.persist(category);
         u.getMyCategories().add(category);
@@ -60,9 +64,8 @@ public class CategoryService extends AbstractServiceHelper {
             return false;
         }
         boolean notExist = true;
-        // kontrol if category name is not exist in users categories
+        // check if category name is not exist in users categories
         List<Category> usersCategories = user.getMyCategories();
-        //todo sql - get by name from users categories
         for (Category c : usersCategories) {
             if (c.getName().equals(category.getName())) {
                 notExist = false;

@@ -6,7 +6,6 @@ import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +43,7 @@ public class BankAccountService extends AbstractServiceHelper {
         return b.getOwners();
     }
 
-    public boolean persist(BankAccount bankAccount) throws NotAuthenticatedClient {
+    public boolean persist(BankAccount bankAccount) throws NotAuthenticatedClient, CategoryNotFoundException {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             return false;
@@ -176,20 +175,21 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
 
-    private void createStartTransaction(BankAccount bankAccount, User user) {
+    private void createStartTransaction(BankAccount bankAccount, User user) throws CategoryNotFoundException, NotAuthenticatedClient {
         Transaction startTransaction = new Transaction();
 
         //todo default start category with Jakh
-        Category startCategory = new Category();
-        startCategory.getCreators().add(user);
-        startCategory.setName("Start transaction");
-        categoryDao.persist(startCategory);
-        user.getMyCategories().add(startCategory);
-        userDao.update(user);
+//        Category startCategory = new Category();
+//        startCategory.getCreators().add(user);
+//        startCategory.setName("Start transaction");
+//        categoryDao.persist(startCategory);
+//        user.getMyCategories().add(startCategory);
+//        userDao.update(user);
+        // todo myslis v pohode?
+        Category category = getByIdCategory(6);
 
-        //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         startTransaction.setBankAccount(bankAccount);
-        startTransaction.setCategory(startCategory);
+        startTransaction.setCategory(category);
         startTransaction.setJottings("Start transaction");
         startTransaction.setAmount(bankAccount.getBalance());
         startTransaction.setDate(new Date());

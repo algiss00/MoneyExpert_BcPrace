@@ -1,8 +1,6 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.User;
-import cz.cvut.fel.service.BankAccountService;
 import cz.cvut.fel.service.BudgetService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -18,12 +16,10 @@ import java.util.logging.Logger;
 @RequestMapping("/budget")
 public class BudgetController {
     private final BudgetService budgetService;
-    private final BankAccountService bankAccountService;
     private static final Logger log = Logger.getLogger(BudgetController.class.getName());
 
-    public BudgetController(BudgetService budgetService, BankAccountService bankAccountService) {
+    public BudgetController(BudgetService budgetService) {
         this.budgetService = budgetService;
-        this.bankAccountService = bankAccountService;
     }
 
 //    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,12 +28,12 @@ public class BudgetController {
 //    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.getByIdBudget(id), HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws UserNotFoundException,
+    ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws
             BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
         if (!budgetService.persist(b, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -46,12 +42,13 @@ public class BudgetController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException,
+            NotAuthenticatedClient {
         return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws UserNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws BudgetNotFoundException, NotAuthenticatedClient {
         if (budgetService.remove(id)) {
             return new ResponseEntity<Void>(HttpStatus.OK);
         }
@@ -59,7 +56,7 @@ public class BudgetController {
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, NotAuthenticatedClient {
         budgetService.removeCategoryFromBudget(budId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

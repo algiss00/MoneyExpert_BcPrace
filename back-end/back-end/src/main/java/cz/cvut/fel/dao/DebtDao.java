@@ -33,6 +33,15 @@ public class DebtDao extends AbstractDao<Debt> {
         return em.createNamedQuery("Debt.getDeadlineDebts", Debt.class).getResultList();
     }
 
+    public Debt getByName(int uid, String debtName) {
+        return em.createNamedQuery("Debt.getByName", Debt.class)
+                .setParameter("uid", uid)
+                .setParameter("debtName", debtName)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
+    }
+
     @Override
     public void persist(Debt entity) {
         Objects.requireNonNull(entity);
