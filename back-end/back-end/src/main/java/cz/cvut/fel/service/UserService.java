@@ -23,11 +23,11 @@ public class UserService extends AbstractServiceHelper {
         return userDao.getByUsername(username);
     }
 
-    public User getByEmail(String email) {
+    public User getByEmail(String email) throws Exception {
         return userDao.getByEmail(email);
     }
 
-    public boolean alreadyExists(User user) {
+    public boolean alreadyExists(User user) throws Exception {
         return getByUsername(user.getUsername()) != null
                 || getByEmail(user.getEmail()) != null || userDao.find(user.getId()) != null;
     }
@@ -47,6 +47,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public List<Category> getAllUsersCategories() throws Exception {
+        // todo get default categories too
         return categoryDao.getUsersCategory(isLogged().getId());
     }
 
@@ -55,7 +56,7 @@ public class UserService extends AbstractServiceHelper {
         return u.getMyDebts();
     }
 
-    public boolean persist(User user) {
+    public boolean persist(User user) throws Exception {
         Objects.requireNonNull(user);
         if (alreadyExists(user))
             return false;

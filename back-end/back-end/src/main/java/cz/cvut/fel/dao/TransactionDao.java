@@ -36,13 +36,18 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public Transaction getFromBankAcc(int accountId, int transId) {
-        return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
-                .setParameter("bankAccId", accountId)
-                .setParameter("transId", transId)
-                .setMaxResults(1)
-                .getResultList()
-                .stream().findFirst().orElse(null);
+    public Transaction getFromBankAcc(int accountId, int transId) throws Exception {
+        try {
+            return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
+                    .setParameter("bankAccId", accountId)
+                    .setParameter("transId", transId)
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception transaction dao");
+        }
     }
 
     public List<Transaction> getAllSortedFromBankAcc(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {

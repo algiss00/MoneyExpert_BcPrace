@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<User> add(@RequestBody User user) {
+    ResponseEntity<User> add(@RequestBody User user) throws Exception {
         if (!userService.persist(user)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -39,12 +39,15 @@ public class CategoryDao extends AbstractDao<Category> {
 
     public Category getUsersCategoryById(int uid, int catId) throws Exception {
         try {
-            return (Category) em.createNativeQuery("SELECT * FROM relation_category_user as relation " +
-                            "where relation.user_id = :userId and realtion.category_id = :catId",
+            return (Category) em.createNativeQuery("SELECT cat.id, cat.name FROM category_table as cat inner JOIN relation_category_user as relation" +
+                            " ON relation.category_id = cat.id " +
+                            "where relation.user_id = :uid and relation.category_id = :catId",
                     Category.class)
-                    .setParameter("userId", uid)
+                    .setParameter("uid", uid)
                     .setParameter("catId", catId)
-                    .getSingleResult();
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("Exception CategoryDao");
@@ -53,13 +56,15 @@ public class CategoryDao extends AbstractDao<Category> {
 
     public Category getUsersCategoryByName(int uid, String catName) throws Exception {
         try {
-            return (Category) em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
+            return (Category) em.createNativeQuery("SELECT cat.id, cat.name FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
                             "where relation.user_id = :userId and cat.name = :catName",
                     Category.class)
                     .setParameter("userId", uid)
                     .setParameter("catName", catName)
-                    .getSingleResult();
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("Exception CategoryDao");

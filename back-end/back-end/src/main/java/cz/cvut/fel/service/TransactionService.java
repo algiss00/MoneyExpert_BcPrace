@@ -84,7 +84,7 @@ public class TransactionService extends AbstractServiceHelper {
         return true;
     }
 
-    private void budgetLogic(BankAccount bankAccount, Transaction transaction) {
+    private void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
         Category transCategory = transaction.getCategory();
         double transAmount = transaction.getAmount();
 
@@ -134,7 +134,7 @@ public class TransactionService extends AbstractServiceHelper {
         return !(t.getAmount() <= 0);
     }
 
-    private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) {
+    private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             bankAccount.setBalance(bankAccount.getBalance() - transaction.getAmount());
             budgetLogic(bankAccount, transaction);
@@ -144,7 +144,7 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws Exception {
         Transaction transaction = getByIdTransaction(transactionId);
         Transaction transferTransaction = new Transaction();
 
@@ -173,7 +173,7 @@ public class TransactionService extends AbstractServiceHelper {
         return transaction;
     }
 
-    public Transaction update(int id, Transaction t) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction update(int id, Transaction t) throws Exception {
         Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -185,7 +185,7 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.update(transaction);
     }
 
-    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws Exception {
         Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -217,14 +217,14 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public void remove(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public void remove(int id) throws Exception {
         Transaction transaction = getByIdTransaction(id);
         transaction.setCategory(null);
         transaction.setBankAccount(null);
         transactionDao.remove(transaction);
     }
 
-    public void removeFromCategory(int transId) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public void removeFromCategory(int transId) throws Exception {
         Transaction t = getByIdTransaction(transId);
         t.setCategory(null);
         transactionDao.update(t);

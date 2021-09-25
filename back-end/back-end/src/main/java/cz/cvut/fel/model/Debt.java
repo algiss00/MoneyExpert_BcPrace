@@ -17,7 +17,9 @@ import java.util.List;
         @NamedQuery(name = "Debt.getDeadlineDebts",
                 query = "SELECT d FROM Debt d WHERE d.deadline <= CURRENT_DATE"),
         @NamedQuery(name = "Debt.getByName",
-                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid and d.name = :debtName")
+                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid and d.name = :debtName"),
+        @NamedQuery(name = "Debt.getByBankAccount",
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bankAccId and d.id = :debtId")
 })
 public class Debt extends AbstractEntity {
     @Column

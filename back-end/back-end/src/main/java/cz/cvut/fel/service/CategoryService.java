@@ -2,8 +2,6 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.service.exceptions.CategoryNotFoundException;
-import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

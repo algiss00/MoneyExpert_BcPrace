@@ -11,7 +11,11 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
         @NamedQuery(name = "Budget.getBudgetByCategory", query = "SELECT b FROM Budget b where b.category.id = :categoryId" +
-                " and b.bankAccount.id = :bankAccId")
+                " and b.bankAccount.id = :bankAccId"),
+        @NamedQuery(name = "Budget.getByBankAccId", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
+                " and b.id = :buId"),
+        @NamedQuery(name = "Budget.getByName", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
+                " and b.name = :name")
 })
 
 public class Budget extends AbstractEntity {

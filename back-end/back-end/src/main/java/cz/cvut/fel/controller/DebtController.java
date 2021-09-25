@@ -35,7 +35,7 @@ public class DebtController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws Exception {
         if (!debtService.persist(d, accId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

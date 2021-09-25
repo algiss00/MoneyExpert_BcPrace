@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,7 +39,7 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getTransactionById(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getTransactionById(@PathVariable int id) throws Exception {
         Transaction u = transactionService.getByIdTransaction(id);
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
@@ -98,7 +97,7 @@ public class TransactionController {
 
     @PostMapping(value = "/transfer")
     ResponseEntity<Transaction> transferTransaction(@RequestParam int fromAccId, @RequestParam int toAccId, @RequestParam int transId)
-            throws BankAccountNotFoundException, TransactionNotFoundException, NotAuthenticatedClient {
+            throws Exception {
         Transaction t = transactionService.transferTransaction(fromAccId, toAccId, transId);
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
@@ -114,13 +113,13 @@ public class TransactionController {
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
         transactionService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws TransactionNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws Exception {
         transactionService.removeFromCategory(transId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

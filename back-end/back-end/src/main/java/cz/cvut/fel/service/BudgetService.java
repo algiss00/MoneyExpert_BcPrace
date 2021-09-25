@@ -26,6 +26,10 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.findAll();
     }
 
+    public List<Budget> getByName(int accId, String name) throws Exception {
+        return budgetDao.getByName(getByIdBankAccount(accId).getId(), name);
+    }
+
     public boolean persist(Budget budget, int accId, int categoryId) throws
             Exception {
         Objects.requireNonNull(budget);
@@ -33,8 +37,9 @@ public class BudgetService extends AbstractServiceHelper {
         Category category = getByIdCategory(categoryId);
 
         BankAccount bankAccount = getByIdBankAccount(accId);
-        if (!validate(budget, bankAccount))
+        if (!validate(budget, bankAccount.getId(), categoryId)) {
             return false;
+        }
         budget.setCreator(u);
         budget.setCategory(category);
         budget.setBankAccount(bankAccount);
@@ -45,16 +50,16 @@ public class BudgetService extends AbstractServiceHelper {
         return true;
     }
 
-    private boolean validate(Budget budget, BankAccount bankAccount) {
-        if (budgetDao.find(budget.getId()) != null) {
+    private boolean validate(Budget budget, int bankAccountId, int catId) throws Exception {
+        if (budget.getName().trim().isEmpty() || budget.getAmount() <= 0) {
             return false;
         }
-        return !budget.getName().trim().isEmpty() && budget.getAmount() > 0
-                && !isBudgetCategoryExist(budget.getCategory(), bankAccount.getId());
+        return getBudgetByCategoryInBankAcc(catId, bankAccountId) == null;
     }
 
-    private boolean isBudgetCategoryExist(Category budCategory, int bankAccId) {
-        return budgetDao.getByCategory(budCategory.getId(), bankAccId) != null;
+    public Budget getBudgetByCategoryInBankAcc(int catId, int bankAccId) throws Exception {
+        getByIdCategory(catId);
+        return budgetDao.getByCategory(catId, bankAccId);
     }
 
     public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {

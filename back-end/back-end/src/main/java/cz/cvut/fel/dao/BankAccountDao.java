@@ -21,7 +21,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
 
     public List<BankAccount> getByName(String name, int uid) throws Exception {
         try {
-            return em.createNativeQuery("SELECT relation.user_id, acc.name, acc.id, acc.balance, acc.currency " +
+            return em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency " +
                             "FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +
                             "ON relation.bank_account_id = acc.id" +
                             " where relation.user_id = :userId and acc.name = :name ",
@@ -29,6 +29,24 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
                     .setParameter("userId", uid)
                     .setParameter("name", name)
                     .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BankAccountDao");
+        }
+    }
+
+    public BankAccount getUsersBankAccountById(int uid, int bankAccId) throws Exception {
+        try {
+            return (BankAccount) em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency" +
+                            " FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +
+                            "ON relation.bank_account_id = acc.id " +
+                            "where relation.user_id = :userId and relation.bank_account_id = :bankAccId",
+                    BankAccount.class)
+                    .setParameter("userId", uid)
+                    .setParameter("bankAccId", bankAccId)
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("Exception BankAccountDao");

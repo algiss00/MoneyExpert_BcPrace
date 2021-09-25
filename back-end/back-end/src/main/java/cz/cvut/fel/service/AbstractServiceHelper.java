@@ -5,8 +5,6 @@ import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
 
-import java.util.List;
-
 abstract class AbstractServiceHelper {
     UserDao userDao;
     BankAccountDao bankAccountDao;
@@ -95,12 +93,12 @@ abstract class AbstractServiceHelper {
         return debt.getCreator().getId() == user.getId();
     }
 
-    public Transaction getByIdTransaction(int id) throws TransactionNotFoundException, NotAuthenticatedClient {
+    public Transaction getByIdTransaction(int id) throws Exception {
         Transaction t = transactionDao.find(id);
         if (t == null) {
             throw new TransactionNotFoundException(id);
         }
-        if (!isOwnerOfTransaction(t)) {
+        if (!isUserOwnerOfBankAccount(t.getBankAccount())) {
             throw new NotAuthenticatedClient();
         }
         return t;
@@ -111,7 +109,7 @@ abstract class AbstractServiceHelper {
         return categoryDao.getUsersCategoryById(user.getId(), categoryId) != null;
     }
 
-    public BankAccount getByIdBankAccount(int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public BankAccount getByIdBankAccount(int id) throws Exception {
         BankAccount bankAccount = bankAccountDao.find(id);
         if (bankAccount == null) {
             throw new BankAccountNotFoundException(id);
@@ -122,20 +120,8 @@ abstract class AbstractServiceHelper {
         return bankAccount;
     }
 
-    public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws NotAuthenticatedClient {
+    public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws Exception {
         User user = isLogged();
-        List<User> owners = bankAccount.getOwners();
-        return owners.contains(user);
-    }
-
-    public boolean isOwnerOfTransaction(Transaction t) throws NotAuthenticatedClient {
-        User user = isLogged();
-        List<BankAccount> bankAccounts = user.getAvailableBankAccounts();
-        for (BankAccount bankAccount : bankAccounts) {
-            if (bankAccount.getId() == t.getBankAccount().getId()) {
-                return true;
-            }
-        }
-        return false;
+        return bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 }

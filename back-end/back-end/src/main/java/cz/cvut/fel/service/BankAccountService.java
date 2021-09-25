@@ -30,9 +30,8 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.getByName(name, isLogged().getId());
     }
 
-    public List<Budget> getAllAccountsBudgets(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public List<Budget> getAllAccountsBudgets(int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
-        // todo get sorted budgets
         return b.getBudgets();
     }
 
@@ -40,15 +39,13 @@ public class BankAccountService extends AbstractServiceHelper {
         return transactionDao.getAllSortedFromBankAcc(SortAttribute.DATE, SortOrder.DESCENDING, getByIdBankAccount(accountId));
     }
 
-    public List<Debt> getAllAccountsDebts(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public List<Debt> getAllAccountsDebts(int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
-        // todo get sorted debts
         return b.getDebts();
     }
 
-    public List<User> getAllOwners(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public List<User> getAllOwners(int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
-        // todo get sorted
         return b.getOwners();
     }
 
@@ -67,7 +64,7 @@ public class BankAccountService extends AbstractServiceHelper {
         return true;
     }
 
-    public void addNewOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public void addNewOwner(int userId, int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
         User u = getByIdUser(userId);
 
@@ -86,20 +83,20 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
 
-    public BankAccount updateAccount(int id, BankAccount bankAccount) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    public BankAccount updateAccount(int id, BankAccount bankAccount) throws Exception {
         BankAccount b = getByIdBankAccount(id);
         b.setName(bankAccount.getName());
         b.setCurrency(bankAccount.getCurrency());
         return bankAccountDao.update(b);
     }
 
-    public void remove(int id) throws NotAuthenticatedClient, BankAccountNotFoundException {
+    public void remove(int id) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(id);
         bankAccount.getOwners().clear();
         bankAccountDao.remove(bankAccount);
     }
 
-    public void removeOwner(int userId, int accId) throws UserNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public void removeOwner(int userId, int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
         User u = getByIdUser(userId);
 
@@ -109,7 +106,7 @@ public class BankAccountService extends AbstractServiceHelper {
         userDao.update(u);
     }
 
-    public void removeTransFromAccount(int transId, int accId) throws TransactionNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public void removeTransFromAccount(int transId, int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
         Transaction t = getByIdTransaction(transId);
         if (!isTransactionInBankAcc(b.getId(), t.getId())) {
@@ -121,11 +118,11 @@ public class BankAccountService extends AbstractServiceHelper {
         transactionDao.update(t);
     }
 
-    private boolean isTransactionInBankAcc(int bankAccountId, int transactionId) {
+    private boolean isTransactionInBankAcc(int bankAccountId, int transactionId) throws Exception {
         return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 
-    public void removeBudgetFromBankAcc(int budgetId, int accId) throws BankAccountNotFoundException, BudgetNotFoundException, NotAuthenticatedClient {
+    public void removeBudgetFromBankAcc(int budgetId, int accId) throws Exception {
         Budget budget = budgetDao.find(budgetId);
         if (budget == null) {
             throw new BudgetNotFoundException();
@@ -140,27 +137,15 @@ public class BankAccountService extends AbstractServiceHelper {
         bankAccountDao.update(bankAccount);
     }
 
-    private boolean isBudgetInBankAcc(BankAccount bankAccount, Budget budget) {
-        List<Budget> budgets = bankAccount.getBudgets();
-        for (Budget b : budgets) {
-            if (b.getId() == budget.getId()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isBudgetInBankAcc(BankAccount bankAccount, Budget budget) throws Exception {
+        return budgetDao.getByBankAcc(budget.getId(), bankAccount.getId()) != null;
     }
 
-    private boolean isDebtInBankAcc(BankAccount bankAccount, Debt d) {
-        List<Debt> debts = bankAccount.getDebts();
-        for (Debt debt : debts) {
-            if (debt.getId() == d.getId()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isDebtInBankAcc(BankAccount bankAccount, Debt d) throws Exception {
+        return debtDao.getByBankAccId(d.getId(), bankAccount.getId()) != null;
     }
 
-    public void removeDebt(int id, int accId) throws DebtNotFoundException, BankAccountNotFoundException, NotAuthenticatedClient {
+    public void removeDebt(int id, int accId) throws Exception {
         Debt debt = debtDao.find(id);
         if (debt == null) {
             throw new DebtNotFoundException();
@@ -176,7 +161,7 @@ public class BankAccountService extends AbstractServiceHelper {
         bankAccountDao.update(bankAccount);
     }
 
-    public void removeAllTrans(int accId) throws BankAccountNotFoundException, TransactionNotFoundException, NotAuthenticatedClient {
+    public void removeAllTrans(int accId) throws Exception {
         BankAccount b = getByIdBankAccount(accId);
         for (Transaction t : b.getTransactions()) {
             removeTransFromAccount(t.getId(), b.getId());

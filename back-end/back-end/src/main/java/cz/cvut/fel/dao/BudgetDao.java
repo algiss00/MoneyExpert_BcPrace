@@ -1,6 +1,7 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.Budget;
+import cz.cvut.fel.model.Category;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -23,13 +24,39 @@ public class BudgetDao extends AbstractDao<Budget> {
         return em.createNamedQuery("Budget.getAll").getResultList();
     }
 
-    public Budget getByCategory(int categoryId, int bankAccId) {
-        return em.createNamedQuery("Budget.getBudgetByCategory", Budget.class)
-                .setParameter("categoryId", categoryId)
+    public Budget getByCategory(int categoryId, int bankAccId) throws Exception {
+        try {
+            return em.createNamedQuery("Budget.getBudgetByCategory", Budget.class)
+                    .setParameter("categoryId", categoryId)
+                    .setParameter("bankAccId", bankAccId)
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BudgetDao");
+        }
+    }
+
+    public Budget getByBankAcc(int buId, int bankAccId) throws Exception {
+        try {
+            return em.createNamedQuery("Budget.getByBankAccId", Budget.class)
+                    .setParameter("buId", buId)
+                    .setParameter("bankAccId", bankAccId)
+                    .setMaxResults(1)
+                    .getResultList()
+                    .stream().findFirst().orElse(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BudgetDao");
+        }
+    }
+
+    public List<Budget> getByName(int bankAccId, String name) {
+        return em.createNamedQuery("Budget.getByName", Budget.class)
                 .setParameter("bankAccId", bankAccId)
-                .setMaxResults(1)
-                .getResultList()
-                .stream().findFirst().orElse(null);
+                .setParameter("name", name)
+                .getResultList();
     }
 
     @Override
