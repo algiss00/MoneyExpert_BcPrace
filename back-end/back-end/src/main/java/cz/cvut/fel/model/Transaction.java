@@ -1,6 +1,7 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.cvut.fel.dto.TypeTransaction;
 
 import javax.validation.constraints.Min;
 import javax.persistence.*;

@@ -1,6 +1,7 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.cvut.fel.dto.TypeReplay;
 
 import javax.persistence.*;
 import java.util.ArrayList;

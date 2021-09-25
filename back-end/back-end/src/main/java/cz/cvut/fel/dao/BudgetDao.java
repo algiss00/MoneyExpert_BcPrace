@@ -1,9 +1,6 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.NotifyBudget;
-import cz.cvut.fel.model.TypeNotification;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

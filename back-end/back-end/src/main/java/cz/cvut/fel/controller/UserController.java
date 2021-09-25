@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getCategories() throws UserNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getCategories() throws Exception {
         List<Category> categories = userService.getAllUsersCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }

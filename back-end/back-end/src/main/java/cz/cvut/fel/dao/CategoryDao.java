@@ -23,6 +23,49 @@ public class CategoryDao extends AbstractDao<Category> {
         return em.createNamedQuery("Category.getAll").getResultList();
     }
 
+    public List<Category> getUsersCategory(int uid) throws Exception {
+        try {
+            return em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
+                            "ON relation.category_id = cat.id " +
+                            "where relation.user_id = :userId",
+                    Category.class)
+                    .setParameter("userId", uid)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception CategoryDao");
+        }
+    }
+
+    public Category getUsersCategoryById(int uid, int catId) throws Exception {
+        try {
+            return (Category) em.createNativeQuery("SELECT * FROM relation_category_user as relation " +
+                            "where relation.user_id = :userId and realtion.category_id = :catId",
+                    Category.class)
+                    .setParameter("userId", uid)
+                    .setParameter("catId", catId)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception CategoryDao");
+        }
+    }
+
+    public Category getUsersCategoryByName(int uid, String catName) throws Exception {
+        try {
+            return (Category) em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
+                            "ON relation.category_id = cat.id " +
+                            "where relation.user_id = :userId and cat.name = :catName",
+                    Category.class)
+                    .setParameter("userId", uid)
+                    .setParameter("catName", catName)
+                    .getSingleResult();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception CategoryDao");
+        }
+    }
+
     @Override
     public void persist(Category entity) {
         Objects.requireNonNull(entity);

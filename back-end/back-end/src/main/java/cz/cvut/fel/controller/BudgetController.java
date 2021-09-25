@@ -34,7 +34,7 @@ public class BudgetController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws
-            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+            Exception {
         if (!budgetService.persist(b, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

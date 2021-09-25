@@ -19,6 +19,22 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         return em.find(BankAccount.class, id);
     }
 
+    public List<BankAccount> getByName(String name, int uid) throws Exception {
+        try {
+            return em.createNativeQuery("SELECT relation.user_id, acc.name, acc.id, acc.balance, acc.currency " +
+                            "FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +
+                            "ON relation.bank_account_id = acc.id" +
+                            " where relation.user_id = :userId and acc.name = :name ",
+                    BankAccount.class)
+                    .setParameter("userId", uid)
+                    .setParameter("name", name)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BankAccountDao");
+        }
+    }
+
     @Override
     public List<BankAccount> findAll() {
         return em.createNamedQuery("BankAccount.getAll").getResultList();

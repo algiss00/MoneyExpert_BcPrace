@@ -3,6 +3,8 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.SortAttribute;
 import cz.cvut.fel.dto.SortOrder;
+import cz.cvut.fel.dto.TypeNotification;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     public List<Transaction> getSorted(SortAttribute sortAttribute, SortOrder sortOrder, int bankAccId) throws
             Exception {
-        return transactionDao.getAllSorted(sortAttribute, sortOrder, getByIdBankAccount(bankAccId));
+        return transactionDao.getAllSortedFromBankAcc(sortAttribute, sortOrder, getByIdBankAccount(bankAccId));
     }
 
     public List<Transaction> getSortedByMonth(int month, int bankAccId) throws Exception {
@@ -54,13 +56,17 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
-            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+            Exception {
         getByIdBankAccount(accountId);
         getByIdCategory(catId);
         return transactionDao.getAllTransFromCategory(catId, accountId);
     }
 
-    public boolean persist(Transaction transaction, int accId, int categoryId) throws BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+    public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
+        return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId));
+    }
+
+    public boolean persist(Transaction transaction, int accId, int categoryId) throws Exception {
         Objects.requireNonNull(transaction);
         if (!validate(transaction))
             return false;

@@ -3,7 +3,7 @@ package cz.cvut.fel.controller;
 import cz.cvut.fel.dto.SortAttribute;
 import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.model.Transaction;
-import cz.cvut.fel.model.TypeTransaction;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.service.TransactionService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,9 +27,14 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    @GetMapping(value = "/between-date/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getBetweenDate(@RequestParam String from, @RequestParam String to, @PathVariable int accId) throws Exception {
+        List<Transaction> transactions = transactionService.getBetweenDate(from, to, accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws BankAccountNotFoundException,
-            CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws Exception {
         List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
@@ -83,7 +89,7 @@ public class TransactionController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
-            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+            Exception {
         if (!transactionService.persist(transaction, accId, categoryId)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +45,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .stream().findFirst().orElse(null);
     }
 
-    public List<Transaction> getAllSorted(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {
+    public List<Transaction> getAllSortedFromBankAcc(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {
         try {
             CriteriaBuilder builder = em.getCriteriaBuilder();
             CriteriaQuery<Transaction> criteria = builder.createQuery(Transaction.class);
@@ -128,6 +129,21 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("bankAccId", bankAccId)
                     .setParameter("categoryId", catId)
                     .getSingleResult();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception transaction dao");
+        }
+    }
+
+    public List<Transaction> getBetweenDate(String from, String to, BankAccount idBankAccount) throws Exception {
+        try {
+            return em.createNativeQuery("SELECT * from transaction_table as t where t.bank_account_id = :bankAccId " +
+                            "and t.date BETWEEN :from AND :to ",
+                    Transaction.class)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
+                    .setParameter("bankAccId", idBankAccount)
+                    .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("Exception transaction dao");

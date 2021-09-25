@@ -1,6 +1,7 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.BankAccountNotFoundException;
 import cz.cvut.fel.service.exceptions.DebtNotFoundException;

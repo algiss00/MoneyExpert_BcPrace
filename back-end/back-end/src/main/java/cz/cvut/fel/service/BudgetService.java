@@ -27,7 +27,7 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     public boolean persist(Budget budget, int accId, int categoryId) throws
-            BankAccountNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+            Exception {
         Objects.requireNonNull(budget);
         User u = isLogged();
         Category category = getByIdCategory(categoryId);

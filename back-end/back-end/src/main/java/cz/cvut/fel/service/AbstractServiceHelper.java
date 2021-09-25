@@ -51,15 +51,14 @@ abstract class AbstractServiceHelper {
         return u;
     }
 
-    public Category getByIdCategory(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Category getByIdCategory(int id) throws Exception {
         Category c = categoryDao.find(id);
         if (c == null) {
             throw new CategoryNotFoundException(id);
         }
-        //todo for default categories
-//        if (!isCreatorOfCategory(c)) {
-//            throw new NotAuthenticatedClient();
-//        }
+        if (!isCreatorOfCategory(c.getId())) {
+            throw new NotAuthenticatedClient();
+        }
         return c;
     }
 
@@ -107,10 +106,9 @@ abstract class AbstractServiceHelper {
         return t;
     }
 
-    public boolean isCreatorOfCategory(Category category) throws NotAuthenticatedClient {
+    public boolean isCreatorOfCategory(int categoryId) throws Exception {
         User user = isLogged();
-        List<User> creators = category.getCreators();
-        return creators.contains(user);
+        return categoryDao.getUsersCategoryById(user.getId(), categoryId) != null;
     }
 
     public BankAccount getByIdBankAccount(int id) throws BankAccountNotFoundException, NotAuthenticatedClient {

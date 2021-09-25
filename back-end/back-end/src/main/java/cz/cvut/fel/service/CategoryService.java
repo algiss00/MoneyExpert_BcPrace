@@ -4,7 +4,6 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.CategoryNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
-import cz.cvut.fel.service.exceptions.TransactionNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,15 +24,15 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.findAll();
     }
 
-    public Budget getBudget(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Budget getBudget(int catId) throws Exception {
         return getByIdCategory(catId).getBudget();
     }
 
-    public List<Transaction> getTransactions(int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public List<Transaction> getTransactions(int catId) throws Exception {
         return getByIdCategory(catId).getTransactions();
     }
 
-    public boolean persist(Category category) throws NotAuthenticatedClient {
+    public boolean persist(Category category) throws Exception {
         Objects.requireNonNull(category);
         User u = isLogged();
         if (!validate(category, u))
@@ -49,7 +48,7 @@ public class CategoryService extends AbstractServiceHelper {
         return true;
     }
 
-    public void addTransactionToCategory(int transId, int categoryId) throws TransactionNotFoundException, CategoryNotFoundException, NotAuthenticatedClient {
+    public void addTransactionToCategory(int transId, int categoryId) throws Exception {
         Transaction t = getByIdTransaction(transId);
         Category category = getByIdCategory(categoryId);
 
@@ -59,23 +58,15 @@ public class CategoryService extends AbstractServiceHelper {
         transactionDao.update(t);
     }
 
-    private boolean validate(Category category, User user) {
+    private boolean validate(Category category, User user) throws Exception {
         if (category.getName().trim().isEmpty() || categoryDao.find(category.getId()) != null) {
             return false;
         }
-        boolean notExist = true;
         // check if category name is not exist in users categories
-        List<Category> usersCategories = user.getMyCategories();
-        for (Category c : usersCategories) {
-            if (c.getName().equals(category.getName())) {
-                notExist = false;
-                break;
-            }
-        }
-        return notExist;
+        return categoryDao.getUsersCategoryByName(user.getId(), category.getName()) == null;
     }
 
-    public void remove(int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public void remove(int id) throws Exception {
         Category ca = getByIdCategory(id);
         ca.getTransactions().clear();
         ca.setBudget(null);
@@ -83,7 +74,7 @@ public class CategoryService extends AbstractServiceHelper {
         categoryDao.remove(ca);
     }
 
-    public Category updateCategory(int id, Category category) throws CategoryNotFoundException, NotAuthenticatedClient {
+    public Category updateCategory(int id, Category category) throws Exception {
         Category c = getByIdCategory(id);
         c.setName(category.getName());
         return categoryDao.update(c);

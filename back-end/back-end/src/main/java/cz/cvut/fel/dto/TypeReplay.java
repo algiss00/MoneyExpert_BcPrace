@@ -1,4 +1,4 @@
-package cz.cvut.fel.model;
+package cz.cvut.fel.dto;
 
 public enum TypeReplay {
     EVERY_MONTH,

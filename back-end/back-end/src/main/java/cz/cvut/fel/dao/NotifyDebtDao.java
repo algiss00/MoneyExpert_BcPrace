@@ -1,7 +1,7 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.NotifyDebt;
-import cz.cvut.fel.model.TypeNotification;
+import cz.cvut.fel.dto.TypeNotification;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

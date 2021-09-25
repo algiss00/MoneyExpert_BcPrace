@@ -46,9 +46,8 @@ public class UserService extends AbstractServiceHelper {
         return u.getMyBudgets();
     }
 
-    public List<Category> getAllUsersCategories() throws NotAuthenticatedClient {
-        User u = isLogged();
-        return u.getMyCategories();
+    public List<Category> getAllUsersCategories() throws Exception {
+        return categoryDao.getUsersCategory(isLogged().getId());
     }
 
     public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {

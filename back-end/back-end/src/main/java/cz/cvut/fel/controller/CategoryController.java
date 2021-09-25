@@ -30,25 +30,25 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getCategoryById(@PathVariable int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getCategoryById(@PathVariable int id) throws Exception {
         Category c = categoryService.getByIdCategory(id);
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
 
     @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudget(@PathVariable int catId) throws CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getBudget(@PathVariable int catId) throws Exception {
         Budget budget = categoryService.getBudget(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
     
     @GetMapping(value = "/transactions/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransactions(@PathVariable int catId) throws NotAuthenticatedClient, CategoryNotFoundException {
+    ResponseEntity<?> getAllTransactions(@PathVariable int catId) throws Exception {
         List<Transaction> c = categoryService.getTransactions(catId);
         return new ResponseEntity<>(c, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Category> add(@RequestBody Category category) throws NotAuthenticatedClient {
+    ResponseEntity<Category> add(@RequestBody Category category) throws Exception {
         if (!categoryService.persist(category)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -56,20 +56,18 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Void> addTransactionToCategory(@RequestParam int transId, @RequestParam int categoryId) throws CategoryNotFoundException,
-            TransactionNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> addTransactionToCategory(@RequestParam int transId, @RequestParam int categoryId) throws Exception {
         categoryService.addTransactionToCategory(transId, categoryId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Category> updateCat(@RequestParam int catId, @RequestBody Category category) throws CategoryNotFoundException,
-            NotAuthenticatedClient {
+    ResponseEntity<Category> updateCat(@RequestParam int catId, @RequestBody Category category) throws Exception {
         return new ResponseEntity<>(categoryService.updateCategory(catId, category), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws CategoryNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
         categoryService.remove(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

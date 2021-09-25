@@ -1,6 +1,9 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.SortAttribute;
+import cz.cvut.fel.dto.SortOrder;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
@@ -23,27 +26,33 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.findAll();
     }
 
+    public List<BankAccount> getByName(String name) throws Exception {
+        return bankAccountDao.getByName(name, isLogged().getId());
+    }
+
     public List<Budget> getAllAccountsBudgets(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount b = getByIdBankAccount(accId);
+        // todo get sorted budgets
         return b.getBudgets();
     }
 
-    public List<Transaction> getAllTransactions(int accountId) throws BankAccountNotFoundException, NotAuthenticatedClient {
-        BankAccount b = getByIdBankAccount(accountId);
-        return b.getTransactions();
+    public List<Transaction> getAllTransactions(int accountId) throws Exception {
+        return transactionDao.getAllSortedFromBankAcc(SortAttribute.DATE, SortOrder.DESCENDING, getByIdBankAccount(accountId));
     }
 
     public List<Debt> getAllAccountsDebts(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount b = getByIdBankAccount(accId);
+        // todo get sorted debts
         return b.getDebts();
     }
 
     public List<User> getAllOwners(int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
         BankAccount b = getByIdBankAccount(accId);
+        // todo get sorted
         return b.getOwners();
     }
 
-    public boolean persist(BankAccount bankAccount) throws NotAuthenticatedClient, CategoryNotFoundException {
+    public boolean persist(BankAccount bankAccount) throws Exception {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             return false;
@@ -175,7 +184,7 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
 
-    private void createStartTransaction(BankAccount bankAccount, User user) throws CategoryNotFoundException, NotAuthenticatedClient {
+    private void createStartTransaction(BankAccount bankAccount, User user) throws Exception {
         Transaction startTransaction = new Transaction();
 
         //todo default start category with Jakh

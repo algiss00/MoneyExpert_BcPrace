@@ -28,8 +28,14 @@ public class BankAccountController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAccountById(@PathVariable int id) throws BankAccountNotFoundException, NotAuthenticatedClient {
-        BankAccount u = bankAccountService.getByIdBankAccount(id);
-        return new ResponseEntity<>(u, HttpStatus.OK);
+        BankAccount bankAccount = bankAccountService.getByIdBankAccount(id);
+        return new ResponseEntity<>(bankAccount, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAccountByName(@RequestParam String name) throws Exception {
+        List<BankAccount> bankAccountList = bankAccountService.getByName(name);
+        return new ResponseEntity<>(bankAccountList, HttpStatus.OK);
     }
 
     @GetMapping(value = "/budgets/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,7 +44,7 @@ public class BankAccountController {
     }
 
     @GetMapping(value = "/transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws BankAccountNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws Exception {
         List<Transaction> transactions = bankAccountService.getAllTransactions(accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
@@ -56,7 +62,7 @@ public class BankAccountController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<BankAccount> add(@RequestBody BankAccount b) throws NotAuthenticatedClient, CategoryNotFoundException {
+    ResponseEntity<BankAccount> add(@RequestBody BankAccount b) throws Exception {
         if (!bankAccountService.persist(b)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
