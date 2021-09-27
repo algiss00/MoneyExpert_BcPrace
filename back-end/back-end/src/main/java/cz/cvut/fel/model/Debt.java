@@ -1,7 +1,6 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import cz.cvut.fel.dto.TypeReplay;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +18,9 @@ import java.util.List;
         @NamedQuery(name = "Debt.getByName",
                 query = "SELECT d FROM Debt d WHERE d.creator.id = :uid and d.name = :debtName"),
         @NamedQuery(name = "Debt.getByBankAccount",
-                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bankAccId and d.id = :debtId")
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bankAccId and d.id = :debtId"),
+        @NamedQuery(name = "Debt.getSortedByDeadlineFromBankAcc",
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bId order by d.deadline DESC")
 })
 public class Debt extends AbstractEntity {
     @Column
@@ -28,9 +29,6 @@ public class Debt extends AbstractEntity {
     private Date deadline;
     @Column
     private String name;
-    //kazdy mesic, tyden, nebo den...
-    @Enumerated(EnumType.STRING)
-    private TypeReplay replay;
     @Column
     private String description;
     @Column
@@ -91,14 +89,6 @@ public class Debt extends AbstractEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public TypeReplay getReplay() {
-        return replay;
-    }
-
-    public void setReplay(TypeReplay replay) {
-        this.replay = replay;
     }
 
     public String getDescription() {

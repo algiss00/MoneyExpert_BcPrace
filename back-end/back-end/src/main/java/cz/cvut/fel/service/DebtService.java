@@ -26,6 +26,11 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.findAll();
     }
 
+    public Debt getByName(String name) throws Exception {
+        User u = isLogged();
+        return debtDao.getByName(u.getId(), name);
+    }
+
     public boolean persist(Debt debt, int accId) throws Exception {
         User u = isLogged();
         BankAccount bankAccount = getByIdBankAccount(accId);
@@ -113,7 +118,6 @@ public class DebtService extends AbstractServiceHelper {
         da.setAmount(debt.getAmount());
         da.setDescription(debt.getDescription());
         da.setDeadline(debt.getDeadline());
-        da.setReplay(debt.getReplay());
         da.setNotifyDate(debt.getNotifyDate());
 
         return debtDao.update(da);

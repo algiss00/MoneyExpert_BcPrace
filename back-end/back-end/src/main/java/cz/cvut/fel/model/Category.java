@@ -11,8 +11,7 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c"),
-        // todo get by name and by creator
-        // @NamedQuery(name = "Category.getByName", query = "SELECT c FROM Category c where c.name = :name")
+        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id between 1 and 11")
 })
 public class Category extends AbstractEntity {
     @Column

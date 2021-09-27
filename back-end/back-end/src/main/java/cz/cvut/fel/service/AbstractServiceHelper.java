@@ -5,6 +5,8 @@ import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
 
+import java.util.List;
+
 abstract class AbstractServiceHelper {
     UserDao userDao;
     BankAccountDao bankAccountDao;
@@ -49,11 +51,16 @@ abstract class AbstractServiceHelper {
         return u;
     }
 
+    public List<Category> getDefaultCategories() {
+        return categoryDao.getDefaultCategories();
+    }
+
     public Category getByIdCategory(int id) throws Exception {
         Category c = categoryDao.find(id);
         if (c == null) {
             throw new CategoryNotFoundException(id);
         }
+        // todo
         if (!isCreatorOfCategory(c.getId())) {
             throw new NotAuthenticatedClient();
         }

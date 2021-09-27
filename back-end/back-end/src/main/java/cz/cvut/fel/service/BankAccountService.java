@@ -36,12 +36,15 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public List<Transaction> getAllTransactions(int accountId) throws Exception {
-        return transactionDao.getAllSortedFromBankAcc(SortAttribute.DATE, SortOrder.DESCENDING, getByIdBankAccount(accountId));
+        return transactionDao.getAllTransactionsFromBankAccByDate(getByIdBankAccount(accountId).getId());
+    }
+
+    public List<Transaction> getAllTransactionsByType(int accountId, TypeTransaction typeTransaction) throws Exception {
+        return transactionDao.getFromBankAccByTransactionType(getByIdBankAccount(accountId).getId(), typeTransaction);
     }
 
     public List<Debt> getAllAccountsDebts(int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        return b.getDebts();
+        return debtDao.getSortedByDeadlineFromBankAcc(getByIdBankAccount(accId).getId());
     }
 
     public List<User> getAllOwners(int accId) throws Exception {
@@ -75,13 +78,8 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     private boolean validate(BankAccount bankAccount) {
-        return !bankAccount.getName().trim().isEmpty() && !alreadyExists(bankAccount);
+        return !bankAccount.getName().trim().isEmpty();
     }
-
-    private boolean alreadyExists(BankAccount bankAccount) {
-        return bankAccountDao.find(bankAccount.getId()) != null;
-    }
-
 
     public BankAccount updateAccount(int id, BankAccount bankAccount) throws Exception {
         BankAccount b = getByIdBankAccount(id);

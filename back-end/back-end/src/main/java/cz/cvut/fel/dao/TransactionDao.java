@@ -2,6 +2,7 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.dto.SortAttribute;
 import cz.cvut.fel.dto.SortOrder;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Transaction;
 import org.springframework.stereotype.Repository;
@@ -50,25 +51,38 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public List<Transaction> getAllSortedFromBankAcc(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {
-        try {
-            CriteriaBuilder builder = em.getCriteriaBuilder();
-            CriteriaQuery<Transaction> criteria = builder.createQuery(Transaction.class);
-            Root<Transaction> transactions = criteria.from(Transaction.class);
-            Path<?> column = transactions.get(by.getColumnName());
-            Order ordering = (order == SortOrder.ASCENDING)
-                    ? builder.asc(column) : builder.desc(column);
-
-            Predicate transactionsFromBankAcc = builder.equal(transactions.get("bankAccount"), bankAccId);
-
-            criteria.select(transactions).where(transactionsFromBankAcc).orderBy(ordering);
-            TypedQuery<Transaction> query = em.createQuery(criteria);
-            return query.getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
-        }
+    public List<Transaction> getFromBankAccByTransactionType(int accountId, TypeTransaction typeTransaction) {
+        return em.createNamedQuery("Transaction.getByTransactionType", Transaction.class)
+                .setParameter("type", typeTransaction)
+                .setParameter("bankAccId", accountId)
+                .getResultList();
     }
+
+    public List<Transaction> getAllTransactionsFromBankAccByDate(int bankAccId) throws Exception {
+        return em.createNamedQuery("Transaction.getAllFromBankAccount", Transaction.class)
+                .setParameter("bankAccId", bankAccId)
+                .getResultList();
+    }
+
+//    public List<Transaction> getAllSortedFromBankAcc(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {
+//        try {
+//            CriteriaBuilder builder = em.getCriteriaBuilder();
+//            CriteriaQuery<Transaction> criteria = builder.createQuery(Transaction.class);
+//            Root<Transaction> transactions = criteria.from(Transaction.class);
+//            Path<?> column = transactions.get(by.getColumnName());
+//            Order ordering = (order == SortOrder.ASCENDING)
+//                    ? builder.asc(column) : builder.desc(column);
+//
+//            Predicate transactionsFromBankAcc = builder.equal(transactions.get("bankAccount"), bankAccId);
+//
+//            criteria.select(transactions).where(transactionsFromBankAcc).orderBy(ordering);
+//            TypedQuery<Transaction> query = em.createQuery(criteria);
+//            return query.getResultList();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            throw new Exception("Exception transaction dao");
+//        }
+//    }
 
     public List<Transaction> getByMonthSorted(int month, int bankAccId) throws Exception {
         try {

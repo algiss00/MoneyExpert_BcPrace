@@ -34,6 +34,12 @@ public class DebtController {
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getDebtByName(@RequestParam String name) throws Exception {
+        Debt d = debtService.getByName(name);
+        return new ResponseEntity<>(d, HttpStatus.OK);
+    }
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Debt> add(@RequestBody Debt d, @RequestParam int accId) throws Exception {
         if (!debtService.persist(d, accId)) {

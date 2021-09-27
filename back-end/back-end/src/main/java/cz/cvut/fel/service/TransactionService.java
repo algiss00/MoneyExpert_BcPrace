@@ -6,7 +6,6 @@ import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +25,6 @@ public class TransactionService extends AbstractServiceHelper {
 
     public List<Transaction> getAll() {
         return transactionDao.findAll();
-    }
-
-    public List<Transaction> getSorted(SortAttribute sortAttribute, SortOrder sortOrder, int bankAccId) throws
-            Exception {
-        return transactionDao.getAllSortedFromBankAcc(sortAttribute, sortOrder, getByIdBankAccount(bankAccId));
     }
 
     public List<Transaction> getSortedByMonth(int month, int bankAccId) throws Exception {
@@ -57,9 +51,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
             Exception {
-        getByIdBankAccount(accountId);
-        getByIdCategory(catId);
-        return transactionDao.getAllTransFromCategory(catId, accountId);
+        return transactionDao.getAllTransFromCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId());
     }
 
     public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
@@ -182,6 +174,14 @@ public class TransactionService extends AbstractServiceHelper {
         transaction.setAmount(t.getAmount());
         transaction.setDate(t.getDate());
         transaction.setJottings(t.getJottings());
+        return transactionDao.update(transaction);
+    }
+
+    public Transaction updateCategory(int tid, int catId) throws Exception {
+        Transaction transaction = getByIdTransaction(tid);
+        Category category = getByIdCategory(catId);
+
+        transaction.setCategory(category);
         return transactionDao.update(transaction);
     }
 

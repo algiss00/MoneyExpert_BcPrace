@@ -35,7 +35,7 @@ public class CategoryService extends AbstractServiceHelper {
         User u = isLogged();
         if (!validate(category, u))
             return false;
-        // todo
+        // todo issue with ids
 //        int newId = getAll().size() + 1;
 //        System.out.println("NEW ID " + newId);
         //category.setId(newId);

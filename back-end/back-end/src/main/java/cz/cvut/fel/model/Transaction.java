@@ -10,13 +10,19 @@ import java.util.Date;
 @Table(name = "transaction_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t"),
+        @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t order by t.date desc"),
         @NamedQuery(
                 name = "Transaction.getAllFromCategory",
-                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId"),
+                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId order by t.date desc"),
         @NamedQuery(
                 name = "Transaction.getFromBankAccount",
-                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.id = :transId")
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.id = :transId"),
+        @NamedQuery(
+                name = "Transaction.getAllFromBankAccount",
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId order by t.date desc"),
+        @NamedQuery(
+                name = "Transaction.getByTransactionType",
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.typeTransaction = :type order by t.date desc")
 })
 
 public class Transaction extends AbstractEntity {

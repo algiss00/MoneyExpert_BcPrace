@@ -44,13 +44,6 @@ public class TransactionController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/sorted-transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getTransactionSorted(@PathVariable int accId, @RequestParam SortAttribute by,
-                                           @RequestParam SortOrder order) throws Exception {
-        List<Transaction> transactions = transactionService.getSorted(by, order, accId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/sorted-transactions-month/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getTransactionSortedByMonth(@PathVariable int bankAccId, @RequestParam int month)
             throws Exception {
@@ -110,6 +103,11 @@ public class TransactionController {
     @PostMapping(value = "/update-type", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> updateTransType(@RequestParam int transId, @RequestBody TypeTransaction typeTransaction) throws Exception {
         return new ResponseEntity<>(transactionService.updateTransactionType(transId, typeTransaction), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update-category", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Transaction> updateCategory(@RequestParam int transId, @RequestBody int catId) throws Exception {
+        return new ResponseEntity<>(transactionService.updateCategory(transId, catId), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

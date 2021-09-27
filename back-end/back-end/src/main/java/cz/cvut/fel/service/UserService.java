@@ -47,7 +47,6 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public List<Category> getAllUsersCategories() throws Exception {
-        // todo get default categories too
         return categoryDao.getUsersCategory(isLogged().getId());
     }
 
@@ -60,6 +59,7 @@ public class UserService extends AbstractServiceHelper {
         Objects.requireNonNull(user);
         if (alreadyExists(user))
             return false;
+        user.setMyCategories(getDefaultCategories());
         userDao.persist(user);
         return true;
     }

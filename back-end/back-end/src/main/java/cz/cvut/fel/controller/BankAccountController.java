@@ -1,5 +1,8 @@
 package cz.cvut.fel.controller;
 
+import cz.cvut.fel.dto.SortAttribute;
+import cz.cvut.fel.dto.SortOrder;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.Transaction;
@@ -46,6 +49,12 @@ public class BankAccountController {
     @GetMapping(value = "/transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws Exception {
         List<Transaction> transactions = bankAccountService.getAllTransactions(accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/transactions-by-type/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransFromAccByType(@PathVariable int accId, @RequestParam TypeTransaction type) throws Exception {
+        List<Transaction> transactions = bankAccountService.getAllTransactionsByType(accId, type);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 

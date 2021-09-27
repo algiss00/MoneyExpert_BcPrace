@@ -1,6 +1,11 @@
-INSERT INTO category_table VALUES (1, 'Car');
-INSERT INTO category_table VALUES (2, 'Food');
-INSERT INTO category_table VALUES (3, 'School');
-INSERT INTO category_table VALUES (4, 'House');
+INSERT INTO category_table VALUES (1, 'Auto');
+INSERT INTO category_table VALUES (2, 'Jidlo');
+INSERT INTO category_table VALUES (3, 'Skola');
+INSERT INTO category_table VALUES (4, 'Byt');
 INSERT INTO category_table VALUES (5, 'Shopping');
 INSERT INTO category_table VALUES (6, 'Start transaction');
+INSERT INTO category_table VALUES (7, 'Ostatni');
+INSERT INTO category_table VALUES (8, 'Jizdenky');
+INSERT INTO category_table VALUES (9, 'Zdravi');
+INSERT INTO category_table VALUES (10, 'Mzda');
+INSERT INTO category_table VALUES (11, 'Darek');

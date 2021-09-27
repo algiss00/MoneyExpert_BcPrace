@@ -1,7 +1,6 @@
 package cz.cvut.fel.dto;
 
 public enum SortAttribute {
-    ID("id"),
     DATE("date");
 
     private final String columnName;
