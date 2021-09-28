@@ -3,6 +3,8 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,8 @@ import java.util.Objects;
 @Service
 @Transactional
 public class UserService extends AbstractServiceHelper {
+
+    //private PasswordEncoder passwordEncoder;
 
     public UserService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                        BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
@@ -29,7 +33,7 @@ public class UserService extends AbstractServiceHelper {
 
     public boolean alreadyExists(User user) throws Exception {
         return getByUsername(user.getUsername()) != null
-                || getByEmail(user.getEmail()) != null || userDao.find(user.getId()) != null;
+                || getByEmail(user.getEmail()) != null;
     }
 
     public List<User> getAll() {
@@ -51,15 +55,22 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {
-        User u = isLogged();
-        return u.getMyDebts();
+        return debtDao.getUsersDebt(isLogged().getId());
     }
 
-    public boolean persist(User user) throws Exception {
-        Objects.requireNonNull(user);
-        if (alreadyExists(user))
+    public boolean persist(User userObj) throws Exception {
+        Objects.requireNonNull(userObj);
+        if (alreadyExists(userObj))
             return false;
+        User user = new User();
         user.setMyCategories(getDefaultCategories());
+        user.setEmail(userObj.getEmail());
+        user.setUsername(userObj.getUsername());
+        user.setLastname(userObj.getLastname());
+        user.setName(userObj.getName());
+        // todo encode password
+        user.setPassword(userObj.getPassword());
+
         userDao.persist(user);
         return true;
     }

@@ -1,5 +1,6 @@
 package cz.cvut.fel.controller;
 
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.service.NotifyBudgetService;
 import cz.cvut.fel.service.exceptions.*;
@@ -27,6 +28,18 @@ public class NotifyBudgetController {
     ResponseEntity<?> getAllNotifyBudgets() {
         List<NotifyBudget> notifyBudgetList = notifyBudgetService.getAll();
         return new ResponseEntity<>(notifyBudgetList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersNotifyBudgets() throws NotAuthenticatedClient {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getUsersNotifyBudgets();
+        return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user-by-type", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersNotifyBudgetsByType(@RequestParam TypeNotification type) throws NotAuthenticatedClient {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getUsersNotifyBudgetsByType(type);
+        return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

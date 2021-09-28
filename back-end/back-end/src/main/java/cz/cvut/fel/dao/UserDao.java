@@ -22,7 +22,7 @@ public class UserDao extends AbstractDao<User> {
 
     @Override
     public List<User> findAll() {
-        return em.createNamedQuery("User.getAll").getResultList();
+        return em.createNamedQuery("User.getAll", User.class).getResultList();
     }
 
     public User getByUsername(String username) throws UsernameNotFoundException {

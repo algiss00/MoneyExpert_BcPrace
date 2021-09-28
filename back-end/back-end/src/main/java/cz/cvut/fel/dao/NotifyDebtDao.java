@@ -1,6 +1,5 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.dto.TypeNotification;
 import org.springframework.stereotype.Repository;
@@ -22,7 +21,20 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
 
     @Override
     public List<NotifyDebt> findAll() {
-        return em.createNamedQuery("Notify.getAll").getResultList();
+        return em.createNamedQuery("Notify.getAll", NotifyDebt.class).getResultList();
+    }
+
+    public List<NotifyDebt> getUsersNotifyDebts(int uid) {
+        return em.createNamedQuery("Notify.getUsersNotifyDebts", NotifyDebt.class)
+                .setParameter("uid", uid)
+                .getResultList();
+    }
+
+    public List<NotifyDebt> getUsersNotifyDebtsByType(int uid, TypeNotification typeNotification) {
+        return em.createNamedQuery("Notify.getUsersNotifyDebtsByType", NotifyDebt.class)
+                .setParameter("uid", uid)
+                .setParameter("typeNotif", typeNotification)
+                .getResultList();
     }
 
     public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) throws Exception {

@@ -1,14 +1,19 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
-import cz.cvut.fel.dto.SortAttribute;
-import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
+import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.money.CurrencyUnit;
+import javax.money.Monetary;
+import javax.money.MonetaryAmount;
+import javax.money.convert.CurrencyConversion;
+import javax.money.convert.MonetaryConversions;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -164,6 +169,17 @@ public class TransactionService extends AbstractServiceHelper {
         bankAccountDao.update(toBankAcc);
         return transaction;
     }
+
+    // todo
+//    public MonetaryAmount convertFromCZKtoEUR(double czkAmount) {
+//        MonetaryAmount czk = Monetary.getDefaultAmountFactory().setCurrency("CZK")
+//                .setNumber(czkAmount).create();
+//
+//        CurrencyConversion conversionEUR = MonetaryConversions.getConversion("EUR");
+//
+//        MonetaryAmount convertedAmountUSDtoEUR = czk.with(conversionEUR);
+//        return convertedAmountUSDtoEUR;
+//    }
 
     public Transaction update(int id, Transaction t) throws Exception {
         Transaction transaction = getByIdTransaction(id);

@@ -20,11 +20,11 @@ public class CategoryDao extends AbstractDao<Category> {
 
     @Override
     public List<Category> findAll() {
-        return em.createNamedQuery("Category.getAll").getResultList();
+        return em.createNamedQuery("Category.getAll", Category.class).getResultList();
     }
 
     public List<Category> getDefaultCategories() {
-        return em.createNamedQuery("Category.getDefault").getResultList();
+        return em.createNamedQuery("Category.getDefault", Category.class).getResultList();
     }
 
     public List<Category> getUsersCategory(int uid) throws Exception {

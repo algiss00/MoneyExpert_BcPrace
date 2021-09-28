@@ -9,17 +9,19 @@ import javax.persistence.*;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Notify.getAll", query = "SELECT n FROM NotifyDebt n"),
-        @NamedQuery(name = "Notify.alreadyExists", query = "SELECT n FROM NotifyDebt n WHERE n.debt.id = :debtId AND n.typeNotification = :type")
+        @NamedQuery(name = "Notify.alreadyExists", query = "SELECT n FROM NotifyDebt n WHERE n.debt.id = :debtId" +
+                " AND n.typeNotification = :type"),
+        @NamedQuery(name = "Notify.getUsersNotifyDebtsByType", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid " +
+                "and n.typeNotification = :typeNotif"),
+        @NamedQuery(name = "Notify.getUsersNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid")
 })
 public class NotifyDebt extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "debt_id")
-    @JsonIgnore
     private Debt debt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User creator;
 
     @Enumerated(EnumType.STRING)

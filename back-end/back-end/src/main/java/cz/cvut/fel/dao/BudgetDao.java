@@ -21,7 +21,7 @@ public class BudgetDao extends AbstractDao<Budget> {
 
     @Override
     public List<Budget> findAll() {
-        return em.createNamedQuery("Budget.getAll").getResultList();
+        return em.createNamedQuery("Budget.getAll", Budget.class).getResultList();
     }
 
     public Budget getByCategory(int categoryId, int bankAccId) throws Exception {

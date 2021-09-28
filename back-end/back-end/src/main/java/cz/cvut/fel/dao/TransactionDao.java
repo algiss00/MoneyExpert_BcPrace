@@ -1,16 +1,11 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.dto.SortAttribute;
-import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Transaction;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +22,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
 
     @Override
     public List<Transaction> findAll() {
-        return em.createNamedQuery("Transaction.getAll").getResultList();
+        return em.createNamedQuery("Transaction.getAll", Transaction.class).getResultList();
     }
 
     public List<Transaction> getAllTransFromCategory(int catId, int accountId) {

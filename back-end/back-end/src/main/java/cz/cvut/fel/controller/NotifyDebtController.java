@@ -1,5 +1,6 @@
 package cz.cvut.fel.controller;
 
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.NotifyDebtService;
 import cz.cvut.fel.service.exceptions.*;
@@ -26,6 +27,18 @@ public class NotifyDebtController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllNotifyDebts() {
         List<NotifyDebt> notifyDebts = notifyDebtService.getAll();
+        return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersNotifyDebts() throws NotAuthenticatedClient {
+        List<NotifyDebt> notifyDebts = notifyDebtService.getUsersNotifyDebts();
+        return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user-by-type", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersNotifyDebtsByType(@RequestParam TypeNotification type) throws NotAuthenticatedClient {
+        List<NotifyDebt> notifyDebts = notifyDebtService.getUsersNotifyDebtsByType(type);
         return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
     }
 

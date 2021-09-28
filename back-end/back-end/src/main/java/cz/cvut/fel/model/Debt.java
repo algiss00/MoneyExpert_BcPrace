@@ -20,7 +20,9 @@ import java.util.List;
         @NamedQuery(name = "Debt.getByBankAccount",
                 query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bankAccId and d.id = :debtId"),
         @NamedQuery(name = "Debt.getSortedByDeadlineFromBankAcc",
-                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bId order by d.deadline DESC")
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bId order by d.deadline ASC"),
+        @NamedQuery(name = "Debt.getUsersDebt",
+                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid order by d.deadline ASC")
 })
 public class Debt extends AbstractEntity {
     @Column

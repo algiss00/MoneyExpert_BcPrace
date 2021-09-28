@@ -22,7 +22,7 @@ public class DebtDao extends AbstractDao<Debt> {
 
     @Override
     public List<Debt> findAll() {
-        return em.createNamedQuery("Debt.getAll").getResultList();
+        return em.createNamedQuery("Debt.getAll", Debt.class).getResultList();
     }
 
     public List<Debt> getNotifyDebts() {
@@ -32,6 +32,12 @@ public class DebtDao extends AbstractDao<Debt> {
     public List<Debt> getSortedByDeadlineFromBankAcc(int bId) {
         return em.createNamedQuery("Debt.getSortedByDeadlineFromBankAcc", Debt.class)
                 .setParameter("bId", bId)
+                .getResultList();
+    }
+
+    public List<Debt> getUsersDebt(int uid) {
+        return em.createNamedQuery("Debt.getUsersDebt", Debt.class)
+                .setParameter("uid", uid)
                 .getResultList();
     }
 

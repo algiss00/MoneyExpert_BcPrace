@@ -55,7 +55,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
 
     @Override
     public List<BankAccount> findAll() {
-        return em.createNamedQuery("BankAccount.getAll").getResultList();
+        return em.createNamedQuery("BankAccount.getAll", BankAccount.class).getResultList();
     }
 
     @Override

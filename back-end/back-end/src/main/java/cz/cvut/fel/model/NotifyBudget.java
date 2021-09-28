@@ -10,7 +10,10 @@ import javax.persistence.*;
 @NamedQueries({
         @NamedQuery(name = "NotifyBudget.getAll", query = "SELECT n FROM NotifyBudget n"),
         @NamedQuery(name = "NotifyBudget.alreadyExists", query = "SELECT n FROM NotifyBudget n WHERE n.budget.id = :budgetId " +
-                "AND n.typeNotification = :type")
+                "AND n.typeNotification = :type"),
+        @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgetByType", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid " +
+                "and n.typeNotification = :typeNotif"),
+        @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgets", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid")
 })
 public class NotifyBudget extends AbstractEntity {
     @ManyToOne

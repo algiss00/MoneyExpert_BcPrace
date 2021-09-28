@@ -1,7 +1,9 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyDebt;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotifyDebtNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,14 @@ public class NotifyDebtService extends AbstractServiceHelper {
 
     public List<NotifyDebt> getAll() {
         return notifyDebtDao.findAll();
+    }
+
+    public List<NotifyDebt> getUsersNotifyDebts() throws NotAuthenticatedClient {
+        return notifyDebtDao.getUsersNotifyDebts(isLogged().getId());
+    }
+
+    public List<NotifyDebt> getUsersNotifyDebtsByType(TypeNotification typeNotification) throws NotAuthenticatedClient {
+        return notifyDebtDao.getUsersNotifyDebtsByType(isLogged().getId(), typeNotification);
     }
 
     public NotifyDebt getByIdNotifyDebt(int id) throws NotifyDebtNotFoundException {
