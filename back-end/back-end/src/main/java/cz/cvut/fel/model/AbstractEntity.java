@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class AbstractEntity implements Serializable {
     @Id
     @GeneratedValue
-    private int id;
+    protected int id;
 
     public int getId() {
         return id;

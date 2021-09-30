@@ -3,6 +3,7 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,13 @@ import java.util.Objects;
 @Service
 @Transactional
 public class UserService extends AbstractServiceHelper {
-
-    //private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                        BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
-                       NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+                       NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao, PasswordEncoder passwordEncoder) {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getByUsername(String username) {
@@ -58,21 +59,19 @@ public class UserService extends AbstractServiceHelper {
         return debtDao.getUsersDebt(isLogged().getId());
     }
 
-    public boolean persist(User userObj) throws Exception {
+    public User persist(User userObj) throws Exception {
         Objects.requireNonNull(userObj);
         if (alreadyExists(userObj))
-            return false;
+            throw new NotValidDataException("user");
         User user = new User();
         user.setMyCategories(getDefaultCategories());
         user.setEmail(userObj.getEmail());
         user.setUsername(userObj.getUsername());
         user.setLastname(userObj.getLastname());
         user.setName(userObj.getName());
-        // todo encode password
-        user.setPassword(userObj.getPassword());
+        user.setPassword(passwordEncoder.encode(userObj.getPassword()));
 
-        userDao.persist(user);
-        return true;
+        return userDao.persist(user);
     }
 
     public User updateUserBasic(User user) throws Exception {

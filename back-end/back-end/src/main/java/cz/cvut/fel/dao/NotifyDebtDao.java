@@ -52,9 +52,10 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     @Override
-    public void persist(NotifyDebt entity) {
+    public NotifyDebt persist(NotifyDebt entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

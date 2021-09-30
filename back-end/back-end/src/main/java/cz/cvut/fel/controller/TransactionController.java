@@ -82,10 +82,11 @@ public class TransactionController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction) throws
             Exception {
-        if (!transactionService.persist(transaction, accId, categoryId)) {
+        Transaction t = transactionService.persist(transaction, accId, categoryId);
+        if (t == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+        return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/transfer")
@@ -132,6 +133,7 @@ public class TransactionController {
             NotAuthenticatedClient.class,
             NotifyBudgetNotFoundException.class,
             NotifyDebtNotFoundException.class,
+            NotValidDataException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

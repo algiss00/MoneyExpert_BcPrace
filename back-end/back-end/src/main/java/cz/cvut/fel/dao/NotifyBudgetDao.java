@@ -52,9 +52,10 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     @Override
-    public void persist(NotifyBudget entity) {
+    public NotifyBudget persist(NotifyBudget entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

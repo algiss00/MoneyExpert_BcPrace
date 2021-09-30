@@ -40,7 +40,7 @@ public class CategoryController {
         Budget budget = categoryService.getBudget(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
-    
+
     @GetMapping(value = "/transactions/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllTransactions(@PathVariable int catId) throws Exception {
         List<Transaction> c = categoryService.getTransactions(catId);
@@ -49,10 +49,11 @@ public class CategoryController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Category> add(@RequestBody Category category) throws Exception {
-        if (!categoryService.persist(category)) {
+        Category c = categoryService.persist(category);
+        if (c == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(category, HttpStatus.CREATED);
+        return new ResponseEntity<>(c, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/transaction", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,6 +83,7 @@ public class CategoryController {
             NotAuthenticatedClient.class,
             NotifyBudgetNotFoundException.class,
             NotifyDebtNotFoundException.class,
+            NotValidDataException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

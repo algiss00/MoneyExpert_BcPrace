@@ -60,9 +60,10 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     @Override
-    public void persist(Budget entity) {
+    public Budget persist(Budget entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

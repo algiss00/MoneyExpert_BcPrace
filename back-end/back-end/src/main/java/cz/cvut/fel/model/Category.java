@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c"),
-        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id between 1 and 11")
+        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id between -11 and -1")
 })
 public class Category extends AbstractEntity {
     @Column

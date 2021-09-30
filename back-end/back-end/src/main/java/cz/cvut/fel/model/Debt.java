@@ -46,18 +46,15 @@ public class Debt extends AbstractEntity {
     @JsonIgnore
     private User creator;
 
-    @OneToMany(mappedBy = "debt")
+    @OneToOne(mappedBy = "debt")
     @JsonIgnore
-    private List<NotifyDebt> notifyDebt;
+    private NotifyDebt notifyDebt;
 
-    public List<NotifyDebt> getNotifyDebt() {
-        if (notifyDebt == null) {
-            setNotifyDebt(new ArrayList<>());
-        }
+    public NotifyDebt getNotifyDebt() {
         return notifyDebt;
     }
 
-    public void setNotifyDebt(List<NotifyDebt> notifyDebt) {
+    public void setNotifyDebt(NotifyDebt notifyDebt) {
         this.notifyDebt = notifyDebt;
     }
 

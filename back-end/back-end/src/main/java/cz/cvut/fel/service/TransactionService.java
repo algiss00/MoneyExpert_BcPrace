@@ -4,6 +4,7 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.Money;
 import org.springframework.stereotype.Service;
@@ -63,22 +64,22 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId));
     }
 
-    public boolean persist(Transaction transaction, int accId, int categoryId) throws Exception {
+    public Transaction persist(Transaction transaction, int accId, int categoryId) throws Exception {
         Objects.requireNonNull(transaction);
         if (!validate(transaction))
-            return false;
+            throw new NotValidDataException("transaction");
 
         BankAccount b = getByIdBankAccount(accId);
         Category category = getByIdCategory(categoryId);
         transaction.setBankAccount(b);
         transaction.setCategory(category);
         transaction.setDate(new Date());
-        transactionDao.persist(transaction);
+        Transaction persistedTransaction = transactionDao.persist(transaction);
 
         b.getTransactions().add(transaction);
         bankAccountLogic(b, transaction);
         bankAccountDao.update(b);
-        return true;
+        return persistedTransaction;
     }
 
     private void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
@@ -94,40 +95,30 @@ public class TransactionService extends AbstractServiceHelper {
         budgetForTransaction.setSumAmount(budgetForTransaction.getSumAmount() + transAmount);
         budgetDao.update(budgetForTransaction);
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
-
         if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
             System.out.println("trans amount is bigger or equal then budget amount NOTIFICATE");
-            if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_AMOUNT)) {
-                System.out.println("EXISTS");
-                return;
-            }
-            NotifyBudget notifyBudgetEntity = new NotifyBudget();
-            notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
-            notifyBudgetEntity.setBudget(budgetForTransaction);
-            notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_AMOUNT);
-
-            notifyBudgetDao.persist(notifyBudgetEntity);
-            System.out.println("ADDED TO BUDGET AMOUNT " + notifyBudgetEntity.getBudget().getName());
+            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_AMOUNT);
+            System.out.println("ADDED TO BUDGET AMOUNT " + budgetForTransaction.getName());
         } else if (percentOfSumAmount >= budgetForTransaction.getPercentNotif()) {
             System.out.println("PROCENT NOTIFICATE");
-            if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), TypeNotification.BUDGET_PERCENT)) {
-                System.out.println("EXISTS");
-                return;
-            }
-            NotifyBudget notifyBudgetEntity = new NotifyBudget();
-            notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
-            notifyBudgetEntity.setBudget(budgetForTransaction);
-            notifyBudgetEntity.setTypeNotification(TypeNotification.BUDGET_PERCENT);
-
-            notifyBudgetDao.persist(notifyBudgetEntity);
-            System.out.println("ADDED TO BUDGET PERCENT " + notifyBudgetEntity.getBudget().getName());
+            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_PERCENT);
+            System.out.println("ADDED TO BUDGET PERCENT " + budgetForTransaction.getName());
         }
     }
 
-    private boolean validate(Transaction t) {
-        if (transactionDao.find(t.getId()) != null) {
-            return false;
+    private void createNotifyBudget(Budget budgetForTransaction, TypeNotification typeNotification) throws Exception {
+        if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), typeNotification)) {
+            System.out.println("EXISTS");
+            return;
         }
+        NotifyBudget notifyBudgetEntity = new NotifyBudget();
+        notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
+        notifyBudgetEntity.setBudget(budgetForTransaction);
+        notifyBudgetEntity.setTypeNotification(typeNotification);
+        notifyBudgetDao.persist(notifyBudgetEntity);
+    }
+
+    private boolean validate(Transaction t) {
         return !(t.getAmount() <= 0);
     }
 

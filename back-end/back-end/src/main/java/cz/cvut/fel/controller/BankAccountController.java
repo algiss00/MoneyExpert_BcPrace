@@ -72,10 +72,11 @@ public class BankAccountController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<BankAccount> add(@RequestBody BankAccount b) throws Exception {
-        if (!bankAccountService.persist(b)) {
+        BankAccount bankAccount = bankAccountService.persist(b);
+        if (bankAccount == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(b, HttpStatus.CREATED);
+        return new ResponseEntity<>(bankAccount, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/owner", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,6 +136,7 @@ public class BankAccountController {
             NotAuthenticatedClient.class,
             NotifyBudgetNotFoundException.class,
             NotifyDebtNotFoundException.class,
+            NotValidDataException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

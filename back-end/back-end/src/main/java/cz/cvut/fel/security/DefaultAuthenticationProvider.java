@@ -33,7 +33,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
         UserDetails userDetails = (UserDetails) userDetailsService.loadUserByUsername(username);
 
-        if (!passwordEncoder.matches(password, passwordEncoder.encode(userDetails.getPassword())))
+        if (!passwordEncoder.matches(password, userDetails.getPassword()))
             throw new BadCredentialsException("Bad Credentials.");
         userDetails.eraseCredentials();
         return SecurityUtils.setCurrentUser(userDetails);

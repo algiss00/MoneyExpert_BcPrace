@@ -76,9 +76,10 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     @Override
-    public void persist(Category entity) {
+    public Category persist(Category entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

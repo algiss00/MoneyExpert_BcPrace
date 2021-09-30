@@ -16,12 +16,12 @@ import javax.persistence.*;
         @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgets", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid")
 })
 public class NotifyBudget extends AbstractEntity {
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "budget_id")
     @JsonIgnore
     private Budget budget;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User creator;

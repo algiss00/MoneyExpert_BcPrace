@@ -52,19 +52,19 @@ public class BankAccountService extends AbstractServiceHelper {
         return b.getOwners();
     }
 
-    public boolean persist(BankAccount bankAccount) throws Exception {
+    public BankAccount persist(BankAccount bankAccount) throws Exception {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
-            return false;
+            throw new NotValidDataException("bankAccount");
         User u = isLogged();
         bankAccount.getOwners().add(u);
-        bankAccountDao.persist(bankAccount);
+        BankAccount persistedEntity = bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);
         userDao.update(u);
         if (bankAccount.getBalance() != 0) {
             createStartTransaction(bankAccount, u);
         }
-        return true;
+        return persistedEntity;
     }
 
     public void addNewOwner(int userId, int accId) throws Exception {

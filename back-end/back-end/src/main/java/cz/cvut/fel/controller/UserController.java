@@ -24,11 +24,11 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> getAll() {
-//        List<User> usersAll = userService.getAll();
-//        return new ResponseEntity<>(usersAll, HttpStatus.OK);
-//    }
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAll() {
+        List<User> usersAll = userService.getAll();
+        return new ResponseEntity<>(usersAll, HttpStatus.OK);
+    }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getUserById(@PathVariable int id) throws UserNotFoundException {
@@ -73,10 +73,11 @@ public class UserController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> add(@RequestBody User user) throws Exception {
-        if (!userService.persist(user)) {
+        User u = userService.persist(user);
+        if (u == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return new ResponseEntity<>(u, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/basic-info", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,6 +111,7 @@ public class UserController {
             NotAuthenticatedClient.class,
             NotifyBudgetNotFoundException.class,
             NotifyDebtNotFoundException.class,
+            NotValidDataException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

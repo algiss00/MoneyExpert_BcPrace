@@ -5,6 +5,7 @@ import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.DebtNotFoundException;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,20 +32,20 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.getByName(u.getId(), name);
     }
 
-    public boolean persist(Debt debt, int accId) throws Exception {
+    public Debt persist(Debt debt, int accId) throws Exception {
         User u = isLogged();
         BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
         if (!validate(debt, u))
-            return false;
+            throw new NotValidDataException("debt");
         debt.setCreator(u);
         debt.setBankAccount(bankAccount);
-        debtDao.persist(debt);
-        return true;
+        Debt persistedDebt = debtDao.persist(debt);
+        return persistedDebt;
     }
 
-    //every 12 hours
-    @Scheduled(cron = "5 * * * * * ")
+    //every 12 hours - every 0:05, 1:05, 2:05 ....
+    @Scheduled(cron = "*/5 * * * * * ")
     public void checkNotifyDates() throws Exception {
         System.out.println("NOTiFY");
         //check if exists, maybe every 12 hours notificate check
@@ -74,7 +75,7 @@ public class DebtService extends AbstractServiceHelper {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
-    @Scheduled(cron = "6 * * * * * ")
+    @Scheduled(cron = "*/6 * * * * * ")
     public void checkDeadlineDates() throws Exception {
         System.out.println("DEADLINE");
         List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
@@ -100,7 +101,7 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     private boolean validate(Debt debt, User user) throws Exception {
-        if (debt.getName().trim().isEmpty() || debtDao.find(debt.getId()) != null) {
+        if (debt.getName().trim().isEmpty()) {
             return false;
         }
         return debtDao.getByName(user.getId(), debt.getName()) == null;

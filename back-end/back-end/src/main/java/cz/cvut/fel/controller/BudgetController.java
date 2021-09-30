@@ -45,10 +45,11 @@ public class BudgetController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Budget> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Budget b) throws
             Exception {
-        if (!budgetService.persist(b, accId, categoryId)) {
+        Budget budget = budgetService.persist(b, accId, categoryId);
+        if (budget == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(b, HttpStatus.CREATED);
+        return new ResponseEntity<>(budget, HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,6 +82,7 @@ public class BudgetController {
             NotAuthenticatedClient.class,
             NotifyBudgetNotFoundException.class,
             NotifyDebtNotFoundException.class,
+            NotValidDataException.class,
             Exception.class})
     void handleExceptions(HttpServletResponse response, Exception exception)
             throws IOException {

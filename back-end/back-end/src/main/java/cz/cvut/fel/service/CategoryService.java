@@ -2,6 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,20 +31,20 @@ public class CategoryService extends AbstractServiceHelper {
         return getByIdCategory(catId).getTransactions();
     }
 
-    public boolean persist(Category category) throws Exception {
+    public Category persist(Category category) throws Exception {
         Objects.requireNonNull(category);
         User u = isLogged();
         if (!validate(category, u))
-            return false;
+            throw new NotValidDataException("category");
         // todo issue with ids
 //        int newId = getAll().size() + 1;
 //        System.out.println("NEW ID " + newId);
         //category.setId(newId);
         category.getCreators().add(u);
-        categoryDao.persist(category);
+        Category persistedCategory = categoryDao.persist(category);
         u.getMyCategories().add(category);
         userDao.update(u);
-        return true;
+        return persistedCategory;
     }
 
     public void addTransactionToCategory(int transId, int categoryId) throws Exception {
@@ -57,7 +58,7 @@ public class CategoryService extends AbstractServiceHelper {
     }
 
     private boolean validate(Category category, User user) throws Exception {
-        if (category.getName().trim().isEmpty() || categoryDao.find(category.getId()) != null) {
+        if (category.getName().trim().isEmpty()) {
             return false;
         }
         // check if category name is not exist in users categories

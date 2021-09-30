@@ -52,9 +52,10 @@ public class UserDao extends AbstractDao<User> {
     }
 
     @Override
-    public void persist(User entity) {
+    public User persist(User entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

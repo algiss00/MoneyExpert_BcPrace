@@ -26,9 +26,11 @@ public class Budget extends AbstractEntity {
     @Column
     private int percentNotif;
 
+    // do not put to db
+    @Transient
+    @JsonIgnore
     private double sumAmount;
-
-    //todo meli jsme tu cascade.Persist ale proc? bank acc uz treba exituje, nechci aby se vytvarel novy BankAcc
+    
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
@@ -43,18 +45,15 @@ public class Budget extends AbstractEntity {
     @JsonIgnore
     private User creator;
 
-    @OneToMany(mappedBy = "budget")
+    @OneToOne(mappedBy = "budget")
     @JsonIgnore
-    private List<NotifyBudget> notifyBudget;
+    private NotifyBudget notifyBudget;
 
-    public List<NotifyBudget> getNotifyBudget() {
-        if (notifyBudget == null) {
-            setNotifyBudget(new ArrayList<>());
-        }
+    public NotifyBudget getNotifyBudget() {
         return notifyBudget;
     }
 
-    public void setNotifyBudget(List<NotifyBudget> notifyBudget) {
+    public void setNotifyBudget(NotifyBudget notifyBudget) {
         this.notifyBudget = notifyBudget;
     }
 
@@ -94,8 +93,8 @@ public class Budget extends AbstractEntity {
         return percentNotif;
     }
 
-    public void setPercentNotif(int procentUpozorneni) {
-        this.percentNotif = procentUpozorneni;
+    public void setPercentNotif(int percentNotif) {
+        this.percentNotif = percentNotif;
     }
 
     public BankAccount getBankAccount() {

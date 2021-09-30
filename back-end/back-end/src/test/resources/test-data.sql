@@ -1,0 +1,16 @@
+INSERT INTO category_table VALUES (-1, 'Auto');
+INSERT INTO category_table VALUES (-2, 'Jidlo');
+INSERT INTO category_table VALUES (-3, 'Skola');
+INSERT INTO category_table VALUES (-4, 'Byt');
+INSERT INTO category_table VALUES (-5, 'Shopping');
+INSERT INTO category_table VALUES (-6, 'Start transaction');
+INSERT INTO category_table VALUES (-7, 'Ostatni');
+INSERT INTO category_table VALUES (-8, 'Jizdenky');
+INSERT INTO category_table VALUES (-9, 'Zdravi');
+INSERT INTO category_table VALUES (-10, 'Mzda');
+INSERT INTO category_table VALUES (-11, 'Darek');
+INSERT INTO user_table VALUES (10,'emailTest1@ads.cz','Sicker','John','123456','john123');
+INSERT INTO user_table VALUES (11,'emailTest2@ads.cz','Sky','Ali','123456','ali123');
+INSERT INTO user_table VALUES (12,'emailTest3@ads.cz','Nice','Cley','123456','cley123');
+INSERT INTO user_table VALUES (13,'emailTest4@ads.cz','True','Petr','123456','petr123');
+INSERT INTO user_table VALUES (14,'emailTes5t@ads.cz','Low','Dirtrich','123456','dirtrich123');

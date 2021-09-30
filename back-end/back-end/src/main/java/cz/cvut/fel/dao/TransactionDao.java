@@ -165,9 +165,10 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     @Override
-    public void persist(Transaction entity) {
+    public Transaction persist(Transaction entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class User extends AbstractEntity {
     @Column
     private String username;
     @Column
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -53,33 +55,27 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<Debt> myDebts;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<NotifyDebt> notifyDebt;
+    private NotifyDebt notifyDebt;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<NotifyBudget> notifyBudget;
+    private NotifyBudget notifyBudget;
 
-    public List<NotifyBudget> getNotifyBudget() {
-        if (notifyBudget == null) {
-            setNotifyBudget(new ArrayList<>());
-        }
+    public NotifyBudget getNotifyBudget() {
         return notifyBudget;
     }
 
-    public void setNotifyBudget(List<NotifyBudget> notifyBudget) {
+    public void setNotifyBudget(NotifyBudget notifyBudget) {
         this.notifyBudget = notifyBudget;
     }
 
-    public List<NotifyDebt> getNotifyDebt() {
-        if (notifyDebt == null) {
-            setNotifyDebt(new ArrayList<>());
-        }
+    public NotifyDebt getNotifyDebt() {
         return notifyDebt;
     }
 
-    public void setNotifyDebt(List<NotifyDebt> notifyDebt) {
+    public void setNotifyDebt(NotifyDebt notifyDebt) {
         this.notifyDebt = notifyDebt;
     }
 

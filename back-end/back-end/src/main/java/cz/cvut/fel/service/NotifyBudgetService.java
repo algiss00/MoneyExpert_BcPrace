@@ -5,6 +5,7 @@ import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import cz.cvut.fel.service.exceptions.NotifyBudgetNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,11 +41,11 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         return notifyBudget;
     }
 
-    public void persistNotifyDebt(NotifyBudget notifyBudget) throws Exception {
+    public NotifyBudget persistNotifyBudget(NotifyBudget notifyBudget) throws Exception {
         if (!validateNotifyBudget(notifyBudget)) {
-            throw new Exception("Not valid NotifyBudget");
+            throw new NotValidDataException("notifyBudget");
         }
-        notifyBudgetDao.persist(notifyBudget);
+        return notifyBudgetDao.persist(notifyBudget);
     }
 
     private boolean validateNotifyBudget(NotifyBudget notifyBudget) {

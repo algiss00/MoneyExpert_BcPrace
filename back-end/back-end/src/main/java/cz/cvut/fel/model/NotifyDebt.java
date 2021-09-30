@@ -16,11 +16,11 @@ import javax.persistence.*;
         @NamedQuery(name = "Notify.getUsersNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid")
 })
 public class NotifyDebt extends AbstractEntity {
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "debt_id")
     private Debt debt;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User creator;
 

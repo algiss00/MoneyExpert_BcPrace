@@ -59,9 +59,10 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     @Override
-    public void persist(BankAccount entity) {
+    public BankAccount persist(BankAccount entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

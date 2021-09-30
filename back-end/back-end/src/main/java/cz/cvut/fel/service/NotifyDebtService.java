@@ -4,6 +4,7 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import cz.cvut.fel.service.exceptions.NotifyDebtNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +40,11 @@ public class NotifyDebtService extends AbstractServiceHelper {
         return notifyDebt;
     }
 
-    public void persistNotifyDebt(NotifyDebt notifyDebt) throws Exception {
+    public NotifyDebt persistNotifyDebt(NotifyDebt notifyDebt) throws Exception {
         if (!validateNotifyDebt(notifyDebt)) {
-            throw new Exception("Not valid NotifyDebt");
+            throw new NotValidDataException("notifyDebt");
         }
-        notifyDebtDao.persist(notifyDebt);
+        return notifyDebtDao.persist(notifyDebt);
     }
 
     private boolean validateNotifyDebt(NotifyDebt notifyDebt) {

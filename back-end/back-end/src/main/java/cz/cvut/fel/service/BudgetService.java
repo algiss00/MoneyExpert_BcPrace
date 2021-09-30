@@ -30,7 +30,7 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.getByName(getByIdBankAccount(accId).getId(), name);
     }
 
-    public boolean persist(Budget budget, int accId, int categoryId) throws
+    public Budget persist(Budget budget, int accId, int categoryId) throws
             Exception {
         Objects.requireNonNull(budget);
         User u = isLogged();
@@ -38,16 +38,16 @@ public class BudgetService extends AbstractServiceHelper {
 
         BankAccount bankAccount = getByIdBankAccount(accId);
         if (!validate(budget, bankAccount.getId(), categoryId)) {
-            return false;
+            throw new NotValidDataException("budget");
         }
         budget.setCreator(u);
         budget.setCategory(category);
         budget.setBankAccount(bankAccount);
         budget.setSumAmount(0);
-        budgetDao.persist(budget);
+        Budget persistedBudget = budgetDao.persist(budget);
         bankAccount.getBudgets().add(budget);
         bankAccountDao.update(bankAccount);
-        return true;
+        return persistedBudget;
     }
 
     private boolean validate(Budget budget, int bankAccountId, int catId) throws Exception {

@@ -1,16 +1,20 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.MoneyExpertApplication;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.Assert.assertNotNull;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@DataJpaTest
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @ComponentScan(basePackageClasses = MoneyExpertApplication.class)
 public class DaoTest {
     @Autowired
@@ -32,13 +36,13 @@ public class DaoTest {
 
     @Test
     public void testRepositories() {
-        Assert.assertNotNull(bankAccountDao);
-        Assert.assertNotNull(budgetDao);
-        Assert.assertNotNull(categoryDao);
-        Assert.assertNotNull(debtDao);
-        Assert.assertNotNull(notifyBudgetDao);
-        Assert.assertNotNull(notifyDebtDao);
-        Assert.assertNotNull(transactionDao);
-        Assert.assertNotNull(userDao);
+        assertNotNull(bankAccountDao);
+        assertNotNull(budgetDao);
+        assertNotNull(categoryDao);
+        assertNotNull(debtDao);
+        assertNotNull(notifyBudgetDao);
+        assertNotNull(notifyDebtDao);
+        assertNotNull(transactionDao);
+        assertNotNull(userDao);
     }
 }

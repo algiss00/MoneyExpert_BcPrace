@@ -74,9 +74,10 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     @Override
-    public void persist(Debt entity) {
+    public Debt persist(Debt entity) {
         Objects.requireNonNull(entity);
         em.persist(entity);
+        return entity;
     }
 
     @Override

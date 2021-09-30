@@ -16,7 +16,7 @@ public abstract class AbstractDao<T> {
 
     abstract public List<T> findAll();
 
-    abstract public void persist(T entity);
+    abstract public T persist(T entity);
 
     abstract public T update(T entity);
 
