@@ -19,12 +19,12 @@ import static org.junit.Assert.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 @ComponentScan(basePackageClasses = MoneyExpertApplication.class)
-public class userDaoTest {
+@Sql("classpath:test-data.sql")
+public class UserDaoTest {
     @Autowired
     private UserDao userDao;
 
     @Test
-    @Sql("classpath:test-data.sql")
     public void findUser() {
         User user = userDao.find(10);
         assertNotNull(user);
@@ -35,7 +35,6 @@ public class userDaoTest {
     }
 
     @Test
-    @Sql("classpath:test-data.sql")
     public void findByEmail() throws Exception {
         User user = userDao.getByEmail("emailTest2@ads.cz");
         assertNotNull(user);
@@ -45,7 +44,6 @@ public class userDaoTest {
     }
 
     @Test
-    @Sql("classpath:test-data.sql")
     public void persist() {
         User generatedUser = Generator.generateDefaultUser();
         User user = userDao.persist(generatedUser);
@@ -57,7 +55,6 @@ public class userDaoTest {
     }
 
     @Test
-    @Sql("classpath:test-data.sql")
     public void remove() {
         User user = userDao.find(10);
         assertNotNull(user);
@@ -65,9 +62,14 @@ public class userDaoTest {
         assertNull(userDao.find(10));
     }
 
-//    @Test
-//    @Sql("classpath:test-data.sql")
-//    public void update() {
-//
-//    }
+    @Test
+    public void update() {
+        User user = userDao.find(13);
+        assertNotNull(user);
+        assertEquals("petr123", user.getUsername());
+        user.setUsername("pertUpdateTest");
+        userDao.update(user);
+        User updatedUser = userDao.find(13);
+        assertEquals("pertUpdateTest", updatedUser.getUsername());
+    }
 }
