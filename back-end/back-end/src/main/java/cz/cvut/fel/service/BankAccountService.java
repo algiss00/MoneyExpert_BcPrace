@@ -62,7 +62,7 @@ public class BankAccountService extends AbstractServiceHelper {
         u.getAvailableBankAccounts().add(bankAccount);
         userDao.update(u);
         if (bankAccount.getBalance() != 0) {
-            createStartTransaction(bankAccount, u);
+            createStartTransaction(bankAccount);
         }
         return persistedEntity;
     }
@@ -102,22 +102,6 @@ public class BankAccountService extends AbstractServiceHelper {
         u.getAvailableBankAccounts().remove(b);
         bankAccountDao.update(b);
         userDao.update(u);
-    }
-
-    public void removeTransFromAccount(int transId, int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        Transaction t = getByIdTransaction(transId);
-        if (!isTransactionInBankAcc(b.getId(), t.getId())) {
-            throw new NotAuthenticatedClient();
-        }
-        b.getTransactions().remove(t);
-        t.setBankAccount(null);
-        bankAccountDao.update(b);
-        transactionDao.update(t);
-    }
-
-    private boolean isTransactionInBankAcc(int bankAccountId, int transactionId) throws Exception {
-        return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 
     public void removeBudgetFromBankAcc(int budgetId, int accId) throws Exception {
@@ -167,18 +151,9 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
 
-    private void createStartTransaction(BankAccount bankAccount, User user) throws Exception {
+    private void createStartTransaction(BankAccount bankAccount) throws Exception {
         Transaction startTransaction = new Transaction();
-
-        //todo default start category with Jakh
-//        Category startCategory = new Category();
-//        startCategory.getCreators().add(user);
-//        startCategory.setName("Start transaction");
-//        categoryDao.persist(startCategory);
-//        user.getMyCategories().add(startCategory);
-//        userDao.update(user);
-        // todo myslis v pohode?
-        Category category = getByIdCategory(6);
+        Category category = getByIdCategory(-6);
 
         startTransaction.setBankAccount(bankAccount);
         startTransaction.setCategory(category);

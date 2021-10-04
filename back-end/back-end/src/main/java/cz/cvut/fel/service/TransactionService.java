@@ -5,16 +5,11 @@ import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
-import org.javamoney.moneta.FastMoney;
-import org.javamoney.moneta.Money;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import javax.money.CurrencyUnit;
-import javax.money.Monetary;
-import javax.money.MonetaryAmount;
-import javax.money.convert.CurrencyConversion;
-import javax.money.convert.MonetaryConversions;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,11 +17,14 @@ import java.util.Objects;
 @Service
 @Transactional
 public class TransactionService extends AbstractServiceHelper {
+    private final RestTemplate restTemplate;
+
 
     public TransactionService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                               BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
-                              NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
+                              NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao, RestTemplateBuilder restTemplateBuilder) {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
+        this.restTemplate = restTemplateBuilder.build();
     }
 
     public List<Transaction> getAll() {
@@ -136,8 +134,13 @@ public class TransactionService extends AbstractServiceHelper {
         Transaction transaction = getByIdTransaction(transactionId);
         Transaction transferTransaction = new Transaction();
 
+        double actualCurrencyAmount = transaction.getAmount();
         BankAccount toBankAcc = getByIdBankAccount(toAccId);
         BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
+
+        if (!isTransactionInBankAcc(fromAccId, transactionId)) {
+            throw new NotValidDataException();
+        }
 
         transferTransaction.setBankAccount(toBankAcc);
         transferTransaction.setCategory(transaction.getCategory());
@@ -146,30 +149,41 @@ public class TransactionService extends AbstractServiceHelper {
         } else {
             transferTransaction.setJottings(transaction.getJottings());
         }
-        transferTransaction.setAmount(transaction.getAmount());
+
+        if (!toBankAcc.getCurrency().equals(fromBankAcc.getCurrency())) {
+            actualCurrencyAmount = currencyConvertLogic(transaction.getAmount(), toBankAcc.getCurrency());
+        }
+        transferTransaction.setAmount(actualCurrencyAmount);
         transferTransaction.setDate(new Date());
-        transferTransaction.setTypeTransaction(TypeTransaction.INCOME);
+        transferTransaction.setTypeTransaction(transaction.getTypeTransaction());
 
-        transactionDao.persist(transferTransaction);
-        bankAccountLogic(toBankAcc, transferTransaction);
-
-        transaction.setTypeTransaction(TypeTransaction.EXPENSE);
-        bankAccountLogic(fromBankAcc, transaction);
-
+        Transaction persistedTransaction = transactionDao.persist(transferTransaction);
         toBankAcc.getTransactions().add(transferTransaction);
+        bankAccountLogic(toBankAcc, transferTransaction);
         bankAccountDao.update(toBankAcc);
-        return transaction;
+
+        removeTransFromAccount(transaction.getId(), fromAccId);
+        return persistedTransaction;
+    }
+
+    private double currencyConvertLogic(double amount, String currency) {
+        if (currency.equals("CZK")) {
+            // this is from eur to czk
+            return amount * 25.32;
+        }
+        // from czk to eur
+        return amount * 0.039;
     }
 
     // todo
-//    public MonetaryAmount convertFromCZKtoEUR(double czkAmount) {
-//        MonetaryAmount czk = Monetary.getDefaultAmountFactory().setCurrency("CZK")
-//                .setNumber(czkAmount).create();
-//
-//        CurrencyConversion conversionEUR = MonetaryConversions.getConversion("EUR");
-//
-//        MonetaryAmount convertedAmountUSDtoEUR = czk.with(conversionEUR);
-//        return convertedAmountUSDtoEUR;
+//    public String currency() {
+//        String url = "https://api.ratesapi.io/api/2010-01-12?base=EUR";
+//        return this.restTemplate.getForObject(url, String.class);
+////        if (response.getStatusCode() == HttpStatus.OK) {
+////            return response.getBody();
+////        } else {
+////            return null;
+////        }
 //    }
 
     public Transaction update(int id, Transaction t) throws Exception {

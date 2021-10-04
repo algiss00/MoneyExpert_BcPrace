@@ -1,7 +1,5 @@
 package cz.cvut.fel.controller;
 
-import cz.cvut.fel.dto.SortAttribute;
-import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.service.TransactionService;
@@ -25,6 +23,11 @@ public class TransactionController {
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
+
+//    @GetMapping(value = "/currency", produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<?> currency() throws Exception {
+//        return new ResponseEntity<>(transactionService.currency(), HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/between-date/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getBetweenDate(@RequestParam String from, @RequestParam String to, @PathVariable int accId) throws Exception {

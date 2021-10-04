@@ -1,6 +1,7 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
@@ -60,7 +61,6 @@ abstract class AbstractServiceHelper {
         if (c == null) {
             throw new CategoryNotFoundException(id);
         }
-        // todo
         if (!isCreatorOfCategory(c.getId())) {
             throw new NotAuthenticatedClient();
         }
@@ -130,5 +130,29 @@ abstract class AbstractServiceHelper {
     public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws Exception {
         User user = isLogged();
         return bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId()) != null;
+    }
+
+    public void removeTransFromAccount(int transId, int accId) throws Exception {
+        BankAccount b = getByIdBankAccount(accId);
+        Transaction t = getByIdTransaction(transId);
+        if (!isTransactionInBankAcc(b.getId(), t.getId())) {
+            throw new NotAuthenticatedClient();
+        }
+        b.getTransactions().remove(t);
+        double actualBalance = b.getBalance();
+        if (t.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            b.setBalance(actualBalance + t.getAmount());
+        } else {
+            b.setBalance(actualBalance - t.getAmount());
+        }
+        t.setBankAccount(null);
+        bankAccountDao.update(b);
+        transactionDao.update(t);
+
+        transactionDao.remove(t);
+    }
+
+    public boolean isTransactionInBankAcc(int bankAccountId, int transactionId) throws Exception {
+        return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 }
