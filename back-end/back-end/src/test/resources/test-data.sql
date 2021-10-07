@@ -1,15 +1,15 @@
--- category table
-INSERT INTO category_table VALUES (-1, 'Auto');
-INSERT INTO category_table VALUES (-2, 'Jidlo');
-INSERT INTO category_table VALUES (-3, 'Skola');
-INSERT INTO category_table VALUES (-4, 'Byt');
-INSERT INTO category_table VALUES (-5, 'Shopping');
-INSERT INTO category_table VALUES (-6, 'Start transaction');
-INSERT INTO category_table VALUES (-7, 'Ostatni');
-INSERT INTO category_table VALUES (-8, 'Jizdenky');
-INSERT INTO category_table VALUES (-9, 'Zdravi');
-INSERT INTO category_table VALUES (-10, 'Mzda');
-INSERT INTO category_table VALUES (-11, 'Darek');
+-- -- category table
+-- INSERT INTO category_table VALUES (-1, 'Auto');
+-- INSERT INTO category_table VALUES (-2, 'Jidlo');
+-- INSERT INTO category_table VALUES (-3, 'Skola');
+-- INSERT INTO category_table VALUES (-4, 'Byt');
+-- INSERT INTO category_table VALUES (-5, 'Shopping');
+-- INSERT INTO category_table VALUES (-6, 'Start transaction');
+-- INSERT INTO category_table VALUES (-7, 'Ostatni');
+-- INSERT INTO category_table VALUES (-8, 'Jizdenky');
+-- INSERT INTO category_table VALUES (-9, 'Zdravi');
+-- INSERT INTO category_table VALUES (-10, 'Mzda');
+-- INSERT INTO category_table VALUES (-11, 'Darek');
 
 -- users table
 INSERT INTO user_table VALUES (10,'emailTest1@ads.cz','Sicker','John','123456','john123');

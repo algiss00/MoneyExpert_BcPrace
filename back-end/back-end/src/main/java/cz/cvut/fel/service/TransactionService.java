@@ -17,14 +17,10 @@ import java.util.Objects;
 @Service
 @Transactional
 public class TransactionService extends AbstractServiceHelper {
-    private final RestTemplate restTemplate;
-
-
     public TransactionService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                               BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
-                              NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao, RestTemplateBuilder restTemplateBuilder) {
+                              NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao) {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
-        this.restTemplate = restTemplateBuilder.build();
     }
 
     public List<Transaction> getAll() {
