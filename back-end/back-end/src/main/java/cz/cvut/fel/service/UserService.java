@@ -4,7 +4,6 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

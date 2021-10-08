@@ -36,10 +36,6 @@ public class CategoryService extends AbstractServiceHelper {
         User u = isLogged();
         if (!validate(category, u))
             throw new NotValidDataException("category");
-        // todo issue with ids
-//        int newId = getAll().size() + 1;
-//        System.out.println("NEW ID " + newId);
-        //category.setId(newId);
         category.getCreators().add(u);
         Category persistedCategory = categoryDao.persist(category);
         u.getMyCategories().add(category);
