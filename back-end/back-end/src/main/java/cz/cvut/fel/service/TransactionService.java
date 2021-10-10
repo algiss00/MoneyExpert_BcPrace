@@ -27,26 +27,26 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.findAll();
     }
 
-    public List<Transaction> getSortedByMonth(int month, int bankAccId) throws Exception {
-        return transactionDao.getByMonthSorted(month, getByIdBankAccount(bankAccId).getId());
+    public List<Transaction> getSortedByMonth(int month, int year, int bankAccId) throws Exception {
+        return transactionDao.getByMonthSorted(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
-    public double getSumOfExpenseOnMonth(int month, int bankAccId) throws Exception {
-        return transactionDao.getExpenseSum(month, getByIdBankAccount(bankAccId).getId());
+    public double getSumOfExpenseOnMonth(int month, int year, int bankAccId) throws Exception {
+        return transactionDao.getExpenseSum(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
-    public double getSumOfIncomeOnMonth(int month, int bankAccId) throws Exception {
-        return transactionDao.getIncomeSum(month, getByIdBankAccount(bankAccId).getId());
+    public double getSumOfIncomeOnMonth(int month, int year, int bankAccId) throws Exception {
+        return transactionDao.getIncomeSum(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
-    public double getSumOfExpenseWithCategory(int month, int bankAccId, int catId)
+    public double getSumOfExpenseWithCategory(int month, int year, int bankAccId, int catId)
             throws Exception {
-        return transactionDao.getExpenseSumWithCategory(month, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
+        return transactionDao.getExpenseSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
-    public double getSumOfIncomeWithCategory(int month, int bankAccId, int catId)
+    public double getSumOfIncomeWithCategory(int month, int year, int bankAccId, int catId)
             throws Exception {
-        return transactionDao.getIncomeSumWithCategory(month, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
+        return transactionDao.getIncomeSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws

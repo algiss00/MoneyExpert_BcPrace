@@ -6,6 +6,7 @@ import cz.cvut.fel.model.Transaction;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public Transaction getFromBankAcc(int accountId, int transId) throws Exception {
+    public Transaction getFromBankAcc(int accountId, int transId) {
         try {
             return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
                     .setParameter("bankAccId", accountId)
@@ -42,7 +43,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .stream().findFirst().orElse(null);
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            return null;
         }
     }
 
@@ -53,7 +54,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransactionsFromBankAccByDate(int bankAccId) throws Exception {
+    public List<Transaction> getAllTransactionsFromBankAccByDate(int bankAccId) {
         return em.createNamedQuery("Transaction.getAllFromBankAccount", Transaction.class)
                 .setParameter("bankAccId", bankAccId)
                 .getResultList();
@@ -79,77 +80,83 @@ public class TransactionDao extends AbstractDao<Transaction> {
 //        }
 //    }
 
-    public List<Transaction> getByMonthSorted(int month, int bankAccId) throws Exception {
+    public List<Transaction> getByMonthSorted(int month, int year, int bankAccId) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
-                            "where MONTH(t.date) = :month and t.bank_account_id = :bankAccId order by t.date desc",
+                            "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId order by t.date desc",
                     Transaction.class)
                     .setParameter("month", month)
+                    .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            return Collections.emptyList();
         }
     }
 
-    public double getExpenseSum(int month, int bankAccId) throws Exception {
+    public double getExpenseSum(int month, int year, int bankAccId) throws Exception {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE'")
+                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE'")
                     .setParameter("month", month)
+                    .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            throw new Exception("Internal error");
         }
     }
 
-    public double getIncomeSum(int month, int bankAccId) throws Exception {
+    public double getIncomeSum(int month, int year, int bankAccId) throws Exception {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME'")
+                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME'")
                     .setParameter("month", month)
+                    .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            throw new Exception("Internal error");
         }
     }
 
-    public double getExpenseSumWithCategory(int month, int bankAccId, int catId) throws Exception {
+    public double getExpenseSumWithCategory(int month, int year, int bankAccId, int catId) throws Exception {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE' " +
+                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE' " +
                     "and t.category_id = :categoryId")
                     .setParameter("month", month)
+                    .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
                     .setParameter("categoryId", catId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            throw new Exception("Internal error");
         }
     }
 
-    public double getIncomeSumWithCategory(int month, int bankAccId, int catId) throws Exception {
+    // todo for all month in this year - and YEAR(t.date) = :year
+    public double getIncomeSumWithCategory(int month, int year, int bankAccId, int catId) throws Exception {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME' " +
+                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME' " +
                     "and t.category_id = :categoryId")
                     .setParameter("month", month)
+                    .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
                     .setParameter("categoryId", catId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            throw new Exception("Internal error");
         }
     }
 
-    public List<Transaction> getBetweenDate(String from, String to, BankAccount idBankAccount) throws Exception {
+    public List<Transaction> getBetweenDate(String from, String to, BankAccount idBankAccount) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t where t.bank_account_id = :bankAccId " +
                             "and t.date BETWEEN :from AND :to ",
@@ -160,7 +167,8 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception transaction dao");
+            // todo for all
+            return Collections.emptyList();
         }
     }
 

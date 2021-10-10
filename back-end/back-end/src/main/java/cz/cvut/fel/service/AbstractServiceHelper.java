@@ -32,16 +32,16 @@ abstract class AbstractServiceHelper {
     }
 
     public User isLogged() throws NotAuthenticatedClient {
-        User user;
         try {
-            user = userDao.find(SecurityUtils.getCurrentUser().getId());
+            User user = userDao.find(SecurityUtils.getCurrentUser().getId());
             if (user == null) {
                 throw new UserNotFoundException();
             }
+            return user;
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new NotAuthenticatedClient();
         }
-        return user;
     }
 
     public User getByIdUser(int id) throws UserNotFoundException {

@@ -2,9 +2,10 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.User;
 import generator.Generator;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.persistence.EntityManager;
 
@@ -14,7 +15,7 @@ public class UserDaoMockTest {
     private UserDao userDao;
     private EntityManager entityManagerMock;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         entityManagerMock = mock(EntityManager.class);
         userDao = new UserDao(entityManagerMock);
@@ -42,7 +43,7 @@ public class UserDaoMockTest {
         userDao.persist(user);
         user.setUsername("mock-test");
         when(entityManagerMock.merge(any())).thenReturn(user);
-        Assert.assertEquals(user, userDao.update(user));
+        assertEquals(user, userDao.update(user));
         verify(entityManagerMock, times(1)).merge(user);
     }
 
