@@ -139,7 +139,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    // todo for all month in this year - and YEAR(t.date) = :year
     public double getIncomeSumWithCategory(int month, int year, int bankAccId, int catId) throws Exception {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
@@ -167,7 +166,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            // todo for all
             return Collections.emptyList();
         }
     }

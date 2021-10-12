@@ -9,14 +9,14 @@ import cz.cvut.fel.service.exceptions.*;
 import java.util.List;
 
 abstract class AbstractServiceHelper {
-    UserDao userDao;
-    BankAccountDao bankAccountDao;
-    TransactionDao transactionDao;
-    BudgetDao budgetDao;
-    DebtDao debtDao;
-    CategoryDao categoryDao;
-    NotifyBudgetDao notifyBudgetDao;
-    NotifyDebtDao notifyDebtDao;
+    protected UserDao userDao;
+    protected BankAccountDao bankAccountDao;
+    protected TransactionDao transactionDao;
+    protected BudgetDao budgetDao;
+    protected DebtDao debtDao;
+    protected CategoryDao categoryDao;
+    protected NotifyBudgetDao notifyBudgetDao;
+    protected NotifyDebtDao notifyDebtDao;
 
     public AbstractServiceHelper(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                                  BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,

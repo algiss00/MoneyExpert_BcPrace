@@ -171,7 +171,7 @@ public class TransactionService extends AbstractServiceHelper {
         return amount * 0.039;
     }
 
-    // todo
+    // todo API
 //    public String currency() {
 //        String url = "https://api.ratesapi.io/api/2010-01-12?base=EUR";
 //        return this.restTemplate.getForObject(url, String.class);
