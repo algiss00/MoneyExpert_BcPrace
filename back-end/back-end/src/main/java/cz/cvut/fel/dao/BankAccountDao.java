@@ -4,6 +4,7 @@ import cz.cvut.fel.model.BankAccount;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +32,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception BankAccountDao");
+            return Collections.emptyList();
         }
     }
 

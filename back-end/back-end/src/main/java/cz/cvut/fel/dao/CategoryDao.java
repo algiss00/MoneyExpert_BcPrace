@@ -4,6 +4,7 @@ import cz.cvut.fel.model.Category;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +38,7 @@ public class CategoryDao extends AbstractDao<Category> {
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception CategoryDao");
+            return Collections.emptyList();
         }
     }
 

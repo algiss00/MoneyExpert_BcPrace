@@ -57,7 +57,7 @@ public class CategoryService extends AbstractServiceHelper {
         if (category.getName().trim().isEmpty()) {
             return false;
         }
-        // check if category name is not exist in users categories
+        // check if category name is exist in users categories
         return categoryDao.getUsersCategoryByName(user.getId(), category.getName()) == null;
     }
 

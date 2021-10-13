@@ -1,5 +1,6 @@
 package generator;
 
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 
@@ -63,6 +64,7 @@ public class Generator {
         final NotifyBudget notifyBudget = new NotifyBudget();
         notifyBudget.setBudget(generateDefaultBudget());
         notifyBudget.setCreator(generateDefaultUser());
+        notifyBudget.setTypeNotification(TypeNotification.BUDGET_PERCENT);
         return notifyBudget;
     }
 
@@ -70,6 +72,7 @@ public class Generator {
         final NotifyDebt notifyDebt = new NotifyDebt();
         notifyDebt.setDebt(generateDefaultDebt());
         notifyDebt.setCreator(generateDefaultUser());
+        notifyDebt.setTypeNotification(TypeNotification.DEBT_DEADLINE);
         return notifyDebt;
     }
 
