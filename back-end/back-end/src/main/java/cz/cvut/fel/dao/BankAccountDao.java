@@ -20,7 +20,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         return em.find(BankAccount.class, id);
     }
 
-    public List<BankAccount> getByName(String name, int uid) throws Exception {
+    public List<BankAccount> getByName(String name, int uid) {
         try {
             return em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency " +
                             "FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +

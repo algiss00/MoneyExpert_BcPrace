@@ -15,7 +15,10 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +67,82 @@ public class TransactionDaoTest {
         assertNotNull(transaction);
         transactionDao.remove(transaction);
         assertNull(transactionDao.find(31));
+    }
+
+    @Test
+    public void getByMonthSorted() throws ParseException {
+        List<Transaction> transactions = transactionDao.getByMonthSorted(9, 2021, 18);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = formatter.parse("2021-09-01");
+
+        assertFalse(transactions.isEmpty());
+        assertEquals(3, transactions.size());
+        int[] ids = {35, 34, 33};
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(ids[i], transactions.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getByMonthSortedEmptyMonth() {
+        List<Transaction> transactions = transactionDao.getByMonthSorted(5, 2021, 18);
+        assertTrue(transactions.isEmpty());
+    }
+
+    @Test
+    public void getByMonthSortedEmptyByYear() {
+        List<Transaction> transactions = transactionDao.getByMonthSorted(9, 2020, 18);
+        assertTrue(transactions.isEmpty());
+    }
+
+    @Test
+    public void getExpenseSum() throws Exception {
+        double sum = transactionDao.getExpenseSum(9, 2021, 18);
+        assertEquals(300, sum);
+    }
+
+    @Test
+    public void getExpenseSumException() {
+        assertThrows(Exception.class, () -> transactionDao.getExpenseSum(9, 2020, 18));
+    }
+
+    @Test
+    public void getExpenseSumWithCategory() throws Exception {
+        double sum = transactionDao.getExpenseSumWithCategory(9, 2021, 18, -4);
+        assertEquals(100, sum);
+    }
+
+    @Test
+    public void getExpenseSumExceptionException() {
+        assertThrows(Exception.class, () -> transactionDao.getExpenseSumWithCategory(9, 2020, 18, -4));
+    }
+
+    @Test
+    public void getBetweenDate() {
+        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-01", "2021-10-05", 18);
+        int[] ids = {36, 37, 38};
+        assertFalse(transactions.isEmpty());
+        assertEquals(3, transactions.size());
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(ids[i], transactions.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getBetweenDateWrongToAndFrom() {
+        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-05", "2021-10-01", 18);
+        assertTrue(transactions.isEmpty());
+    }
+
+    @Test
+    public void getBetweenDateOneTransaction() {
+        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-01", "2021-10-01", 18);
+        int[] ids = {36};
+        assertFalse(transactions.isEmpty());
+        assertEquals(1, transactions.size());
+        for (int i = 0; i < transactions.size(); i++) {
+            assertEquals(ids[i], transactions.get(i).getId());
+        }
     }
 
     @Test

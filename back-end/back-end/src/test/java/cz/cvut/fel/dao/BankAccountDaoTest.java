@@ -13,6 +13,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -31,6 +33,40 @@ public class BankAccountDaoTest {
         assertEquals("CSOB Ucet", bankAccount.getName());
         assertEquals("CZK", bankAccount.getCurrency());
         assertEquals(1000, bankAccount.getBalance(), 0.0);
+    }
+
+    @Test
+    public void getByName() {
+        List<BankAccount> bankAccounts = bankAccountDao.getByName("CSOB Ucet", 10);
+        assertFalse(bankAccounts.isEmpty());
+        assertEquals(2, bankAccounts.size());
+
+        int[] ids = {15, 19};
+        for (int i = 0; i < bankAccounts.size(); i++) {
+            assertEquals(ids[i], bankAccounts.get(i).getId());
+            assertEquals("CSOB Ucet", bankAccounts.get(i).getName());
+        }
+    }
+
+    @Test
+    public void getByNameEmpty() {
+        List<BankAccount> bankAccounts = bankAccountDao.getByName("CSOB Ucet Test", 10);
+        assertTrue(bankAccounts.isEmpty());
+    }
+
+    @Test
+    public void getUsersBankAccountById() throws Exception {
+        BankAccount bankAccount = bankAccountDao.getUsersBankAccountById(10, 15);
+        assertNotNull(bankAccount);
+        assertEquals("CSOB Ucet", bankAccount.getName());
+        assertEquals("CZK", bankAccount.getCurrency());
+        assertEquals(1000, bankAccount.getBalance(), 0.0);
+    }
+
+    @Test
+    public void getUsersBankAccountByIdNotFound() throws Exception {
+        BankAccount bankAccount = bankAccountDao.getUsersBankAccountById(10, 17);
+        assertNull(bankAccount);
     }
 
     @Test

@@ -55,7 +55,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
-        return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId));
+        return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId).getId());
     }
 
     public Transaction persist(Transaction transaction, int accId, int categoryId) throws Exception {

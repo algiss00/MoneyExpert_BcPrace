@@ -15,6 +15,8 @@ import org.springframework.test.context.jdbc.Sql;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +43,30 @@ public class DebtDaoTest {
         assertEquals(1000, debt.getAmount(), 0.0);
         assertEquals(deadline, formatter.parse(debt.getDeadline().toString()));
         assertEquals(notifyDate, formatter.parse(debt.getNotifyDate().toString()));
+    }
+
+    @Test
+    public void getNotifyDebts() {
+        List<Debt> debts = debtDao.getNotifyDebts();
+        assertFalse(debts.isEmpty());
+        assertEquals(3, debts.size());
+
+        int[] ids = {25, 26, 27};
+        for (int i = 0; i < debts.size(); i++) {
+            assertEquals(ids[i], debts.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getDeadlineDebts() {
+        List<Debt> debts = debtDao.getDeadlineDebts();
+        assertFalse(debts.isEmpty());
+        assertEquals(3, debts.size());
+
+        int[] ids = {22, 23, 24};
+        for (int i = 0; i < debts.size(); i++) {
+            assertEquals(ids[i], debts.get(i).getId());
+        }
     }
 
     @Test

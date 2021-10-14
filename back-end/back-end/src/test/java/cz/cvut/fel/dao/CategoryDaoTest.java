@@ -13,6 +13,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -29,6 +31,37 @@ public class CategoryDaoTest {
         Category category = categoryDao.find(-1);
         assertNotNull(category);
         assertEquals("Auto", category.getName());
+    }
+
+    @Test
+    public void getUsersCategory() {
+        List<Category> categories = categoryDao.getUsersCategory(10);
+        assertFalse(categories.isEmpty());
+        assertEquals(2, categories.size());
+
+        int[] ids = {1, 2};
+        for (int i = 0; i < categories.size(); i++) {
+            assertEquals(ids[i], categories.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getUsersCategoryEmpty() {
+        List<Category> categories = categoryDao.getUsersCategory(12);
+        assertTrue(categories.isEmpty());
+    }
+
+    @Test
+    public void getUsersCategoryById() throws Exception {
+        Category category = categoryDao.getUsersCategoryById(10, 2);
+        assertNotNull(category);
+        assertEquals("Jidlo", category.getName());
+    }
+
+    @Test
+    public void getUsersCategoryByIdEmpty() throws Exception {
+        Category category = categoryDao.getUsersCategoryById(10, 7);
+        assertNull(category);
     }
 
     @Test

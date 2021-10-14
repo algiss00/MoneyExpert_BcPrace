@@ -1,6 +1,7 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.MoneyExpertApplication;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.NotifyBudget;
 import generator.Generator;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +34,36 @@ public class NotifyBudgetDaoTest {
         assertNotNull(notifyBudget);
         assertEquals("Jidlo budget", notifyBudget.getBudget().getName());
         assertEquals("john123", notifyBudget.getCreator().getUsername());
+    }
+
+    @Test
+    public void getUsersNotifyBudgets() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getUsersNotifyBudgets(10);
+        assertFalse(notifyBudget.isEmpty());
+        assertEquals(2, notifyBudget.size());
+
+        int[] ids = {25, 28};
+        for (int i = 0; i < notifyBudget.size(); i++) {
+            assertEquals(ids[i], notifyBudget.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getUsersNotifyBudgetsByType() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getUsersNotifyBudgetsByType(10, TypeNotification.BUDGET_AMOUNT);
+        assertFalse(notifyBudget.isEmpty());
+        assertEquals(2, notifyBudget.size());
+
+        int[] ids = {25, 28};
+        for (int i = 0; i < notifyBudget.size(); i++) {
+            assertEquals(ids[i], notifyBudget.get(i).getId());
+        }
+    }
+
+    @Test
+    public void alreadyExistsBudget() throws Exception {
+        assertTrue(notifyBudgetDao.alreadyExistsBudget(19, TypeNotification.BUDGET_AMOUNT));
+        assertFalse(notifyBudgetDao.alreadyExistsBudget(22, TypeNotification.BUDGET_PERCENT));
     }
 
     @Test

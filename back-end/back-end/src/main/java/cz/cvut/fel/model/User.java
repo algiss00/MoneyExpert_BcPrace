@@ -55,27 +55,33 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<Debt> myDebts;
 
-    @OneToOne(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private NotifyDebt notifyDebt;
+    private List<NotifyDebt> notifyDebt;
 
-    @OneToOne(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     @JsonIgnore
-    private NotifyBudget notifyBudget;
+    private List<NotifyBudget> notifyBudget;
 
-    public NotifyBudget getNotifyBudget() {
+    public List<NotifyBudget> getNotifyBudget() {
+        if (notifyBudget == null) {
+            setNotifyBudget(new ArrayList<>());
+        }
         return notifyBudget;
     }
 
-    public void setNotifyBudget(NotifyBudget notifyBudget) {
+    public void setNotifyBudget(List<NotifyBudget> notifyBudget) {
         this.notifyBudget = notifyBudget;
     }
 
-    public NotifyDebt getNotifyDebt() {
+    public List<NotifyDebt> getNotifyDebt() {
+        if (notifyDebt == null) {
+            setNotifyDebt(new ArrayList<>());
+        }
         return notifyDebt;
     }
 
-    public void setNotifyDebt(NotifyDebt notifyDebt) {
+    public void setNotifyDebt(List<NotifyDebt> notifyDebt) {
         this.notifyDebt = notifyDebt;
     }
 

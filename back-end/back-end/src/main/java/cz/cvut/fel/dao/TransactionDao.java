@@ -54,7 +54,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransactionsFromBankAccByDate(int bankAccId) {
+    public List<Transaction> getAllTransactionsFromBankAccSortedByDate(int bankAccId) {
         return em.createNamedQuery("Transaction.getAllFromBankAccount", Transaction.class)
                 .setParameter("bankAccId", bankAccId)
                 .getResultList();
@@ -155,14 +155,14 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public List<Transaction> getBetweenDate(String from, String to, BankAccount idBankAccount) {
+    public List<Transaction> getBetweenDate(String from, String to, int bankAccountId) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t where t.bank_account_id = :bankAccId " +
-                            "and t.date BETWEEN :from AND :to ",
+                            "and t.date BETWEEN :from AND :to",
                     Transaction.class)
                     .setParameter("from", from)
                     .setParameter("to", to)
-                    .setParameter("bankAccId", idBankAccount)
+                    .setParameter("bankAccId", bankAccountId)
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();

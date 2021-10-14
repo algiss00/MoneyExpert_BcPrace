@@ -21,7 +21,7 @@ public class NotifyBudget extends AbstractEntity {
     @JsonIgnore
     private Budget budget;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User creator;

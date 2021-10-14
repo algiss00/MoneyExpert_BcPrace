@@ -20,7 +20,7 @@ public class NotifyDebt extends AbstractEntity {
     @JoinColumn(name = "debt_id")
     private Debt debt;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User creator;
 

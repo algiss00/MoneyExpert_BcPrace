@@ -1,8 +1,6 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
-import cz.cvut.fel.dto.SortAttribute;
-import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.*;
@@ -36,7 +34,7 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public List<Transaction> getAllTransactions(int accountId) throws Exception {
-        return transactionDao.getAllTransactionsFromBankAccByDate(getByIdBankAccount(accountId).getId());
+        return transactionDao.getAllTransactionsFromBankAccSortedByDate(getByIdBankAccount(accountId).getId());
     }
 
     public List<Transaction> getAllTransactionsByType(int accountId, TypeTransaction typeTransaction) throws Exception {

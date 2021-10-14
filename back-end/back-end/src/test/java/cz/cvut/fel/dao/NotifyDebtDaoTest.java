@@ -1,7 +1,9 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.MoneyExpertApplication;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.Debt;
+import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.NotifyDebt;
 import generator.Generator;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.ParseException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,6 +35,36 @@ public class NotifyDebtDaoTest {
         NotifyDebt notifyDebt = notifyDebtDao.find(28);
         assertNotNull(notifyDebt);
         assertEquals("Honza dluh", notifyDebt.getDebt().getName());
+    }
+
+    @Test
+    public void getUsersNotifyBudgets() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getUsersNotifyDebts(13);
+        assertFalse(notifyDebts.isEmpty());
+        assertEquals(3, notifyDebts.size());
+
+        int[] ids = {28, 30, 31};
+        for (int i = 0; i < notifyDebts.size(); i++) {
+            assertEquals(ids[i], notifyDebts.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getUsersNotifyBudgetsByType() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getUsersNotifyDebtsByType(13, TypeNotification.DEBT_NOTIFY);
+        assertFalse(notifyDebts.isEmpty());
+        assertEquals(2, notifyDebts.size());
+
+        int[] ids = {28, 30};
+        for (int i = 0; i < notifyDebts.size(); i++) {
+            assertEquals(ids[i], notifyDebts.get(i).getId());
+        }
+    }
+
+    @Test
+    public void alreadyExistsBudget() throws Exception {
+        assertNotNull(notifyDebtDao.alreadyExistsDebt(22, TypeNotification.DEBT_NOTIFY));
+        assertNull(notifyDebtDao.alreadyExistsDebt(26, TypeNotification.DEBT_NOTIFY));
     }
 
     @Test

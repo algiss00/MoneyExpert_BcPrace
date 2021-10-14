@@ -28,7 +28,7 @@ public class CategoryDao extends AbstractDao<Category> {
         return em.createNamedQuery("Category.getDefault", Category.class).getResultList();
     }
 
-    public List<Category> getUsersCategory(int uid) throws Exception {
+    public List<Category> getUsersCategory(int uid) {
         try {
             return em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
