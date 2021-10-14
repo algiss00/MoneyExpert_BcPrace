@@ -40,9 +40,9 @@ public class NotifyBudgetDaoTest {
     public void getUsersNotifyBudgets() {
         List<NotifyBudget> notifyBudget = notifyBudgetDao.getUsersNotifyBudgets(10);
         assertFalse(notifyBudget.isEmpty());
-        assertEquals(2, notifyBudget.size());
+        assertEquals(3, notifyBudget.size());
 
-        int[] ids = {25, 28};
+        int[] ids = {25, 28, 29};
         for (int i = 0; i < notifyBudget.size(); i++) {
             assertEquals(ids[i], notifyBudget.get(i).getId());
         }
