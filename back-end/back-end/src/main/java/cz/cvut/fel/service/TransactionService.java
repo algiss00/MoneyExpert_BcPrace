@@ -1,6 +1,7 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeCurrency;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
@@ -146,7 +147,7 @@ public class TransactionService extends AbstractServiceHelper {
             transferTransaction.setJottings(transaction.getJottings());
         }
 
-        if (!toBankAcc.getCurrency().equals(fromBankAcc.getCurrency())) {
+        if (toBankAcc.getCurrency() != fromBankAcc.getCurrency()) {
             actualCurrencyAmount = currencyConvertLogic(transaction.getAmount(), toBankAcc.getCurrency());
         }
         transferTransaction.setAmount(actualCurrencyAmount);
@@ -162,8 +163,8 @@ public class TransactionService extends AbstractServiceHelper {
         return persistedTransaction;
     }
 
-    private double currencyConvertLogic(double amount, String currency) {
-        if (currency.equals("CZK")) {
+    private double currencyConvertLogic(double amount, TypeCurrency currency) {
+        if (currency == TypeCurrency.CZK) {
             // this is from eur to czk
             return amount * 25.32;
         }
@@ -182,7 +183,7 @@ public class TransactionService extends AbstractServiceHelper {
 ////        }
 //    }
 
-    public Transaction update(int id, Transaction t) throws Exception {
+    public Transaction updateBasic(int id, Transaction t) throws Exception {
         Transaction transaction = getByIdTransaction(id);
         BankAccount transBankAcc = transaction.getBankAccount();
 
@@ -197,8 +198,12 @@ public class TransactionService extends AbstractServiceHelper {
     public Transaction updateCategory(int tid, int catId) throws Exception {
         Transaction transaction = getByIdTransaction(tid);
         Category category = getByIdCategory(catId);
-
+        if (transaction.getCategory() == category) {
+            return null;
+        }
         transaction.setCategory(category);
+        category.getTransactions().add(transaction);
+        categoryDao.update(category);
         return transactionDao.update(transaction);
     }
 

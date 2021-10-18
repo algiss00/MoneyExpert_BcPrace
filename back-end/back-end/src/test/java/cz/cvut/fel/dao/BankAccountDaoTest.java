@@ -1,6 +1,7 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.MoneyExpertApplication;
+import cz.cvut.fel.dto.TypeCurrency;
 import cz.cvut.fel.model.BankAccount;
 import generator.Generator;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class BankAccountDaoTest {
         BankAccount bankAccount = bankAccountDao.find(15);
         assertNotNull(bankAccount);
         assertEquals("CSOB Ucet", bankAccount.getName());
-        assertEquals("CZK", bankAccount.getCurrency());
+        assertEquals(TypeCurrency.CZK, bankAccount.getCurrency());
         assertEquals(1000, bankAccount.getBalance(), 0.0);
     }
 
@@ -59,7 +60,7 @@ public class BankAccountDaoTest {
         BankAccount bankAccount = bankAccountDao.getUsersBankAccountById(10, 15);
         assertNotNull(bankAccount);
         assertEquals("CSOB Ucet", bankAccount.getName());
-        assertEquals("CZK", bankAccount.getCurrency());
+        assertEquals(TypeCurrency.CZK, bankAccount.getCurrency());
         assertEquals(1000, bankAccount.getBalance(), 0.0);
     }
 

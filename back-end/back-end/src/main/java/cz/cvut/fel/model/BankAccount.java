@@ -1,6 +1,7 @@
 package cz.cvut.fel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cz.cvut.fel.dto.TypeCurrency;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,8 +15,10 @@ import java.util.List;
 public class BankAccount extends AbstractEntity {
     @Column
     private String name;
-    @Column
-    private String currency;
+
+    @Enumerated(EnumType.STRING)
+    private TypeCurrency currency;
+
     @Column
     private double balance;
 
@@ -87,11 +90,11 @@ public class BankAccount extends AbstractEntity {
         this.name = name;
     }
 
-    public String getCurrency() {
+    public TypeCurrency getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public void setCurrency(TypeCurrency currency) {
         this.currency = currency;
     }
 

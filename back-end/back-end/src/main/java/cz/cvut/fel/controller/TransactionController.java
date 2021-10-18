@@ -103,7 +103,7 @@ public class TransactionController {
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> updateTrans(@RequestParam int transId, @RequestBody Transaction transaction) throws Exception {
-        return new ResponseEntity<>(transactionService.update(transId, transaction), HttpStatus.CREATED);
+        return new ResponseEntity<>(transactionService.updateBasic(transId, transaction), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update-type", produces = MediaType.APPLICATION_JSON_VALUE)

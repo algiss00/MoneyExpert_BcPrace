@@ -1,5 +1,6 @@
 package generator;
 
+import cz.cvut.fel.dto.TypeCurrency;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
@@ -49,7 +50,7 @@ public class Generator {
     public static BankAccount generateDefaultBankAccount() {
         final BankAccount bankAccount = new BankAccount();
         bankAccount.setBalance(1000);
-        bankAccount.setCurrency("CZK");
+        bankAccount.setCurrency(TypeCurrency.CZK);
         bankAccount.setName("Test ucet" + randomInt());
         return bankAccount;
     }
