@@ -44,7 +44,8 @@ public class DebtService extends AbstractServiceHelper {
         return persistedDebt;
     }
 
-    //every 12 hours - every 0:05, 1:05, 2:05 ....
+    //every 12 hours
+    // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
     @Scheduled(cron = "*/5 * * * * * ")
     public void checkNotifyDates() throws Exception {
         System.out.println("NOTiFY");

@@ -133,26 +133,25 @@ abstract class AbstractServiceHelper {
     }
 
     public void removeTransFromAccount(int transId, int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        Transaction t = getByIdTransaction(transId);
-        if (!isTransactionInBankAcc(b.getId(), t.getId())) {
+        BankAccount bankAccount = getByIdBankAccount(accId);
+        Transaction transaction = getByIdTransaction(transId);
+        if (!isTransactionInBankAcc(bankAccount.getId(), transaction.getId())) {
             throw new NotAuthenticatedClient();
         }
-        b.getTransactions().remove(t);
-        double actualBalance = b.getBalance();
-        if (t.getTypeTransaction() == TypeTransaction.EXPENSE) {
-            b.setBalance(actualBalance + t.getAmount());
+        bankAccount.getTransactions().remove(transaction);
+        double actualBalance = bankAccount.getBalance();
+        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            bankAccount.setBalance(actualBalance + transaction.getAmount());
         } else {
-            b.setBalance(actualBalance - t.getAmount());
+            bankAccount.setBalance(actualBalance - transaction.getAmount());
         }
-        t.setBankAccount(null);
-        bankAccountDao.update(b);
-        transactionDao.update(t);
-
-        transactionDao.remove(t);
+        transaction.setBankAccount(null);
+        bankAccountDao.update(bankAccount);
+        transactionDao.update(transaction);
+        transactionDao.remove(transaction);
     }
 
-    public boolean isTransactionInBankAcc(int bankAccountId, int transactionId) throws Exception {
+    public boolean isTransactionInBankAcc(int bankAccountId, int transactionId) {
         return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 }

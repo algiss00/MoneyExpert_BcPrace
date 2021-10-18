@@ -29,8 +29,8 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public List<Budget> getAllAccountsBudgets(int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        return b.getBudgets();
+        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+        return byIdBankAccount.getBudgets();
     }
 
     public List<Transaction> getAllTransactions(int accountId) throws Exception {
@@ -46,8 +46,8 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public List<User> getAllOwners(int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        return b.getOwners();
+        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+        return byIdBankAccount.getOwners();
     }
 
     public BankAccount persist(BankAccount bankAccount) throws Exception {
@@ -60,19 +60,21 @@ public class BankAccountService extends AbstractServiceHelper {
         u.getAvailableBankAccounts().add(bankAccount);
         userDao.update(u);
         if (bankAccount.getBalance() != 0) {
-            createStartTransaction(bankAccount);
+            Transaction startTransaction = createStartTransaction(bankAccount);
+            persistedEntity.getTransactions().add(startTransaction);
+            bankAccountDao.update(persistedEntity);
         }
         return persistedEntity;
     }
 
     public void addNewOwner(int userId, int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        User u = getByIdUser(userId);
+        BankAccount bankAccount = getByIdBankAccount(accId);
+        User user = getByIdUser(userId);
 
-        b.getOwners().add(u);
-        u.getAvailableBankAccounts().add(b);
-        bankAccountDao.update(b);
-        userDao.update(u);
+        bankAccount.getOwners().add(user);
+        user.getAvailableBankAccounts().add(bankAccount);
+        bankAccountDao.update(bankAccount);
+        userDao.update(user);
     }
 
     private boolean validate(BankAccount bankAccount) {
@@ -80,10 +82,10 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public BankAccount updateAccount(int id, BankAccount bankAccount) throws Exception {
-        BankAccount b = getByIdBankAccount(id);
-        b.setName(bankAccount.getName());
-        b.setCurrency(bankAccount.getCurrency());
-        return bankAccountDao.update(b);
+        BankAccount byIdBankAccount = getByIdBankAccount(id);
+        byIdBankAccount.setName(bankAccount.getName());
+        byIdBankAccount.setCurrency(bankAccount.getCurrency());
+        return bankAccountDao.update(byIdBankAccount);
     }
 
     public void remove(int id) throws Exception {
@@ -93,22 +95,19 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public void removeOwner(int userId, int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        User u = getByIdUser(userId);
+        BankAccount bankAccount = getByIdBankAccount(accId);
+        User user = getByIdUser(userId);
 
-        b.getOwners().remove(u);
-        u.getAvailableBankAccounts().remove(b);
-        bankAccountDao.update(b);
-        userDao.update(u);
+        bankAccount.getOwners().remove(user);
+        user.getAvailableBankAccounts().remove(bankAccount);
+        bankAccountDao.update(bankAccount);
+        userDao.update(user);
     }
 
     public void removeBudgetFromBankAcc(int budgetId, int accId) throws Exception {
-        Budget budget = budgetDao.find(budgetId);
-        if (budget == null) {
-            throw new BudgetNotFoundException();
-        }
+        Budget budget = getByIdBudget(budgetId);
         BankAccount bankAccount = getByIdBankAccount(accId);
-        if (!isBudgetInBankAcc(bankAccount, budget)) {
+        if (!isBudgetInBankAcc(budget, bankAccount)) {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getBudgets().remove(budget);
@@ -117,21 +116,18 @@ public class BankAccountService extends AbstractServiceHelper {
         bankAccountDao.update(bankAccount);
     }
 
-    private boolean isBudgetInBankAcc(BankAccount bankAccount, Budget budget) throws Exception {
+    private boolean isBudgetInBankAcc(Budget budget, BankAccount bankAccount) throws Exception {
         return budgetDao.getByBankAcc(budget.getId(), bankAccount.getId()) != null;
     }
 
-    private boolean isDebtInBankAcc(BankAccount bankAccount, Debt d) throws Exception {
+    private boolean isDebtInBankAcc(Debt d, BankAccount bankAccount) throws Exception {
         return debtDao.getByBankAccId(d.getId(), bankAccount.getId()) != null;
     }
 
-    public void removeDebt(int id, int accId) throws Exception {
-        Debt debt = debtDao.find(id);
-        if (debt == null) {
-            throw new DebtNotFoundException();
-        }
+    public void removeDebt(int debtId, int accId) throws Exception {
+        Debt debt = getByIdDebt(debtId);
         BankAccount bankAccount = getByIdBankAccount(accId);
-        if (!isDebtInBankAcc(bankAccount, debt)) {
+        if (!isDebtInBankAcc(debt, bankAccount)) {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getDebts().remove(debt);
@@ -141,15 +137,7 @@ public class BankAccountService extends AbstractServiceHelper {
         bankAccountDao.update(bankAccount);
     }
 
-    public void removeAllTrans(int accId) throws Exception {
-        BankAccount b = getByIdBankAccount(accId);
-        for (Transaction t : b.getTransactions()) {
-            removeTransFromAccount(t.getId(), b.getId());
-        }
-    }
-
-
-    private void createStartTransaction(BankAccount bankAccount) throws Exception {
+    private Transaction createStartTransaction(BankAccount bankAccount) throws Exception {
         Transaction startTransaction = new Transaction();
         Category category = getByIdCategory(-6);
 
@@ -160,6 +148,6 @@ public class BankAccountService extends AbstractServiceHelper {
         startTransaction.setDate(new Date());
         startTransaction.setTypeTransaction(TypeTransaction.INCOME);
 
-        transactionDao.persist(startTransaction);
+        return transactionDao.persist(startTransaction);
     }
 }

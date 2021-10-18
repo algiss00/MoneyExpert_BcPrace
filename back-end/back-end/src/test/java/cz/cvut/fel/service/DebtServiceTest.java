@@ -16,7 +16,11 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -27,6 +31,7 @@ public class DebtServiceTest {
     private User user = Generator.generateDefaultUser();
     private UserDao userDao;
     private BankAccountDao bankAccountDao;
+    private NotifyDebtDao notifyDebtDao;
 
     @BeforeEach
     public void setUp() {
@@ -36,7 +41,7 @@ public class DebtServiceTest {
         BudgetDao budgetDao = mock(BudgetDao.class);
         CategoryDao categoryDao = mock(CategoryDao.class);
         NotifyBudgetDao notifyBudgetDao = mock(NotifyBudgetDao.class);
-        NotifyDebtDao notifyDebtDao = mock(NotifyDebtDao.class);
+        notifyDebtDao = mock(NotifyDebtDao.class);
         userDao = mock(UserDao.class);
 
         debtService = new DebtService(userDao, bankAccountDao, transactionDao,
@@ -101,6 +106,83 @@ public class DebtServiceTest {
             Debt founded = debtService.getByIdDebt(debt.getId());
             verify(debtDao, times(1)).find(debt.getId());
             assertEquals(debt, founded);
+        }
+    }
+
+    @Test
+    public void checkNotifyDates_mockTest_success() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date notify = formatter.parse("2021-10-05");
+
+        Debt debt = Generator.generateDefaultDebt();
+        debt.setCreator(user);
+        debt.setNotifyDate(notify);
+
+        Debt debt1 = Generator.generateDefaultDebt();
+        debt1.setCreator(user);
+        debt1.setNotifyDate(notify);
+
+        Debt debt2 = Generator.generateDefaultDebt();
+        debt2.setCreator(user);
+        debt2.setNotifyDate(notify);
+
+        Debt debt3 = Generator.generateDefaultDebt();
+        debt3.setCreator(user);
+        debt3.setNotifyDate(notify);
+
+        Debt[] notifyDebts = {debt, debt1, debt2, debt3};
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.getNotifyDebts()).thenReturn(Arrays.asList(notifyDebts));
+            debtService.checkNotifyDates();
+            verify(debtDao, times(1)).getNotifyDebts();
+            verify(notifyDebtDao, times(4)).persist(any());
+        }
+    }
+
+    @Test
+    public void checkNotifyDatesEmpty_mockTest_success() throws Exception {
+        Debt debt = Generator.generateDefaultDebt();
+        debt.setCreator(user);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.find(debt.getId())).thenReturn(debt);
+            when(debtDao.getNotifyDebts()).thenReturn(Collections.emptyList());
+            List<Debt> notifyDebts = debtDao.getNotifyDebts();
+            assertTrue(notifyDebts.isEmpty());
+            debtService.checkNotifyDates();
+            verify(debtDao, times(2)).getNotifyDebts();
+        }
+    }
+
+    @Test
+    public void checkDeadlineDates_mockTest_success() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date deadline = formatter.parse("2021-10-05");
+
+        Debt debt = Generator.generateDefaultDebt();
+        debt.setCreator(user);
+        debt.setDeadline(deadline);
+
+        Debt debt1 = Generator.generateDefaultDebt();
+        debt1.setCreator(user);
+        debt1.setDeadline(deadline);
+
+        Debt debt2 = Generator.generateDefaultDebt();
+        debt2.setCreator(user);
+        debt2.setDeadline(deadline);
+
+        Debt debt3 = Generator.generateDefaultDebt();
+        debt3.setCreator(user);
+        debt3.setDeadline(deadline);
+
+        Debt[] deadlineDebts = {debt, debt1, debt2, debt3};
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.getDeadlineDebts()).thenReturn(Arrays.asList(deadlineDebts));
+            debtService.checkDeadlineDates();
+            verify(debtDao, times(1)).getDeadlineDebts();
+            verify(notifyDebtDao, times(4)).persist(any());
         }
     }
 }

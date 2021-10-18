@@ -2,7 +2,9 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Category;
+import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import generator.Generator;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -24,12 +27,14 @@ public class CategoryServiceTest {
     private CategoryDao categoryDao;
     private User user = Generator.generateDefaultUser();
     private UserDao userDao;
+    private TransactionDao transactionDao;
+    private BankAccountDao bankAccountDao;
 
     @BeforeEach
     public void setUp() {
         categoryDao = mock(CategoryDao.class);
-        TransactionDao transactionDao = mock(TransactionDao.class);
-        BankAccountDao bankAccountDao = mock(BankAccountDao.class);
+        transactionDao = mock(TransactionDao.class);
+        bankAccountDao = mock(BankAccountDao.class);
         BudgetDao budgetDao = mock(BudgetDao.class);
         DebtDao debtDao = mock(DebtDao.class);
         NotifyBudgetDao notifyBudgetDao = mock(NotifyBudgetDao.class);
@@ -92,6 +97,27 @@ public class CategoryServiceTest {
             Category founded = categoryService.getByIdCategory(category.getId());
             verify(categoryDao, times(1)).find(anyInt());
             assertEquals(category, founded);
+        }
+    }
+
+    @Test
+    public void addTransactionToCategory_MockTest_success() throws Exception {
+        Category category = Generator.generateDefaultCategory();
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        Transaction transaction = Generator.generateDefaultTransaction();
+        transaction.setBankAccount(bankAccount);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(categoryDao.find(anyInt())).thenReturn(category);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
+            when(transactionDao.find(transaction.getId())).thenReturn(transaction);
+            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+
+            categoryService.addTransactionToCategory(transaction.getId(), category.getId());
+            verify(categoryDao, times(1)).update(any());
+            verify(transactionDao, times(1)).update(any());
+            assertEquals(1, category.getTransactions().size());
+            assertEquals(transaction, category.getTransactions().get(0));
         }
     }
 }

@@ -114,12 +114,6 @@ public class BankAccountController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/all-transactions")
-    ResponseEntity<Void> removeAllTransactions(@RequestParam int accId) throws Exception {
-        bankAccountService.removeAllTrans(accId);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     @DeleteMapping(value = "debt")
     ResponseEntity<Void> removeDebt(@RequestParam int debtId, @RequestParam int accId) throws Exception {
         bankAccountService.removeDebt(debtId, accId);
