@@ -33,7 +33,7 @@ public class CategoryService extends AbstractServiceHelper {
 
     public Category persist(Category category) throws Exception {
         Objects.requireNonNull(category);
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         if (!validate(category, u))
             throw new NotValidDataException("category");
         category.getCreators().add(u);

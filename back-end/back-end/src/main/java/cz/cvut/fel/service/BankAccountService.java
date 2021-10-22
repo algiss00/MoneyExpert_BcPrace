@@ -25,7 +25,7 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     public List<BankAccount> getByName(String name) throws Exception {
-        return bankAccountDao.getByName(name, isLogged().getId());
+        return bankAccountDao.getByName(name, getAuthenticatedUser().getId());
     }
 
     public List<Budget> getAllAccountsBudgets(int accId) throws Exception {
@@ -54,7 +54,7 @@ public class BankAccountService extends AbstractServiceHelper {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             throw new NotValidDataException("bankAccount");
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         bankAccount.getOwners().add(u);
         BankAccount persistedEntity = bankAccountDao.persist(bankAccount);
         u.getAvailableBankAccounts().add(bankAccount);

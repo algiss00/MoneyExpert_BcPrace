@@ -41,21 +41,21 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public List<BankAccount> getAvailableAccounts() throws NotAuthenticatedClient {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         return u.getAvailableBankAccounts();
     }
 
     public List<Budget> getAllUsersBudgets() throws NotAuthenticatedClient {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         return u.getMyBudgets();
     }
 
     public List<Category> getAllUsersCategories() throws Exception {
-        return categoryDao.getUsersCategory(isLogged().getId());
+        return categoryDao.getUsersCategory(getAuthenticatedUser().getId());
     }
 
     public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {
-        return debtDao.getUsersDebt(isLogged().getId());
+        return debtDao.getUsersDebt(getAuthenticatedUser().getId());
     }
 
     public User persist(User userObj) throws Exception {
@@ -74,7 +74,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public User updateUserBasic(User user) throws Exception {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         u.setName(user.getName());
         u.setLastname(user.getLastname());
         return userDao.update(u);
@@ -82,7 +82,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public User updateUsername(String username) throws Exception {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         if (getByUsername(username) != null) {
             throw new Exception("Username is taken");
         }
@@ -91,7 +91,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public User updateEmail(String email) throws Exception {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         if (getByEmail(email) != null) {
             throw new Exception("Email is taken");
         }
@@ -100,7 +100,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public void remove() throws NotAuthenticatedClient {
-        User user = isLogged();
+        User user = getAuthenticatedUser();
         user.getAvailableBankAccounts().clear();
         user.getMyBudgets().clear();
         user.getMyCategories().clear();

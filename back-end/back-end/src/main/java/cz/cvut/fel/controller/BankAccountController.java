@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/bank-account")
 public class BankAccountController {
     private final BankAccountService bankAccountService;
     private static final Logger log = Logger.getLogger(BankAccountController.class.getName());

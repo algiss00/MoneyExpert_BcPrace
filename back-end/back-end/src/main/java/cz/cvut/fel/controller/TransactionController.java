@@ -88,9 +88,6 @@ public class TransactionController {
     ResponseEntity<Transaction> add(@RequestParam int accId, @RequestParam int categoryId, @RequestBody Transaction transaction)
             throws Exception {
         Transaction t = transactionService.persist(transaction, accId, categoryId);
-        if (t == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 

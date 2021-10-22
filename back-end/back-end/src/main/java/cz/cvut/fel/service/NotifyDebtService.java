@@ -25,11 +25,11 @@ public class NotifyDebtService extends AbstractServiceHelper {
     }
 
     public List<NotifyDebt> getUsersNotifyDebts() throws NotAuthenticatedClient {
-        return notifyDebtDao.getUsersNotifyDebts(isLogged().getId());
+        return notifyDebtDao.getUsersNotifyDebts(getAuthenticatedUser().getId());
     }
 
     public List<NotifyDebt> getUsersNotifyDebtsByType(TypeNotification typeNotification) throws NotAuthenticatedClient {
-        return notifyDebtDao.getUsersNotifyDebtsByType(isLogged().getId(), typeNotification);
+        return notifyDebtDao.getUsersNotifyDebtsByType(getAuthenticatedUser().getId(), typeNotification);
     }
 
     public NotifyDebt getByIdNotifyDebt(int id) throws NotifyDebtNotFoundException {

@@ -28,20 +28,19 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     public Debt getByName(String name) throws Exception {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         return debtDao.getByName(u.getId(), name);
     }
 
     public Debt persist(Debt debt, int accId) throws Exception {
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
         if (!validate(debt, u))
             throw new NotValidDataException("debt");
         debt.setCreator(u);
         debt.setBankAccount(bankAccount);
-        Debt persistedDebt = debtDao.persist(debt);
-        return persistedDebt;
+        return debtDao.persist(debt);
     }
 
     //every 12 hours

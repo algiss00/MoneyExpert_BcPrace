@@ -3,7 +3,6 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyBudget;
-import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
 import cz.cvut.fel.service.exceptions.NotifyBudgetNotFoundException;
@@ -26,11 +25,11 @@ public class NotifyBudgetService extends AbstractServiceHelper {
     }
 
     public List<NotifyBudget> getUsersNotifyBudgets() throws NotAuthenticatedClient {
-        return notifyBudgetDao.getUsersNotifyBudgets(isLogged().getId());
+        return notifyBudgetDao.getUsersNotifyBudgets(getAuthenticatedUser().getId());
     }
 
     public List<NotifyBudget> getUsersNotifyBudgetsByType(TypeNotification typeNotification) throws NotAuthenticatedClient {
-        return notifyBudgetDao.getUsersNotifyBudgetsByType(isLogged().getId(), typeNotification);
+        return notifyBudgetDao.getUsersNotifyBudgetsByType(getAuthenticatedUser().getId(), typeNotification);
     }
 
     public NotifyBudget getByIdNotifyBudget(int id) throws NotifyBudgetNotFoundException {

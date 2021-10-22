@@ -31,7 +31,7 @@ abstract class AbstractServiceHelper {
         this.notifyDebtDao = notifyDebtDao;
     }
 
-    public User isLogged() throws NotAuthenticatedClient {
+    public User getAuthenticatedUser() throws NotAuthenticatedClient {
         try {
             User user = userDao.find(SecurityUtils.getCurrentUser().getId());
             if (user == null) {
@@ -90,13 +90,13 @@ abstract class AbstractServiceHelper {
     }
 
     public boolean isOwnerOfBudget(Budget budget) throws NotAuthenticatedClient {
-        User user = isLogged();
+        User user = getAuthenticatedUser();
         User creator = budget.getCreator();
         return creator.getId() == user.getId();
     }
 
     public boolean isCreatorOfDebt(Debt debt) throws NotAuthenticatedClient {
-        User user = isLogged();
+        User user = getAuthenticatedUser();
         return debt.getCreator().getId() == user.getId();
     }
 
@@ -112,7 +112,7 @@ abstract class AbstractServiceHelper {
     }
 
     public boolean isCreatorOfCategory(int categoryId) throws Exception {
-        User user = isLogged();
+        User user = getAuthenticatedUser();
         return categoryDao.getUsersCategoryById(user.getId(), categoryId) != null;
     }
 
@@ -128,7 +128,7 @@ abstract class AbstractServiceHelper {
     }
 
     public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws Exception {
-        User user = isLogged();
+        User user = getAuthenticatedUser();
         return bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 

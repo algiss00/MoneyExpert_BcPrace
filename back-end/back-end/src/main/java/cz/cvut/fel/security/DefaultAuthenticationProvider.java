@@ -26,6 +26,7 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // todo javadoc
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getPrincipal().toString();
@@ -35,7 +36,6 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
 
         if (!passwordEncoder.matches(password, userDetails.getPassword()))
             throw new BadCredentialsException("Bad Credentials.");
-        userDetails.eraseCredentials();
         return SecurityUtils.setCurrentUser(userDetails);
     }
 

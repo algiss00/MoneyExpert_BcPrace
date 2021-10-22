@@ -33,7 +33,7 @@ public class BudgetService extends AbstractServiceHelper {
     public Budget persist(Budget budget, int accId, int categoryId) throws
             Exception {
         Objects.requireNonNull(budget);
-        User u = isLogged();
+        User u = getAuthenticatedUser();
         Category category = getByIdCategory(categoryId);
 
         BankAccount bankAccount = getByIdBankAccount(accId);
