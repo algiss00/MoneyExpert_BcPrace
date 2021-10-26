@@ -43,18 +43,16 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.persist(debt);
     }
 
-    //every 12 hours
+    //every 12 hours - "0 0 */12 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
     @Scheduled(cron = "*/5 * * * * * ")
     public void checkNotifyDates() throws Exception {
         System.out.println("NOTiFY");
-        //check if exists, maybe every 12 hours notificate check
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
         if (notifyDebts.isEmpty()) {
             System.out.println("EMPTY");
             return;
         }
-        // test
         notifyDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
         for (Debt notifiedDebt : notifyDebts) {
             if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_NOTIFY)) {

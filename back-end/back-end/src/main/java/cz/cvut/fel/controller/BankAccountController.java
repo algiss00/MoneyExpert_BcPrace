@@ -1,7 +1,5 @@
 package cz.cvut.fel.controller;
 
-import cz.cvut.fel.dto.SortAttribute;
-import cz.cvut.fel.dto.SortOrder;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Debt;
