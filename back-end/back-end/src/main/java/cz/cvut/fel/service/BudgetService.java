@@ -51,7 +51,8 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     private boolean validate(Budget budget, int bankAccountId, int catId) throws Exception {
-        if (budget.getName().trim().isEmpty() || budget.getAmount() <= 0) {
+        if (budget.getName().trim().isEmpty() || budget.getAmount() <= 0
+                || budget.getPercentNotif() > 100) {
             return false;
         }
         return getBudgetByCategoryInBankAcc(catId, bankAccountId) == null;

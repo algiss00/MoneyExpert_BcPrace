@@ -139,7 +139,7 @@ abstract class AbstractServiceHelper {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getTransactions().remove(transaction);
-        double actualBalance = bankAccount.getBalance();
+        Double actualBalance = bankAccount.getBalance();
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             bankAccount.setBalance(actualBalance + transaction.getAmount());
         } else {

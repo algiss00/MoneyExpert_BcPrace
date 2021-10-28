@@ -48,7 +48,7 @@ public class BankAccountServiceTest {
     @Test
     public void persist_withoutStartTransaction_mockTest_success() throws Exception {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
-        bankAccount.setBalance(0);
+        bankAccount.setBalance(0D);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.persist(bankAccount)).thenReturn(bankAccount);

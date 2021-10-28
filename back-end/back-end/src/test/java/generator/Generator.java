@@ -49,7 +49,7 @@ public class Generator {
 
     public static BankAccount generateDefaultBankAccount() {
         final BankAccount bankAccount = new BankAccount();
-        bankAccount.setBalance(1000);
+        bankAccount.setBalance(1000D);
         bankAccount.setCurrency(TypeCurrency.CZK);
         bankAccount.setName("Test ucet" + randomInt());
         return bankAccount;

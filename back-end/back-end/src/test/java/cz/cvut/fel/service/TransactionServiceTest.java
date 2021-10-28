@@ -225,7 +225,7 @@ public class TransactionServiceTest {
         fromBankAcc.setId(1);
         BankAccount toBankAcc = Generator.generateDefaultBankAccount();
         toBankAcc.setId(2);
-        toBankAcc.setBalance(150);
+        toBankAcc.setBalance(150D);
         toBankAcc.setCurrency(TypeCurrency.EUR);
 
         transaction.setBankAccount(fromBankAcc);
@@ -233,7 +233,7 @@ public class TransactionServiceTest {
 
         fromBankAcc.getTransactions().add(transaction);
         // predpokladame ze startovni balance byl 2000 potom expense transaction 1000 a mame actual balance 1000
-        fromBankAcc.setBalance(1000);
+        fromBankAcc.setBalance(1000D);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             HelperFunctions.prepareTransactionServiceTest(fromBankAcc, category, categoryDao, bankAccountDao);
@@ -263,14 +263,14 @@ public class TransactionServiceTest {
         fromBankAcc.setId(1);
         BankAccount toBankAcc = Generator.generateDefaultBankAccount();
         toBankAcc.setId(2);
-        toBankAcc.setBalance(1500);
+        toBankAcc.setBalance(1500D);
 
         transaction.setBankAccount(fromBankAcc);
         transaction.setCategory(category);
 
         fromBankAcc.getTransactions().add(transaction);
         // predpokladame ze startovni balance byl 2000 potom expense transaction 1000 a mame actual balance 1000
-        fromBankAcc.setBalance(1000);
+        fromBankAcc.setBalance(1000D);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             HelperFunctions.prepareTransactionServiceTest(fromBankAcc, category, categoryDao, bankAccountDao);

@@ -78,7 +78,11 @@ public class BankAccountService extends AbstractServiceHelper {
     }
 
     private boolean validate(BankAccount bankAccount) {
-        return !bankAccount.getName().trim().isEmpty();
+        if (bankAccount.getName().trim().isEmpty() || bankAccount.getCurrency() == null
+                || bankAccount.getBalance() == null) {
+            return false;
+        }
+        return true;
     }
 
     public BankAccount updateAccount(int id, BankAccount bankAccount) throws Exception {

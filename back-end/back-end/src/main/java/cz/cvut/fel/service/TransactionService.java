@@ -114,7 +114,10 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     private boolean validate(Transaction t) {
-        return !(t.getAmount() <= 0);
+        if(t.getTypeTransaction() == null || t.getAmount() <= 0){
+            return false;
+        }
+        return true;
     }
 
     private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
@@ -218,7 +221,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     private void updateTransactionTypeLogic(Transaction oldTransaction, TypeTransaction typeTransaction, BankAccount transBankAcc) {
-        double balance = transBankAcc.getBalance();
+        Double balance = transBankAcc.getBalance();
         if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.EXPENSE) {
             transBankAcc.setBalance(balance - oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
@@ -229,7 +232,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) {
-        double balance = transBankAcc.getBalance();
+        Double balance = transBankAcc.getBalance();
         if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);

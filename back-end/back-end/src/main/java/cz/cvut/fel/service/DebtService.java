@@ -99,7 +99,7 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     private boolean validate(Debt debt, User user) throws Exception {
-        if (debt.getName().trim().isEmpty()) {
+        if (debt.getName().trim().isEmpty() || debt.getAmount() <= 0 || debt.getDeadline().before(debt.getNotifyDate())) {
             return false;
         }
         return debtDao.getByName(user.getId(), debt.getName()) == null;
