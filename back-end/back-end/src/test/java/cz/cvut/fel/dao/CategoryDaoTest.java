@@ -74,10 +74,10 @@ public class CategoryDaoTest {
 
     @Test
     public void remove() {
-        Category category = categoryDao.find(-2);
+        Category category = categoryDao.find(1);
         assertNotNull(category);
         categoryDao.remove(category);
-        assertNull(categoryDao.find(-2));
+        assertNull(categoryDao.find(1));
     }
 
     @Test

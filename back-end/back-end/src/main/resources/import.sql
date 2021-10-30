@@ -9,3 +9,4 @@ INSERT INTO category_table VALUES (-8, 'Jizdenky');
 INSERT INTO category_table VALUES (-9, 'Zdravi');
 INSERT INTO category_table VALUES (-10, 'Mzda');
 INSERT INTO category_table VALUES (-11, 'Darek');
+INSERT INTO category_table VALUES (-12, 'No category');

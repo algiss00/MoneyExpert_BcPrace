@@ -26,7 +26,12 @@ public class DefaultAuthenticationProvider implements AuthenticationProvider {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // todo javadoc
+    /**
+     * authentication method - nastavi AuthenticationToken
+     * @param authentication - data from user
+     * @return - vrati User AuthToken
+     * @throws AuthenticationException
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getPrincipal().toString();

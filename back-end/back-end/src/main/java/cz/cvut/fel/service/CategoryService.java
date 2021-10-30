@@ -61,11 +61,34 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.getUsersCategoryByName(user.getId(), category.getName()) == null;
     }
 
+    /**
+     * Pri smazani category nastavim defualt category u vsech jeji transakci na "No category"
+     * Je zakazno delete default categories - maji id od -1 do -12
+     *
+     * @param id
+     * @throws Exception
+     */
     public void remove(int id) throws Exception {
+        if (id < 0) {
+            throw new Exception("Deleting a category is prohibited ");
+        }
         Category ca = getByIdCategory(id);
+        ca.getTransactions().forEach(transaction -> {
+            try {
+                // "No category" entity
+                transaction.setCategory(getByIdCategory(-12));
+                transactionDao.update(transaction);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         ca.getTransactions().clear();
         ca.setBudget(null);
         ca.setCreators(null);
+        // delete relation
+        categoryDao.deleteUsersRelationCategoryById(getAuthenticatedUser().getId(), id);
+        //delete entity from db
         categoryDao.remove(ca);
     }
 

@@ -32,7 +32,7 @@ public class CategoryDao extends AbstractDao<Category> {
         try {
             return em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
-                            "where relation.user_id = :userId",
+                            "where relation.user_id = :userId order by cat.id desc",
                     Category.class)
                     .setParameter("userId", uid)
                     .getResultList();
@@ -70,6 +70,20 @@ public class CategoryDao extends AbstractDao<Category> {
                     .setMaxResults(1)
                     .getResultList()
                     .stream().findFirst().orElse(null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception CategoryDao");
+        }
+    }
+
+    public void deleteUsersRelationCategoryById(int uid, int catId) throws Exception {
+        try {
+            em.createNativeQuery("DELETE FROM relation_category_user " +
+                            "WHERE category_id = :catId and user_id = :uid",
+                    Category.class)
+                    .setParameter("uid", uid)
+                    .setParameter("catId", catId)
+                    .executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new Exception("Exception CategoryDao");
