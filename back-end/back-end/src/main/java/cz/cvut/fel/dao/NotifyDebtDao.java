@@ -5,6 +5,8 @@ import cz.cvut.fel.dto.TypeNotification;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,7 +49,31 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
                     .stream().findFirst().orElse(null);
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception NotifyBudgetDao");
+            throw new Exception("Exception NotifyDebtDao");
+        }
+    }
+
+    public List<NotifyDebt> getNotifyDebtByDebtId(int uid, int debtId) throws Exception {
+        try {
+            return em.createNamedQuery("Notify.getNotifyDebtByDebtId", NotifyDebt.class)
+                    .setParameter("uid", uid)
+                    .setParameter("debtId", debtId)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public void deleteNotifyDebtByDebtId(int uid, int debtId) throws Exception {
+        try {
+            em.createNamedQuery("Notify.deleteNotifyDebtByDebtId")
+                    .setParameter("uid", uid)
+                    .setParameter("debtId", debtId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception NotifyDebtDao");
         }
     }
 

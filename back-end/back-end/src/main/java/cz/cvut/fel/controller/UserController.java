@@ -96,7 +96,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/delete-account")
-    ResponseEntity<Void> remove() throws NotAuthenticatedClient {
+    ResponseEntity<Void> remove() throws Exception {
         userService.remove();
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

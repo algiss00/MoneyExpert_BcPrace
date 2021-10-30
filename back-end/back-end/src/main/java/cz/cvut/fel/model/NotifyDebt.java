@@ -13,15 +13,20 @@ import javax.persistence.*;
                 " AND n.typeNotification = :type"),
         @NamedQuery(name = "Notify.getUsersNotifyDebtsByType", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid " +
                 "and n.typeNotification = :typeNotif"),
-        @NamedQuery(name = "Notify.getUsersNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid")
+        @NamedQuery(name = "Notify.getUsersNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid"),
+        @NamedQuery(name = "Notify.getNotifyDebtByDebtId", query = "SELECT n FROM NotifyDebt n " +
+                "where n.creator.id = :uid and n.debt.id = :debtId"),
+        @NamedQuery(name = "Notify.deleteNotifyDebtByDebtId", query = "delete FROM NotifyDebt n " +
+                "where n.creator.id = :uid and n.debt.id = :debtId")
 })
 public class NotifyDebt extends AbstractEntity {
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "debt_id")
     private Debt debt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User creator;
 
     @Enumerated(EnumType.STRING)

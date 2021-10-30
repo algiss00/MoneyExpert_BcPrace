@@ -63,12 +63,6 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.getByCategory(catId, bankAccId);
     }
 
-    public boolean remove(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
-        Budget bu = getByIdBudget(id);
-        budgetDao.remove(bu);
-        return true;
-    }
-
     public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
         Budget b = getByIdBudget(id);
         b.setName(budget.getName());

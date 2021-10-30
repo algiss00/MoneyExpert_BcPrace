@@ -35,7 +35,7 @@ public class CategoryDaoTest {
 
     @Test
     public void getUsersCategory() {
-        List<Category> categories = categoryDao.getUsersCategory(10);
+        List<Category> categories = categoryDao.getAllUsersCategory(10);
         assertFalse(categories.isEmpty());
         assertEquals(2, categories.size());
 
@@ -47,7 +47,7 @@ public class CategoryDaoTest {
 
     @Test
     public void getUsersCategoryEmpty() {
-        List<Category> categories = categoryDao.getUsersCategory(12);
+        List<Category> categories = categoryDao.getAllUsersCategory(12);
         assertTrue(categories.isEmpty());
     }
 

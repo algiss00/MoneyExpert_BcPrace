@@ -154,4 +154,63 @@ abstract class AbstractServiceHelper {
     public boolean isTransactionInBankAcc(int bankAccountId, int transactionId) {
         return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
+
+    public void removeBudget(int id) throws Exception {
+        Budget bu = getByIdBudget(id);
+        deleteNotifyBudgetByBudgetId(bu.getId());
+        budgetDao.remove(bu);
+    }
+
+    /**
+     * Delete notifyBudget by Budget Id, if not exists then do nothing
+     *
+     * @param budgetId
+     * @throws Exception
+     */
+    private void deleteNotifyBudgetByBudgetId(int budgetId) throws Exception {
+        int uid = getAuthenticatedUser().getId();
+        // get notifyBudget by budgetId test if exists
+        if (notifyBudgetDao.getNotifyBudgetByBudgetId(uid, budgetId).isEmpty()) {
+            return;
+        }
+        notifyBudgetDao.deleteNotifyBudgetByBudgetId(uid, budgetId);
+    }
+
+    public void removeDebt(int id) throws Exception {
+        Debt debt = getByIdDebt(id);
+        removeNotifyDebtByDebtId(id);
+        debtDao.remove(debt);
+    }
+
+    /**
+     * Delete notifydebt by Debt Id, if not exists then do nothing
+     * @param debtId
+     * @throws Exception
+     */
+    private void removeNotifyDebtByDebtId(int debtId) throws Exception {
+        int uid = getAuthenticatedUser().getId();
+        // get notifyDebt by debtId test if exists
+        if (notifyDebtDao.getNotifyDebtByDebtId(uid, debtId).isEmpty()) {
+            return;
+        }
+        notifyDebtDao.deleteNotifyDebtByDebtId(uid, debtId);
+    }
+
+    /**
+     * Nejdrive smazu relation a potom samotnou entitu
+     *
+     * @param id
+     * @throws Exception
+     */
+    public void removeBankAcc(int id) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(id);
+        bankAccount.getOwners().clear();
+        bankAccount.getBudgets().clear();
+        bankAccount.getDebts().clear();
+        // delete relation
+        bankAccountDao.deleteRelationBankAcc(getAuthenticatedUser().getId(), id);
+        // delete entity from db
+        bankAccountDao.remove(bankAccount);
+    }
+
 }

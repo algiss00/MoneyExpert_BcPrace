@@ -31,6 +31,12 @@ public class User extends AbstractEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    // todo - getter and setters
+//    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+//    @JsonIgnore
+//    private List<BankAccount> createdBankAccounts;
+
+    // todo - maybe not cascade all
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "relation_bankAccount_user",
@@ -39,7 +45,7 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<BankAccount> availableBankAccounts;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "relation_category_user",
             joinColumns = @JoinColumn(name = "user_id"),

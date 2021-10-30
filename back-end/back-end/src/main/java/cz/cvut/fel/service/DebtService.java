@@ -45,7 +45,7 @@ public class DebtService extends AbstractServiceHelper {
 
     //every 12 hours - "0 0 */12 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
-    @Scheduled(cron = "*/5 * * * * * ")
+    @Scheduled(cron = "*/20 * * * * * ")
     public void checkNotifyDates() throws Exception {
         System.out.println("NOTiFY");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
@@ -73,7 +73,7 @@ public class DebtService extends AbstractServiceHelper {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
-    @Scheduled(cron = "*/6 * * * * * ")
+    @Scheduled(cron = "*/20 * * * * * ")
     public void checkDeadlineDates() throws Exception {
         System.out.println("DEADLINE");
         List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
@@ -103,11 +103,6 @@ public class DebtService extends AbstractServiceHelper {
             return false;
         }
         return debtDao.getByName(user.getId(), debt.getName()) == null;
-    }
-
-    public void remove(int id) throws NotAuthenticatedClient, DebtNotFoundException {
-        Debt debt = getByIdDebt(id);
-        debtDao.remove(debt);
     }
 
     public Debt updateDebt(int id, Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {

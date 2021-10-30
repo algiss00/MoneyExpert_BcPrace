@@ -66,7 +66,7 @@ public class CategoryServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(categoryDao.find(anyInt())).thenReturn(category);
             when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
-            categoryService.remove(category.getId());
+            categoryService.removeCategory(category.getId());
             verify(categoryDao, times(1)).remove(category);
         }
     }

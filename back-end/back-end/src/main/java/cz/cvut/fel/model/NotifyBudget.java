@@ -13,12 +13,15 @@ import javax.persistence.*;
                 "AND n.typeNotification = :type"),
         @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgetByType", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid " +
                 "and n.typeNotification = :typeNotif"),
-        @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgets", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid")
+        @NamedQuery(name = "NotifyBudget.getNotifyBudgetByBudgetId", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid " +
+                "and n.budget.id = :budgetId"),
+        @NamedQuery(name = "NotifyBudget.getUsersNotifyBudgets", query = "SELECT n FROM NotifyBudget n where n.creator.id = :uid"),
+        @NamedQuery(name = "NotifyBudget.deleteNotifyBudgetByBudgetId", query = "delete FROM NotifyBudget n " +
+                "where n.creator.id = :uid and n.budget.id = :budgetId")
 })
 public class NotifyBudget extends AbstractEntity {
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "budget_id")
-    @JsonIgnore
     private Budget budget;
 
     @ManyToOne

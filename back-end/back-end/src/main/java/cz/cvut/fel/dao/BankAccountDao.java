@@ -54,6 +54,18 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         }
     }
 
+    public void deleteRelationBankAcc(int uid, int bankAccId) throws Exception {
+        try {
+            em.createNativeQuery("DELETE FROM relation_bank_account_user WHERE user_id = :uid and bank_account_id = :bankAccId")
+                    .setParameter("uid", uid)
+                    .setParameter("bankAccId", bankAccId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BankAccountDao");
+        }
+    }
+
     @Override
     public List<BankAccount> findAll() {
         return em.createNamedQuery("BankAccount.getAll", BankAccount.class).getResultList();

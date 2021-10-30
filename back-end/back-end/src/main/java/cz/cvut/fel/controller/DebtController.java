@@ -55,8 +55,8 @@ public class DebtController {
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
-        debtService.remove(id);
+    ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
+        debtService.removeDebt(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

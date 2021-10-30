@@ -2,6 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,10 @@ public class CategoryService extends AbstractServiceHelper {
 
     public List<Category> getAll() {
         return categoryDao.findAll();
+    }
+
+    public List<Category> getUsersCreatedCategory() throws NotAuthenticatedClient {
+        return categoryDao.getUsersCreatedCategory(getAuthenticatedUser().getId());
     }
 
     public Budget getBudget(int catId) throws Exception {
@@ -68,7 +73,7 @@ public class CategoryService extends AbstractServiceHelper {
      * @param id
      * @throws Exception
      */
-    public void remove(int id) throws Exception {
+    public void removeCategory(int id) throws Exception {
         if (id < 0) {
             throw new Exception("Deleting a category is prohibited ");
         }

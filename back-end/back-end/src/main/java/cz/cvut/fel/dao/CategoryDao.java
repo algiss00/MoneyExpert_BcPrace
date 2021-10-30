@@ -28,11 +28,25 @@ public class CategoryDao extends AbstractDao<Category> {
         return em.createNamedQuery("Category.getDefault", Category.class).getResultList();
     }
 
-    public List<Category> getUsersCategory(int uid) {
+    public List<Category> getAllUsersCategory(int uid) {
         try {
             return em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
                             "where relation.user_id = :userId order by cat.id desc",
+                    Category.class)
+                    .setParameter("userId", uid)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Category> getUsersCreatedCategory(int uid) {
+        try {
+            return em.createNativeQuery("SELECT * FROM category_table as cat inner JOIN relation_category_user as relation " +
+                            "ON relation.category_id = cat.id " +
+                            "where relation.user_id = :userId and relation.category_id >= 0 order by cat.id desc",
                     Category.class)
                     .setParameter("userId", uid)
                     .getResultList();
@@ -79,8 +93,7 @@ public class CategoryDao extends AbstractDao<Category> {
     public void deleteUsersRelationCategoryById(int uid, int catId) throws Exception {
         try {
             em.createNativeQuery("DELETE FROM relation_category_user " +
-                            "WHERE category_id = :catId and user_id = :uid",
-                    Category.class)
+                    "WHERE category_id = :catId and user_id = :uid")
                     .setParameter("uid", uid)
                     .setParameter("catId", catId)
                     .executeUpdate();

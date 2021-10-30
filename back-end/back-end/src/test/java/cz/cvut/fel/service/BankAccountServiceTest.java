@@ -87,7 +87,7 @@ public class BankAccountServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
             when(bankAccountDao.getUsersBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
-            bankAccountService.remove(bankAccount.getId());
+            bankAccountService.removeBankAcc(bankAccount.getId());
             verify(bankAccountDao, times(1)).remove(bankAccount);
         }
     }

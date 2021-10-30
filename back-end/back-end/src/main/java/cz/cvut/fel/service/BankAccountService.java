@@ -92,12 +92,6 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.update(byIdBankAccount);
     }
 
-    public void remove(int id) throws Exception {
-        BankAccount bankAccount = getByIdBankAccount(id);
-        bankAccount.getOwners().clear();
-        bankAccountDao.remove(bankAccount);
-    }
-
     public void removeOwner(int userId, int accId) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(accId);
         User user = getByIdUser(userId);

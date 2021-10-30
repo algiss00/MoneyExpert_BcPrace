@@ -51,7 +51,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     public List<Category> getAllUsersCategories() throws Exception {
-        return categoryDao.getUsersCategory(getAuthenticatedUser().getId());
+        return categoryDao.getAllUsersCategory(getAuthenticatedUser().getId());
     }
 
     public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {
@@ -99,12 +99,38 @@ public class UserService extends AbstractServiceHelper {
         return userDao.update(u);
     }
 
-    public void remove() throws NotAuthenticatedClient {
+    /**
+     * First delete debts and budgets in their is deleted all Notifies entities,
+     * after delete all relation with category then delete all user-created categories,
+     * after delete all users bankAccounts
+     *
+     * @throws Exception
+     */
+    public void remove() throws Exception {
         User user = getAuthenticatedUser();
-        user.getAvailableBankAccounts().clear();
-        user.getMyBudgets().clear();
-        user.getMyCategories().clear();
-        user.getMyDebts().clear();
+
+        for (Budget myBudget : user.getMyBudgets()) {
+            removeBudget(myBudget.getId());
+        }
+
+        for (Debt myDebt : user.getMyDebts()) {
+            removeDebt(myDebt.getId());
+        }
+
+        for (Category myCategory : user.getMyCategories()) {
+            // delete all relations
+            categoryDao.deleteUsersRelationCategoryById(user.getId(), myCategory.getId());
+        }
+
+        for (Category category : categoryDao.getUsersCreatedCategory(user.getId())) {
+            categoryDao.remove(category);
+        }
+
+        // todo - u dont know if user is not just a guest, he not able to delete account
+        for (BankAccount availableBankAccount : user.getAvailableBankAccounts()) {
+            removeBankAcc(availableBankAccount.getId());
+        }
+
         userDao.remove(user);
     }
 }

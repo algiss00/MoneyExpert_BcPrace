@@ -48,6 +48,12 @@ public class NotifyBudgetController {
         return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> remove(@PathVariable int id) throws Exception {
+        notifyBudgetService.removeNotifyBudget(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @ExceptionHandler({
             TransactionNotFoundException.class,
             BankAccountNotFoundException.class,

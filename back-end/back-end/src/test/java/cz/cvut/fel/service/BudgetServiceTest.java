@@ -68,7 +68,7 @@ public class BudgetServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.find(anyInt())).thenReturn(budget);
 
-            budgetService.remove(budget.getId());
+            budgetService.removeBudget(budget.getId());
             verify(budgetDao, times(1)).remove(budget);
         }
     }

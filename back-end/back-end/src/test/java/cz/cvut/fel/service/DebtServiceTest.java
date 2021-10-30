@@ -3,7 +3,6 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
@@ -74,7 +73,7 @@ public class DebtServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(debtDao.find(debt.getId())).thenReturn(debt);
 
-            debtService.remove(debt.getId());
+            debtService.removeDebt(debt.getId());
             verify(debtDao, times(1)).remove(debt);
         }
     }

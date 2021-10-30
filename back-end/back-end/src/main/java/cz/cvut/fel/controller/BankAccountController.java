@@ -90,7 +90,7 @@ public class BankAccountController {
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
-        bankAccountService.remove(id);
+        bankAccountService.removeBankAcc(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

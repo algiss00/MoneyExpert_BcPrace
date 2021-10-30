@@ -3,7 +3,6 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "budget_table")
@@ -26,9 +25,7 @@ public class Budget extends AbstractEntity {
     @Column
     private int percentNotif;
 
-    // do not put to db
-    @Transient
-    @JsonIgnore
+    @Column
     private double sumAmount;
     
     @ManyToOne
@@ -45,16 +42,16 @@ public class Budget extends AbstractEntity {
     @JsonIgnore
     private User creator;
 
-    @OneToOne(mappedBy = "budget")
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
     @JsonIgnore
-    private NotifyBudget notifyBudget;
+    private List<NotifyBudget> notifyBudgets;
 
-    public NotifyBudget getNotifyBudget() {
-        return notifyBudget;
+    public List<NotifyBudget> getNotifyBudgets() {
+        return notifyBudgets;
     }
 
-    public void setNotifyBudget(NotifyBudget notifyBudget) {
-        this.notifyBudget = notifyBudget;
+    public void setNotifyBudgets(List<NotifyBudget> notifyBudget) {
+        this.notifyBudgets = notifyBudget;
     }
 
     public User getCreator() {

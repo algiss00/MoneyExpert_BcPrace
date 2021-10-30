@@ -22,6 +22,12 @@ public class BankAccount extends AbstractEntity {
     @Column
     private Double balance;
 
+    // todo - getter and setters
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    @JsonIgnore
+//    private User creator;
+
     @ManyToMany(mappedBy = "availableBankAccounts", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<User> owners;
@@ -30,11 +36,11 @@ public class BankAccount extends AbstractEntity {
     @JsonIgnore
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Budget> budgets;
 
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Debt> debts;
 

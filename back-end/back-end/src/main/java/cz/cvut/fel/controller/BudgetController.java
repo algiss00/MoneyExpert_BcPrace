@@ -59,11 +59,9 @@ public class BudgetController {
     }
 
     @DeleteMapping(value = "/{id}")
-    ResponseEntity<Void> remove(@PathVariable int id) throws BudgetNotFoundException, NotAuthenticatedClient {
-        if (budgetService.remove(id)) {
-            return new ResponseEntity<Void>(HttpStatus.OK);
-        }
-        return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
+       budgetService.removeBudget(id);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/category")

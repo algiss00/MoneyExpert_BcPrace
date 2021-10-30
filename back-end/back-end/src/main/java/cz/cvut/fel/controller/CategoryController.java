@@ -23,16 +23,22 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllCategory() {
-        List<Category> cateAll = categoryService.getAll();
-        return new ResponseEntity<>(cateAll, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCategoryById(@PathVariable int id) throws Exception {
         Category c = categoryService.getByIdCategory(id);
         return new ResponseEntity<>(c, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/default", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getDefaultCategories() throws Exception {
+        List<Category> defaultCategories = categoryService.getDefaultCategories();
+        return new ResponseEntity<>(defaultCategories, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/user-created", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersCreatedCategory() throws Exception {
+        List<Category> usersCreatedCategories = categoryService.getUsersCreatedCategory();
+        return new ResponseEntity<>(usersCreatedCategories, HttpStatus.OK);
     }
 
     @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +75,7 @@ public class CategoryController {
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
-        categoryService.remove(id);
+        categoryService.removeCategory(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

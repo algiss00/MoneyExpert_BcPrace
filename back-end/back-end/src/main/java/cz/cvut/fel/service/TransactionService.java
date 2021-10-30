@@ -87,7 +87,9 @@ public class TransactionService extends AbstractServiceHelper {
             return;
         }
 
-        budgetForTransaction.setSumAmount(budgetForTransaction.getSumAmount() + transAmount);
+        double sumAmount = budgetForTransaction.getSumAmount();
+
+        budgetForTransaction.setSumAmount(sumAmount + transAmount);
         budgetDao.update(budgetForTransaction);
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
         if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
@@ -114,7 +116,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     private boolean validate(Transaction t) {
-        if(t.getTypeTransaction() == null || t.getAmount() <= 0){
+        if (t.getTypeTransaction() == null || t.getAmount() <= 0) {
             return false;
         }
         return true;
