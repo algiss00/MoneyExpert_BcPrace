@@ -33,14 +33,12 @@ public class BudgetService extends AbstractServiceHelper {
     public Budget persist(Budget budget, int accId, int categoryId) throws
             Exception {
         Objects.requireNonNull(budget);
-        User u = getAuthenticatedUser();
         Category category = getByIdCategory(categoryId);
 
         BankAccount bankAccount = getByIdBankAccount(accId);
         if (!validate(budget, bankAccount.getId(), categoryId)) {
             throw new NotValidDataException("budget");
         }
-        budget.setCreator(u);
         budget.setCategory(category);
         budget.setBankAccount(bankAccount);
         budget.setSumAmount(0);
@@ -63,7 +61,7 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.getByCategory(catId, bankAccId);
     }
 
-    public Budget updateBudget(int id, Budget budget) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public Budget updateBudget(int id, Budget budget) throws Exception {
         Budget b = getByIdBudget(id);
         b.setName(budget.getName());
         b.setAmount(budget.getAmount());
@@ -73,7 +71,7 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.update(b);
     }
 
-    public void removeCategoryFromBudget(int buId) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public void removeCategoryFromBudget(int buId) throws Exception {
         Budget budget = getByIdBudget(buId);
         budget.setCategory(null);
         budgetDao.update(budget);

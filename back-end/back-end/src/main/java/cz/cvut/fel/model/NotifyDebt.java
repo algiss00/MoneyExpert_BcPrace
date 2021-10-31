@@ -11,23 +11,20 @@ import javax.persistence.*;
         @NamedQuery(name = "Notify.getAll", query = "SELECT n FROM NotifyDebt n"),
         @NamedQuery(name = "Notify.alreadyExists", query = "SELECT n FROM NotifyDebt n WHERE n.debt.id = :debtId" +
                 " AND n.typeNotification = :type"),
-        @NamedQuery(name = "Notify.getUsersNotifyDebtsByType", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid " +
+        @NamedQuery(name = "Notify.getDebtsNotifyDebtsByType", query = "SELECT n FROM NotifyDebt n where n.debt.id = :debtId " +
                 "and n.typeNotification = :typeNotif"),
-        @NamedQuery(name = "Notify.getUsersNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.creator.id = :uid"),
+        @NamedQuery(name = "Notify.getDebtsNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.debt.id = :debtId"),
         @NamedQuery(name = "Notify.getNotifyDebtByDebtId", query = "SELECT n FROM NotifyDebt n " +
-                "where n.creator.id = :uid and n.debt.id = :debtId"),
+                "where n.debt.id = :debtId"),
         @NamedQuery(name = "Notify.deleteNotifyDebtByDebtId", query = "delete FROM NotifyDebt n " +
-                "where n.creator.id = :uid and n.debt.id = :debtId")
+                "where n.debt.id = :debtId"),
+        @NamedQuery(name = "Notify.getNotifyDebtsFromBankAccount", query = "SELECT n FROM NotifyDebt n" +
+                " where n.debt.bankAccount.id = :bankAccId")
 })
 public class NotifyDebt extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "debt_id")
     private Debt debt;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User creator;
 
     @Enumerated(EnumType.STRING)
     private TypeNotification typeNotification;
@@ -38,14 +35,6 @@ public class NotifyDebt extends AbstractEntity {
 
     public void setDebt(Debt debt) {
         this.debt = debt;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
     }
 
     public TypeNotification getTypeNotification() {

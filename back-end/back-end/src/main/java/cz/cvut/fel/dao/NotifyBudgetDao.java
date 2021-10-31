@@ -2,8 +2,8 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.dto.TypeNotification;
-import cz.cvut.fel.model.NotifyDebt;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     NotifyBudgetDao(EntityManager em) {
         super(em);
@@ -26,15 +27,27 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         return em.createNamedQuery("NotifyBudget.getAll", NotifyBudget.class).getResultList();
     }
 
-    public List<NotifyBudget> getUsersNotifyBudgets(int uid) {
-        return em.createNamedQuery("NotifyBudget.getUsersNotifyBudgets", NotifyBudget.class)
-                .setParameter("uid", uid)
+    /**
+     * get All budgets with Notifybudget
+     *
+     * @param budgetId
+     * @return
+     */
+    public List<NotifyBudget> getBudgetsNotifyBudgets(int budgetId) {
+        return em.createNamedQuery("NotifyBudget.getBudgetsNotifyBudgets", NotifyBudget.class)
+                .setParameter("budgetId", budgetId)
                 .getResultList();
     }
 
-    public List<NotifyBudget> getUsersNotifyBudgetsByType(int uid, TypeNotification typeNotification) {
-        return em.createNamedQuery("NotifyBudget.getUsersNotifyBudgetByType", NotifyBudget.class)
-                .setParameter("uid", uid)
+    /**
+     * get All budgets with Notifybudget by Type
+     *
+     * @param budgetId
+     * @return
+     */
+    public List<NotifyBudget> getBudgetsNotifyBudgetByType(int budgetId, TypeNotification typeNotification) {
+        return em.createNamedQuery("NotifyBudget.getBudgetsNotifyBudgetByType", NotifyBudget.class)
+                .setParameter("budgetId", budgetId)
                 .setParameter("typeNotif", typeNotification)
                 .getResultList();
     }
@@ -53,10 +66,9 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         }
     }
 
-    public List<NotifyBudget> getNotifyBudgetByBudgetId(int uid, int budgetId) {
+    public List<NotifyBudget> getNotifyBudgetByBudgetId(int budgetId) {
         try {
             return em.createNamedQuery("NotifyBudget.getNotifyBudgetByBudgetId", NotifyBudget.class)
-                    .setParameter("uid", uid)
                     .setParameter("budgetId", budgetId)
                     .getResultList();
         } catch (Exception ex) {
@@ -65,10 +77,20 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         }
     }
 
-    public void deleteNotifyBudgetByBudgetId(int uid, int budgetId) throws Exception {
+    public List<NotifyBudget> getNotifyBudgetsFromBankAccount(int bankAccId) {
+        try {
+            return em.createNamedQuery("NotifyBudget.getNotifyBudgetsFromBankAccount", NotifyBudget.class)
+                    .setParameter("bankAccId", bankAccId)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    public void deleteNotifyBudgetByBudgetId(int budgetId) throws Exception {
         try {
             em.createNamedQuery("NotifyBudget.deleteNotifyBudgetByBudgetId")
-                    .setParameter("uid", uid)
                     .setParameter("budgetId", budgetId)
                     .executeUpdate();
         } catch (Exception ex) {

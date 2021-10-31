@@ -10,7 +10,9 @@ import java.util.List;
 @Table(name = "bankAccount_table")
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "BankAccount.getAll", query = "SELECT b FROM BankAccount b")
+        @NamedQuery(name = "BankAccount.getAll", query = "SELECT b FROM BankAccount b"),
+        @NamedQuery(name = "BankAccount.getByNameCreated", query = "SELECT b FROM BankAccount b " +
+                "where b.name = :name and b.creator.id = :uid")
 })
 public class BankAccount extends AbstractEntity {
     @Column
@@ -22,13 +24,12 @@ public class BankAccount extends AbstractEntity {
     @Column
     private Double balance;
 
-    // todo - getter and setters
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    @JsonIgnore
-//    private User creator;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User creator;
 
-    @ManyToMany(mappedBy = "availableBankAccounts", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "availableBankAccounts")
     @JsonIgnore
     private List<User> owners;
 
@@ -43,6 +44,14 @@ public class BankAccount extends AbstractEntity {
     @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Debt> debts;
+
+    public User getCreator() {
+        return creator;
+    }
+
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
 
     public List<User> getOwners() {
         if (owners == null) {

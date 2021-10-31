@@ -2,6 +2,8 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
+import cz.cvut.fel.model.BankAccount;
+import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
@@ -24,12 +26,19 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         return notifyBudgetDao.findAll();
     }
 
-    public List<NotifyBudget> getUsersNotifyBudgets() throws NotAuthenticatedClient {
-        return notifyBudgetDao.getUsersNotifyBudgets(getAuthenticatedUser().getId());
+    public List<NotifyBudget> getBudgetsNotifyBudgets(int budgetId) throws Exception {
+        Budget budget = getByIdBudget(budgetId);
+        return notifyBudgetDao.getBudgetsNotifyBudgets(budget.getId());
     }
 
-    public List<NotifyBudget> getUsersNotifyBudgetsByType(TypeNotification typeNotification) throws NotAuthenticatedClient {
-        return notifyBudgetDao.getUsersNotifyBudgetsByType(getAuthenticatedUser().getId(), typeNotification);
+    public List<NotifyBudget> getNotifyBudgetsFromBankAccount(int bankAccId) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
+        return notifyBudgetDao.getNotifyBudgetsFromBankAccount(bankAccount.getId());
+    }
+
+    public List<NotifyBudget> getBudgetsNotifyBudgetByType(int budgetId, TypeNotification typeNotification) throws Exception {
+        Budget budget = getByIdBudget(budgetId);
+        return notifyBudgetDao.getBudgetsNotifyBudgetByType(budget.getId(), typeNotification);
     }
 
     public NotifyBudget getByIdNotifyBudget(int id) throws NotifyBudgetNotFoundException {
@@ -48,7 +57,7 @@ public class NotifyBudgetService extends AbstractServiceHelper {
     }
 
     private boolean validateNotifyBudget(NotifyBudget notifyBudget) {
-        return notifyBudget.getBudget() != null && notifyBudget.getCreator() != null && notifyBudget.getTypeNotification() != null;
+        return notifyBudget.getBudget() != null && notifyBudget.getTypeNotification() != null;
     }
 
     public void updateNotifyBudget(int notifyBudgetId, NotifyBudget updatedNotifyBudget) throws Exception {
@@ -56,7 +65,6 @@ public class NotifyBudgetService extends AbstractServiceHelper {
         if (!validateNotifyBudget(updatedNotifyBudget)) {
             throw new Exception("Not valid NotifyDebt");
         }
-        notifyDebt.setCreator(updatedNotifyBudget.getCreator());
         notifyDebt.setBudget(updatedNotifyBudget.getBudget());
         notifyDebt.setTypeNotification(updatedNotifyBudget.getTypeNotification());
         notifyBudgetDao.update(notifyDebt);

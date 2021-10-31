@@ -30,15 +30,21 @@ public class NotifyDebtController {
         return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUsersNotifyDebts() throws NotAuthenticatedClient {
-        List<NotifyDebt> notifyDebts = notifyDebtService.getUsersNotifyDebts();
+    @GetMapping(value = "/debt/{debtId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getDebtsNotifyDebts(@PathVariable int debtId) throws Exception {
+        List<NotifyDebt> notifyDebts = notifyDebtService.getDebtsNotifyDebts(debtId);
         return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user-by-type", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUsersNotifyDebtsByType(@RequestParam TypeNotification type) throws NotAuthenticatedClient {
-        List<NotifyDebt> notifyDebts = notifyDebtService.getUsersNotifyDebtsByType(type);
+    @GetMapping(value = "/bank-account/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getNotifyDebtsFromBankAccount(@PathVariable int bankAccId) throws Exception {
+        List<NotifyDebt> notifyDebts = notifyDebtService.getNotifyDebtsFromBankAccount(bankAccId);
+        return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/debt-by-type/{debtId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getDebtsNotifyDebtsByType(@PathVariable int debtId, @RequestParam TypeNotification type) throws Exception {
+        List<NotifyDebt> notifyDebts = notifyDebtService.getDebtsNotifyDebtsByType(debtId, type);
         return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
     }
 

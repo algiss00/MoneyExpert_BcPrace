@@ -4,6 +4,7 @@ import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.NotifyBudget;
+import cz.cvut.fel.model.NotifyDebt;
 import generator.Generator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,31 +34,45 @@ public class NotifyBudgetDaoTest {
         NotifyBudget notifyBudget = notifyBudgetDao.find(25);
         assertNotNull(notifyBudget);
         assertEquals("Jidlo budget", notifyBudget.getBudget().getName());
-        assertEquals("john123", notifyBudget.getCreator().getUsername());
     }
 
     @Test
-    public void getUsersNotifyBudgets() {
-        List<NotifyBudget> notifyBudget = notifyBudgetDao.getUsersNotifyBudgets(10);
-        assertFalse(notifyBudget.isEmpty());
-        assertEquals(3, notifyBudget.size());
-
-        int[] ids = {25, 28, 29};
-        for (int i = 0; i < notifyBudget.size(); i++) {
-            assertEquals(ids[i], notifyBudget.get(i).getId());
-        }
-    }
-
-    @Test
-    public void getUsersNotifyBudgetsByType() {
-        List<NotifyBudget> notifyBudget = notifyBudgetDao.getUsersNotifyBudgetsByType(10, TypeNotification.BUDGET_AMOUNT);
+    public void getBudgetsNotifyBudgets() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgets(19);
         assertFalse(notifyBudget.isEmpty());
         assertEquals(2, notifyBudget.size());
 
-        int[] ids = {25, 28};
+        int[] ids = {25, 26};
         for (int i = 0; i < notifyBudget.size(); i++) {
             assertEquals(ids[i], notifyBudget.get(i).getId());
         }
+    }
+
+    @Test
+    public void getNotifyBudgetsFromBankAccount() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getNotifyBudgetsFromBankAccount(17);
+        assertFalse(notifyBudget.isEmpty());
+        assertEquals(3, notifyBudget.size());
+
+        int[] ids = {27, 28, 29};
+        for (int i = 0; i < notifyBudget.size(); i++) {
+            assertEquals(ids[i], notifyBudget.get(i).getId());
+        }
+    }
+
+    @Test
+    public void getNotifyBudgetsFromBankAccountNotFoundAny() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getNotifyBudgetsFromBankAccount(16);
+        assertTrue(notifyBudget.isEmpty());
+    }
+
+    @Test
+    public void getBudgetsNotifyBudgetByType() {
+        List<NotifyBudget> notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(19, TypeNotification.BUDGET_AMOUNT);
+        assertFalse(notifyBudget.isEmpty());
+        assertEquals(1, notifyBudget.size());
+
+        assertEquals(25, notifyBudget.get(0).getId());
     }
 
     @Test
@@ -87,10 +102,19 @@ public class NotifyBudgetDaoTest {
         Budget generated = Generator.generateDefaultBudget();
         NotifyBudget notifyBudget = notifyBudgetDao.find(26);
         assertNotNull(notifyBudget);
-        assertEquals("Auto budget", notifyBudget.getBudget().getName());
+        assertEquals("Jidlo budget", notifyBudget.getBudget().getName());
         notifyBudget.setBudget(generated);
         notifyBudgetDao.update(notifyBudget);
         NotifyBudget updatedNotifyB = notifyBudgetDao.find(26);
         assertEquals(generated.getName(), updatedNotifyB.getBudget().getName());
+    }
+
+    @Test
+    public void deleteNotifyBudgetByDebtId() throws Exception {
+        notifyBudgetDao.deleteNotifyBudgetByBudgetId(19);
+        NotifyBudget notifyBudget = notifyBudgetDao.find(25);
+        assertNull(notifyBudget);
+        NotifyBudget notifyBudget2 = notifyBudgetDao.find(26);
+        assertNull(notifyBudget2);
     }
 }

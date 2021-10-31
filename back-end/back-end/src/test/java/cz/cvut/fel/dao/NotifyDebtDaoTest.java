@@ -38,27 +38,42 @@ public class NotifyDebtDaoTest {
     }
 
     @Test
-    public void getUsersNotifyBudgets() {
-        List<NotifyDebt> notifyDebts = notifyDebtDao.getUsersNotifyDebts(13);
+    public void getDebtsNotifyDebts() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getDebtsNotifyDebts(22);
         assertFalse(notifyDebts.isEmpty());
-        assertEquals(3, notifyDebts.size());
+        assertEquals(2, notifyDebts.size());
 
-        int[] ids = {28, 30, 31};
+        int[] ids = {28, 29};
         for (int i = 0; i < notifyDebts.size(); i++) {
             assertEquals(ids[i], notifyDebts.get(i).getId());
         }
     }
 
     @Test
-    public void getUsersNotifyBudgetsByType() {
-        List<NotifyDebt> notifyDebts = notifyDebtDao.getUsersNotifyDebtsByType(13, TypeNotification.DEBT_NOTIFY);
+    public void getNotifyDebtsFromBankAccount() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getNotifyDebtsFromBankAccount(16);
         assertFalse(notifyDebts.isEmpty());
-        assertEquals(2, notifyDebts.size());
+        assertEquals(3, notifyDebts.size());
 
-        int[] ids = {28, 30};
+        int[] ids = {28, 29, 30};
         for (int i = 0; i < notifyDebts.size(); i++) {
             assertEquals(ids[i], notifyDebts.get(i).getId());
         }
+    }
+
+    @Test
+    public void getNotifyDebtsFromBankAccountNotFoundAny() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getNotifyDebtsFromBankAccount(15);
+        assertTrue(notifyDebts.isEmpty());
+    }
+
+    @Test
+    public void getDebtsNotifyDebtsByType() {
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getDebtsNotifyDebtsByType(22, TypeNotification.DEBT_NOTIFY);
+        assertFalse(notifyDebts.isEmpty());
+        assertEquals(1, notifyDebts.size());
+
+        assertEquals(28, notifyDebts.get(0).getId());
     }
 
     @Test
@@ -93,5 +108,14 @@ public class NotifyDebtDaoTest {
         notifyDebtDao.update(notifyDebt);
         NotifyDebt updatedNotifyDebt = notifyDebtDao.find(28);
         assertEquals(generated.getName(), updatedNotifyDebt.getDebt().getName());
+    }
+
+    @Test
+    public void deleteNotifyDebtByDebtId() throws Exception {
+        notifyDebtDao.deleteNotifyDebtByDebtId(22);
+        NotifyDebt notifyDebt = notifyDebtDao.find(28);
+        assertNull(notifyDebt);
+        NotifyDebt notifyDebt2 = notifyDebtDao.find(29);
+        assertNull(notifyDebt2);
     }
 }

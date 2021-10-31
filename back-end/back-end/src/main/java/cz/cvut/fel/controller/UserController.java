@@ -24,12 +24,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAll() {
-        List<User> usersAll = userService.getAll();
-        return new ResponseEntity<>(usersAll, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getUserById(@PathVariable int id) throws UserNotFoundException {
         User u = userService.getByIdUser(id);
@@ -37,38 +31,27 @@ public class UserController {
     }
 
     @GetMapping(value = "/current-user", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getCurrentUser() throws UserNotFoundException {
-        User user;
-        try {
-            user = userService.getByIdUser(SecurityUtils.getCurrentUser().getId());
-        } catch (Exception ex) {
-            throw new UserNotFoundException();
-        }
+    ResponseEntity<?> getCurrentUser() throws NotAuthenticatedClient {
+        User user = userService.getAuthenticatedUser();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAvailableAccounts() throws UserNotFoundException, NotAuthenticatedClient {
-        List<BankAccount> accounts = userService.getAvailableAccounts();
+    @GetMapping(value = "/available-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAvailableAccounts() throws NotAuthenticatedClient {
+        List<BankAccount> accounts = userService.getAvailableBankAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/budgets", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudgets() throws UserNotFoundException, NotAuthenticatedClient {
-        List<Budget> budgets = userService.getAllUsersBudgets();
-        return new ResponseEntity<>(budgets, HttpStatus.OK);
+    @GetMapping(value = "/created-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getCreatedBankAccounts() throws NotAuthenticatedClient {
+        List<BankAccount> accounts = userService.getCreatedBankAccounts();
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
     @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCategories() throws Exception {
         List<Category> categories = userService.getAllUsersCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/debts", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDebts() throws UserNotFoundException, NotAuthenticatedClient {
-        List<Debt> debts = userService.getAllUsersDebts();
-        return new ResponseEntity<>(debts, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)

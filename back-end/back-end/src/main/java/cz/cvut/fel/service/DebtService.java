@@ -27,27 +27,25 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.findAll();
     }
 
-    public Debt getByName(String name) throws Exception {
-        User u = getAuthenticatedUser();
-        return debtDao.getByName(u.getId(), name);
+    public List<Debt> getByNameFromBankAcc(int bankAccountId, String name) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(bankAccountId);
+        return debtDao.getByNameFromBankAcc(bankAccount.getId(), name);
     }
 
     public Debt persist(Debt debt, int accId) throws Exception {
-        User u = getAuthenticatedUser();
         BankAccount bankAccount = getByIdBankAccount(accId);
         Objects.requireNonNull(debt);
-        if (!validate(debt, u))
+        if (!validate(debt))
             throw new NotValidDataException("debt");
-        debt.setCreator(u);
         debt.setBankAccount(bankAccount);
         return debtDao.persist(debt);
     }
 
     //every 12 hours - "0 0 */12 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
-    @Scheduled(cron = "*/20 * * * * * ")
+    @Scheduled(cron = "30 * * * * * ")
     public void checkNotifyDates() throws Exception {
-        System.out.println("NOTiFY");
+        System.out.println("NOTIFY");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
         if (notifyDebts.isEmpty()) {
             System.out.println("EMPTY");
@@ -60,7 +58,6 @@ public class DebtService extends AbstractServiceHelper {
                 continue;
             }
             NotifyDebt notifyDebtEntity = new NotifyDebt();
-            notifyDebtEntity.setCreator(notifiedDebt.getCreator());
             notifyDebtEntity.setDebt(notifiedDebt);
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_NOTIFY);
 
@@ -89,7 +86,6 @@ public class DebtService extends AbstractServiceHelper {
                 continue;
             }
             NotifyDebt notifyDebtEntity = new NotifyDebt();
-            notifyDebtEntity.setCreator(notifiedDebt.getCreator());
             notifyDebtEntity.setDebt(notifiedDebt);
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_DEADLINE);
 
@@ -98,14 +94,14 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
-    private boolean validate(Debt debt, User user) throws Exception {
+    private boolean validate(Debt debt) throws Exception {
         if (debt.getName().trim().isEmpty() || debt.getAmount() <= 0 || debt.getDeadline().before(debt.getNotifyDate())) {
             return false;
         }
-        return debtDao.getByName(user.getId(), debt.getName()) == null;
+        return true;
     }
 
-    public Debt updateDebt(int id, Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
+    public Debt updateDebt(int id, Debt debt) throws Exception {
         Debt da = getByIdDebt(id);
 
         da.setName(debt.getName());

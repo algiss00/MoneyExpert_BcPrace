@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -22,21 +23,15 @@ public class DebtController {
         this.debtService = debtService;
     }
 
-//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> getAllDebts() {
-//        List<Debt> debtAll = debtService.getAll();
-//        return new ResponseEntity<>(dabtAll, HttpStatus.OK);
-//    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDebtById(@PathVariable int id) throws DebtNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getDebtById(@PathVariable int id) throws Exception {
         Debt d = debtService.getByIdDebt(id);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDebtByName(@RequestParam String name) throws Exception {
-        Debt d = debtService.getByName(name);
+    @GetMapping(value = "/by-name/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getByNameFromBankAcc(@PathVariable int bankAccId, @RequestParam String name) throws Exception {
+        List<Debt> d = debtService.getByNameFromBankAcc(bankAccId, name);
         return new ResponseEntity<>(d, HttpStatus.OK);
     }
 
@@ -50,7 +45,7 @@ public class DebtController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws DebtNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws Exception {
         return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
     }
 

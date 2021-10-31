@@ -24,11 +24,6 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-//    @GetMapping(value = "/currency", produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> currency() throws Exception {
-//        return new ResponseEntity<>(transactionService.currency(), HttpStatus.OK);
-//    }
-
     @GetMapping(value = "/between-date/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getBetweenDate(@RequestParam String from, @RequestParam String to, @PathVariable int accId) throws Exception {
         List<Transaction> transactions = transactionService.getBetweenDate(from, to, accId);
@@ -57,31 +52,31 @@ public class TransactionController {
     @GetMapping(value = "/sum-expense/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getSumExpenseInMonth(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
             throws Exception {
-        double transactions = transactionService.getSumOfExpenseOnMonth(month, year, bankAccId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        double sum = transactionService.getSumOfExpenseOnMonth(month, year, bankAccId);
+        return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sum-income/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getSumIncomeInMonth(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
             throws Exception {
-        double transactions = transactionService.getSumOfIncomeOnMonth(month, year, bankAccId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        double sum = transactionService.getSumOfIncomeOnMonth(month, year, bankAccId);
+        return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sum-expense-category/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getSumExpenseWithCategory(@PathVariable int bankAccId, @RequestParam int month,
                                                 @RequestParam int year, @RequestParam int categoryId)
             throws Exception {
-        double transactions = transactionService.getSumOfExpenseWithCategory(month, year, bankAccId, categoryId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        double sum = transactionService.getSumOfExpenseWithCategory(month, year, bankAccId, categoryId);
+        return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sum-income-category/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getSumIncomeWithCategory(@PathVariable int bankAccId, @RequestParam int month,
                                                @RequestParam int year, @RequestParam int categoryId)
             throws Exception {
-        double transactions = transactionService.getSumOfIncomeWithCategory(month, year, bankAccId, categoryId);
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+        double sum = transactionService.getSumOfIncomeWithCategory(month, year, bankAccId, categoryId);
+        return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -104,12 +99,12 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/update-type", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> updateTransType(@RequestParam int transId, @RequestBody TypeTransaction typeTransaction) throws Exception {
+    ResponseEntity<Transaction> updateTransType(@RequestParam int transId, @RequestParam TypeTransaction typeTransaction) throws Exception {
         return new ResponseEntity<>(transactionService.updateTransactionType(transId, typeTransaction), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update-category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Transaction> updateCategory(@RequestParam int transId, @RequestBody int catId) throws Exception {
+    ResponseEntity<Transaction> updateCategory(@RequestParam int transId, @RequestParam int catId) throws Exception {
         return new ResponseEntity<>(transactionService.updateCategory(transId, catId), HttpStatus.CREATED);
     }
 

@@ -22,13 +22,8 @@ public class BudgetController {
         this.budgetService = budgetService;
     }
 
-//    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<?> getAllBudgets() {
-//        return new ResponseEntity<>(budgetService.getAll(), HttpStatus.OK);
-//    }
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudgetById(@PathVariable int id) throws BudgetNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<?> getBudgetById(@PathVariable int id) throws Exception {
         return new ResponseEntity<>(budgetService.getByIdBudget(id), HttpStatus.OK);
     }
 
@@ -53,8 +48,7 @@ public class BudgetController {
     }
 
     @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws BudgetNotFoundException,
-            NotAuthenticatedClient {
+    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws Exception {
         return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
     }
 
@@ -65,7 +59,7 @@ public class BudgetController {
     }
 
     @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws BudgetNotFoundException, NotAuthenticatedClient {
+    ResponseEntity<Void> removeCategoryFromBudget(@RequestParam int budId) throws Exception {
         budgetService.removeCategoryFromBudget(budId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

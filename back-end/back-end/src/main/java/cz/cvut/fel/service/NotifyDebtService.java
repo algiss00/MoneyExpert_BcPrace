@@ -2,6 +2,9 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
+import cz.cvut.fel.model.BankAccount;
+import cz.cvut.fel.model.Debt;
+import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
@@ -24,12 +27,19 @@ public class NotifyDebtService extends AbstractServiceHelper {
         return notifyDebtDao.findAll();
     }
 
-    public List<NotifyDebt> getUsersNotifyDebts() throws NotAuthenticatedClient {
-        return notifyDebtDao.getUsersNotifyDebts(getAuthenticatedUser().getId());
+    public List<NotifyDebt> getDebtsNotifyDebts(int debtId) throws Exception {
+        Debt debt = getByIdDebt(debtId);
+        return notifyDebtDao.getDebtsNotifyDebts(debt.getId());
     }
 
-    public List<NotifyDebt> getUsersNotifyDebtsByType(TypeNotification typeNotification) throws NotAuthenticatedClient {
-        return notifyDebtDao.getUsersNotifyDebtsByType(getAuthenticatedUser().getId(), typeNotification);
+    public List<NotifyDebt> getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) throws Exception {
+        Debt debt = getByIdDebt(debtId);
+        return notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), typeNotification);
+    }
+
+    public List<NotifyDebt> getNotifyDebtsFromBankAccount(int bankAccId) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
+        return notifyDebtDao.getNotifyDebtsFromBankAccount(bankAccount.getId());
     }
 
     public NotifyDebt getByIdNotifyDebt(int id) throws NotifyDebtNotFoundException {
@@ -48,7 +58,7 @@ public class NotifyDebtService extends AbstractServiceHelper {
     }
 
     private boolean validateNotifyDebt(NotifyDebt notifyDebt) {
-        return notifyDebt.getDebt() != null && notifyDebt.getCreator() != null && notifyDebt.getTypeNotification() != null;
+        return notifyDebt.getDebt() != null && notifyDebt.getTypeNotification() != null;
     }
 
     public void updateNotifyDebt(int notifyDebtId, NotifyDebt updatedNotifyDebt) throws Exception {
@@ -56,7 +66,6 @@ public class NotifyDebtService extends AbstractServiceHelper {
         if (!validateNotifyDebt(updatedNotifyDebt)) {
             throw new Exception("Not valid NotifyDebt");
         }
-        notifyDebt.setCreator(updatedNotifyDebt.getCreator());
         notifyDebt.setDebt(updatedNotifyDebt.getDebt());
         notifyDebt.setTypeNotification(updatedNotifyDebt.getTypeNotification());
         notifyDebtDao.update(notifyDebt);

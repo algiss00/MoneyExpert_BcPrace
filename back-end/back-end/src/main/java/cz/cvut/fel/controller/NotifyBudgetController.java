@@ -2,6 +2,7 @@ package cz.cvut.fel.controller;
 
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyBudget;
+import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.NotifyBudgetService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -30,15 +31,21 @@ public class NotifyBudgetController {
         return new ResponseEntity<>(notifyBudgetList, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUsersNotifyBudgets() throws NotAuthenticatedClient {
-        List<NotifyBudget> notifyBudget = notifyBudgetService.getUsersNotifyBudgets();
+    @GetMapping(value = "/bank-account/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getNotifyBudgetsFromBankAccount(@PathVariable int bankAccId) throws Exception {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getNotifyBudgetsFromBankAccount(bankAccId);
         return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user-by-type", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getUsersNotifyBudgetsByType(@RequestParam TypeNotification type) throws NotAuthenticatedClient {
-        List<NotifyBudget> notifyBudget = notifyBudgetService.getUsersNotifyBudgetsByType(type);
+    @GetMapping(value = "/budget/{budgetId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getBudgetsNotifyBudgets(@PathVariable int budgetId) throws Exception {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getBudgetsNotifyBudgets(budgetId);
+        return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/budget-by-type/{budgetId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersNotifyBudgetsByType(@PathVariable int budgetId, @RequestParam TypeNotification type) throws Exception {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getBudgetsNotifyBudgetByType(budgetId, type);
         return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }
 

@@ -7,6 +7,7 @@ import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -71,7 +73,7 @@ public class TransactionServiceTest {
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
             transactionService.remove(transaction.getId());
             verify(transactionDao, times(1)).remove(transaction);
@@ -91,7 +93,7 @@ public class TransactionServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
             Transaction updated = transactionService.updateBasic(transaction.getId(), updatedTransaction);
             verify(transactionDao, times(1)).update(transaction);
@@ -115,7 +117,7 @@ public class TransactionServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
             when(categoryDao.find(category2.getId())).thenReturn(category2);
             when(categoryDao.getUsersCategoryById(user.getId(), category2.getId())).thenReturn(category2);
 
@@ -138,7 +140,7 @@ public class TransactionServiceTest {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
             Transaction updated = transactionService.updateTransactionType(transaction.getId(), TypeTransaction.INCOME);
             verify(transactionDao, times(1)).update(transaction);
@@ -157,11 +159,32 @@ public class TransactionServiceTest {
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
             Transaction founded = transactionService.getByIdTransaction(transaction.getId());
             verify(transactionDao, times(1)).find(transaction.getId());
             assertEquals(transaction, founded);
+        }
+    }
+
+    /**
+     * user nepatri k BankAccountu ve kterem je Transakce - user neni creator ani owner
+     *
+     * @throws Exception
+     */
+    @Test
+    public void find_mockTest_throwNotAuthenticatedClient() throws Exception {
+        Transaction transaction = Generator.generateDefaultTransaction();
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        transaction.setBankAccount(bankAccount);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(transactionDao.find(transaction.getId())).thenReturn(transaction);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(null);
+
+            assertThrows(NotAuthenticatedClient.class, () -> {
+                transactionService.getByIdTransaction(transaction.getId());
+            });
         }
     }
 
@@ -240,7 +263,7 @@ public class TransactionServiceTest {
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
             when(transactionDao.getFromBankAcc(fromBankAcc.getId(), transaction.getId())).thenReturn(transaction);
             when(bankAccountDao.find(toBankAcc.getId())).thenReturn(toBankAcc);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), toBankAcc.getId())).thenReturn(toBankAcc);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), toBankAcc.getId())).thenReturn(toBankAcc);
             when(budgetDao.getByCategory(anyInt(), anyInt())).thenReturn(null);
 
             transactionService.transferTransaction(fromBankAcc.getId(), toBankAcc.getId(), transaction.getId());
@@ -277,7 +300,7 @@ public class TransactionServiceTest {
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
             when(transactionDao.getFromBankAcc(fromBankAcc.getId(), transaction.getId())).thenReturn(transaction);
             when(bankAccountDao.find(toBankAcc.getId())).thenReturn(toBankAcc);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), toBankAcc.getId())).thenReturn(toBankAcc);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), toBankAcc.getId())).thenReturn(toBankAcc);
             when(budgetDao.getByCategory(anyInt(), anyInt())).thenReturn(null);
 
             transactionService.transferTransaction(fromBankAcc.getId(), toBankAcc.getId(), transaction.getId());

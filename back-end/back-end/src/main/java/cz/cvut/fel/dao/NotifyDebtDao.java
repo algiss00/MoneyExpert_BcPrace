@@ -3,14 +3,15 @@ package cz.cvut.fel.dao;
 import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.dto.TypeNotification;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     NotifyDebtDao(EntityManager em) {
         super(em);
@@ -26,17 +27,40 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         return em.createNamedQuery("Notify.getAll", NotifyDebt.class).getResultList();
     }
 
-    public List<NotifyDebt> getUsersNotifyDebts(int uid) {
-        return em.createNamedQuery("Notify.getUsersNotifyDebts", NotifyDebt.class)
-                .setParameter("uid", uid)
+    /**
+     * get All Debts with Notify
+     *
+     * @param debtId
+     * @return
+     */
+    public List<NotifyDebt> getDebtsNotifyDebts(int debtId) {
+        return em.createNamedQuery("Notify.getDebtsNotifyDebts", NotifyDebt.class)
+                .setParameter("debtId", debtId)
                 .getResultList();
     }
 
-    public List<NotifyDebt> getUsersNotifyDebtsByType(int uid, TypeNotification typeNotification) {
-        return em.createNamedQuery("Notify.getUsersNotifyDebtsByType", NotifyDebt.class)
-                .setParameter("uid", uid)
+    /**
+     * get All Debts with Notify by Type
+     *
+     * @param debtId
+     * @return
+     */
+    public List<NotifyDebt> getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) {
+        return em.createNamedQuery("Notify.getDebtsNotifyDebtsByType", NotifyDebt.class)
+                .setParameter("debtId", debtId)
                 .setParameter("typeNotif", typeNotification)
                 .getResultList();
+    }
+
+    public List<NotifyDebt> getNotifyDebtsFromBankAccount(int bankAccId) {
+        try {
+            return em.createNamedQuery("Notify.getNotifyDebtsFromBankAccount", NotifyDebt.class)
+                    .setParameter("bankAccId", bankAccId)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) throws Exception {
@@ -53,10 +77,9 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         }
     }
 
-    public List<NotifyDebt> getNotifyDebtByDebtId(int uid, int debtId) throws Exception {
+    public List<NotifyDebt> getNotifyDebtByDebtId(int debtId) throws Exception {
         try {
             return em.createNamedQuery("Notify.getNotifyDebtByDebtId", NotifyDebt.class)
-                    .setParameter("uid", uid)
                     .setParameter("debtId", debtId)
                     .getResultList();
         } catch (Exception ex) {
@@ -65,10 +88,9 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         }
     }
 
-    public void deleteNotifyDebtByDebtId(int uid, int debtId) throws Exception {
+    public void deleteNotifyDebtByDebtId(int debtId) throws Exception {
         try {
             em.createNamedQuery("Notify.deleteNotifyDebtByDebtId")
-                    .setParameter("uid", uid)
                     .setParameter("debtId", debtId)
                     .executeUpdate();
         } catch (Exception ex) {

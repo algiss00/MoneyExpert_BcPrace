@@ -31,13 +31,11 @@ public class User extends AbstractEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    // todo - getter and setters
-//    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private List<BankAccount> createdBankAccounts;
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<BankAccount> createdBankAccounts;
 
-    // todo - maybe not cascade all
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "relation_bankAccount_user",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -53,42 +51,15 @@ public class User extends AbstractEntity {
     @JsonIgnore
     private List<Category> myCategories;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Budget> myBudgets;
-
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Debt> myDebts;
-
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<NotifyDebt> notifyDebt;
-
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<NotifyBudget> notifyBudget;
-
-    public List<NotifyBudget> getNotifyBudget() {
-        if (notifyBudget == null) {
-            setNotifyBudget(new ArrayList<>());
+    public List<BankAccount> getCreatedBankAccounts() {
+        if (createdBankAccounts == null) {
+            setCreatedBankAccounts(new ArrayList<>());
         }
-        return notifyBudget;
+        return createdBankAccounts;
     }
 
-    public void setNotifyBudget(List<NotifyBudget> notifyBudget) {
-        this.notifyBudget = notifyBudget;
-    }
-
-    public List<NotifyDebt> getNotifyDebt() {
-        if (notifyDebt == null) {
-            setNotifyDebt(new ArrayList<>());
-        }
-        return notifyDebt;
-    }
-
-    public void setNotifyDebt(List<NotifyDebt> notifyDebt) {
-        this.notifyDebt = notifyDebt;
+    public void setCreatedBankAccounts(List<BankAccount> createdBankAccounts) {
+        this.createdBankAccounts = createdBankAccounts;
     }
 
     public List<Category> getMyCategories() {
@@ -102,28 +73,6 @@ public class User extends AbstractEntity {
         this.myCategories = myCategories;
     }
 
-    public List<Budget> getMyBudgets() {
-        if (myBudgets == null) {
-            setMyBudgets(new ArrayList<>());
-        }
-        return myBudgets;
-    }
-
-    public void setMyBudgets(List<Budget> myBudgets) {
-        this.myBudgets = myBudgets;
-    }
-
-    public List<Debt> getMyDebts() {
-        if (myDebts == null) {
-            setMyDebts(new ArrayList<>());
-        }
-        return myDebts;
-    }
-
-    public void setMyDebts(List<Debt> myDebts) {
-        this.myDebts = myDebts;
-    }
-
     public List<BankAccount> getAvailableBankAccounts() {
         if (availableBankAccounts == null) {
             setAvailableBankAccounts(new ArrayList<>());
@@ -131,8 +80,8 @@ public class User extends AbstractEntity {
         return availableBankAccounts;
     }
 
-    public void setAvailableBankAccounts(List<BankAccount> dostupneUcty) {
-        this.availableBankAccounts = dostupneUcty;
+    public void setAvailableBankAccounts(List<BankAccount> availableBankAccounts) {
+        this.availableBankAccounts = availableBankAccounts;
     }
 
     @Override

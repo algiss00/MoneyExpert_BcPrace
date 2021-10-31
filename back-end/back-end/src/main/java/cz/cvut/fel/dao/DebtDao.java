@@ -1,14 +1,16 @@
 package cz.cvut.fel.dao;
 
-import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.Debt;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class DebtDao extends AbstractDao<Debt> {
 
     DebtDao(EntityManager em) {
@@ -35,27 +37,19 @@ public class DebtDao extends AbstractDao<Debt> {
                 .getResultList();
     }
 
-    public List<Debt> getUsersDebt(int uid) {
-        return em.createNamedQuery("Debt.getUsersDebt", Debt.class)
-                .setParameter("uid", uid)
-                .getResultList();
-    }
-
     public List<Debt> getDeadlineDebts() {
         return em.createNamedQuery("Debt.getDeadlineDebts", Debt.class).getResultList();
     }
 
-    public Debt getByName(int uid, String debtName) throws Exception {
+    public List<Debt> getByNameFromBankAcc(int baId, String debtName) {
         try {
-            return em.createNamedQuery("Debt.getByName", Debt.class)
-                    .setParameter("uid", uid)
+            return em.createNamedQuery("Debt.getByNameFromBankAcc", Debt.class)
+                    .setParameter("baId", baId)
                     .setParameter("debtName", debtName)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
+                    .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Exception DebtDao");
+            return Collections.emptyList();
         }
     }
 

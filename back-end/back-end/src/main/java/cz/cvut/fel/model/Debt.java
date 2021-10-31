@@ -15,14 +15,12 @@ import java.util.List;
                 query = "SELECT d FROM Debt d WHERE d.notifyDate <= CURRENT_DATE AND d.deadline > CURRENT_DATE"),
         @NamedQuery(name = "Debt.getDeadlineDebts",
                 query = "SELECT d FROM Debt d WHERE d.deadline <= CURRENT_DATE"),
-        @NamedQuery(name = "Debt.getByName",
-                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid and d.name = :debtName"),
+        @NamedQuery(name = "Debt.getByNameFromBankAcc",
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :baId and d.name = :debtName"),
         @NamedQuery(name = "Debt.getByBankAccount",
                 query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bankAccId and d.id = :debtId"),
         @NamedQuery(name = "Debt.getSortedByDeadlineFromBankAcc",
-                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bId order by d.deadline ASC"),
-        @NamedQuery(name = "Debt.getUsersDebt",
-                query = "SELECT d FROM Debt d WHERE d.creator.id = :uid order by d.deadline ASC")
+                query = "SELECT d FROM Debt d WHERE d.bankAccount.id = :bId order by d.deadline ASC")
 })
 public class Debt extends AbstractEntity {
     @Column
@@ -41,29 +39,19 @@ public class Debt extends AbstractEntity {
     @JsonIgnore
     private BankAccount bankAccount;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User creator;
-
     @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<NotifyDebt> notifyDebt;
 
     public List<NotifyDebt> getNotifyDebt() {
+        if (notifyDebt == null) {
+            setNotifyDebt(new ArrayList<>());
+        }
         return notifyDebt;
     }
 
     public void setNotifyDebt(List<NotifyDebt> notifyDebt) {
         this.notifyDebt = notifyDebt;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
     }
 
     public double getAmount() {

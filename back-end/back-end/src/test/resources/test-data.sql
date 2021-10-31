@@ -13,11 +13,11 @@ INSERT INTO user_table VALUES (13,'emailTest4@ads.cz','True','Petr','123456','pe
 INSERT INTO user_table VALUES (14,'emailTes5t@ads.cz','Low','Dirtrich','123456','dirtrich123');
 
 -- bankAccount table
-INSERT INTO bank_account_table VALUES (15,1000,'CZK','CSOB Ucet');
-INSERT INTO bank_account_table VALUES (16,1205,'EUR','SPORKA Ucet');
-INSERT INTO bank_account_table VALUES (17,124,'EUR','Pracovni Ucet');
-INSERT INTO bank_account_table VALUES (18,10000,'CZK','KB Ucet');
-INSERT INTO bank_account_table VALUES (19,1000,'CZK','CSOB Ucet');
+INSERT INTO bank_account_table VALUES (15,1000,'CZK','CSOB Ucet', 14);
+INSERT INTO bank_account_table VALUES (16,1205,'EUR','SPORKA Ucet', 14);
+INSERT INTO bank_account_table VALUES (17,124,'EUR','Pracovni Ucet', 14);
+INSERT INTO bank_account_table VALUES (18,10000,'CZK','KB Ucet', 14);
+INSERT INTO bank_account_table VALUES (19,1000,'CZK','CSOB Ucet', 14);
 
 -- relation_category_user table
 INSERT INTO relation_category_user VALUES (10, 1);
@@ -33,35 +33,35 @@ INSERT INTO relation_bank_account_user VALUES (11, 17);
 INSERT INTO relation_bank_account_user VALUES (12, 18);
 
 -- budget table
-INSERT INTO budget_table VALUES (19,1000,'Jidlo budget',50,0,15,-2,10);
-INSERT INTO budget_table VALUES (20,1500,'Auto budget',65,0,16,-1,11);
-INSERT INTO budget_table VALUES (21,2000,'Byt budget',80,0,17,-4,12);
+INSERT INTO budget_table VALUES (19,1000,'Jidlo budget',50,0,15,-2);
+INSERT INTO budget_table VALUES (20,1500,'Auto budget',65,0,16,-1);
+INSERT INTO budget_table VALUES (21,2000,'Byt budget',80,0,17,-4);
 
-INSERT INTO budget_table VALUES (22,2000,'Byt budget',80,0,17,-3,12);
-INSERT INTO budget_table VALUES (23,2000,'Byt budget',80,0,17,-7,12);
+INSERT INTO budget_table VALUES (22,2000,'Byt budget',80,0,17,-3);
+INSERT INTO budget_table VALUES (23,2000,'Byt budget',80,0,17,-7);
 
 -- debt table
-INSERT INTO debt_table VALUES (22,1000,'2021-10-10','Debt to Honza','Honza dluh','2021-10-09',null,null);
-INSERT INTO debt_table VALUES (23,100,'2021-10-11','netflix','Netflix','2021-10-10',null,null);
-INSERT INTO debt_table VALUES (24,250,'2021-10-14','debt to Karl','Karl dluh','2021-10-19',null,null);
+INSERT INTO debt_table VALUES (22,1000,'2021-10-10','Debt to Honza','Honza dluh','2021-10-09',16);
+INSERT INTO debt_table VALUES (23,100,'2021-10-11','netflix','Netflix','2021-10-10',15);
+INSERT INTO debt_table VALUES (24,250,'2021-10-14','debt to Karl','Karl dluh','2021-10-19',16);
 
-INSERT INTO debt_table VALUES (25,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-10',null,null);
-INSERT INTO debt_table VALUES (26,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-13',null,null);
-INSERT INTO debt_table VALUES (27,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-14',null,null);
+INSERT INTO debt_table VALUES (25,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-10',17);
+INSERT INTO debt_table VALUES (26,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-13',18);
+INSERT INTO debt_table VALUES (27,250,'2022-10-29','debt to Karl','Karl dluh','2021-10-14',17);
 
 -- NotifyBudget table
-INSERT INTO notify_budget_table VALUES (25,'BUDGET_AMOUNT',19,10);
-INSERT INTO notify_budget_table VALUES (26,'BUDGET_PERCENT',20,11);
-INSERT INTO notify_budget_table VALUES (27,'BUDGET_AMOUNT',21,12);
+INSERT INTO notify_budget_table VALUES (25,'BUDGET_AMOUNT',19);
+INSERT INTO notify_budget_table VALUES (26,'BUDGET_PERCENT',19);
+INSERT INTO notify_budget_table VALUES (27,'BUDGET_AMOUNT',21);
 
-INSERT INTO notify_budget_table VALUES (28,'BUDGET_AMOUNT',22,10);
-INSERT INTO notify_budget_table VALUES (29,'BUDGET_PERCENT',23,10);
+INSERT INTO notify_budget_table VALUES (28,'BUDGET_AMOUNT',22);
+INSERT INTO notify_budget_table VALUES (29,'BUDGET_PERCENT',23);
 
 -- NotifyDebt table
-INSERT INTO notify_debt_table VALUES (28,'DEBT_NOTIFY',13,22);
-INSERT INTO notify_debt_table VALUES (29,'DEBT_DEADLINE',14,23);
-INSERT INTO notify_debt_table VALUES (30,'DEBT_NOTIFY',13,24);
-INSERT INTO notify_debt_table VALUES (31,'DEBT_DEADLINE',13,26);
+INSERT INTO notify_debt_table VALUES (28,'DEBT_NOTIFY',22);
+INSERT INTO notify_debt_table VALUES (29,'DEBT_DEADLINE',22);
+INSERT INTO notify_debt_table VALUES (30,'DEBT_NOTIFY',24);
+INSERT INTO notify_debt_table VALUES (31,'DEBT_DEADLINE',26);
 
 -- Transaction table
 INSERT INTO transaction_table VALUES (30,100,'2021-10-01','jottings test 1','EXPENSE',15,-4);

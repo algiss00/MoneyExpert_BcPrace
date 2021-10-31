@@ -3,9 +3,11 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.BankAccount;
+import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -55,9 +56,9 @@ public class DebtServiceTest {
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
-            when(bankAccountDao.getUsersBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
             when(debtDao.persist(debt)).thenReturn(debt);
-            when(debtDao.getByName(user.getId(), debt.getName())).thenReturn(null);
+            when(debtDao.getByNameFromBankAcc(user.getId(), debt.getName())).thenReturn(null);
 
             Debt persisted = debtService.persist(debt, bankAccount.getId());
             verify(debtDao, times(1)).persist(debt);
@@ -67,8 +68,10 @@ public class DebtServiceTest {
 
     @Test
     public void remove_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
+        debt.setBankAccount(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(debtDao.find(debt.getId())).thenReturn(debt);
@@ -80,8 +83,10 @@ public class DebtServiceTest {
 
     @Test
     public void update_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
+        debt.setBankAccount(bankAccount);
         debt.setName("mock test");
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
@@ -96,8 +101,10 @@ public class DebtServiceTest {
 
     @Test
     public void find_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
+        debt.setBankAccount(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(debtDao.find(debt.getId())).thenReturn(debt);
@@ -109,24 +116,39 @@ public class DebtServiceTest {
     }
 
     @Test
+    public void find_mockTest_throwNotAuthenticatedClient() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        BankAccount bankAccount2 = Generator.generateDefaultBankAccount();
+
+        bankAccount.setCreator(user);
+        Debt debt = Generator.generateDefaultDebt();
+        // belongs to other BankAcc
+        debt.setBankAccount(bankAccount2);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.find(debt.getId())).thenReturn(debt);
+
+            assertThrows(NotAuthenticatedClient.class, () -> {
+                debtService.getByIdDebt(debt.getId());
+            });
+        }
+    }
+
+    @Test
     public void checkNotifyDates_mockTest_success() throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date notify = formatter.parse("2021-10-05");
 
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
         debt.setNotifyDate(notify);
 
         Debt debt1 = Generator.generateDefaultDebt();
-        debt1.setCreator(user);
         debt1.setNotifyDate(notify);
 
         Debt debt2 = Generator.generateDefaultDebt();
-        debt2.setCreator(user);
         debt2.setNotifyDate(notify);
 
         Debt debt3 = Generator.generateDefaultDebt();
-        debt3.setCreator(user);
         debt3.setNotifyDate(notify);
 
         Debt[] notifyDebts = {debt, debt1, debt2, debt3};
@@ -142,7 +164,6 @@ public class DebtServiceTest {
     @Test
     public void checkNotifyDatesEmpty_mockTest_success() throws Exception {
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(debtDao.find(debt.getId())).thenReturn(debt);
@@ -160,19 +181,15 @@ public class DebtServiceTest {
         Date deadline = formatter.parse("2021-10-05");
 
         Debt debt = Generator.generateDefaultDebt();
-        debt.setCreator(user);
         debt.setDeadline(deadline);
 
         Debt debt1 = Generator.generateDefaultDebt();
-        debt1.setCreator(user);
         debt1.setDeadline(deadline);
 
         Debt debt2 = Generator.generateDefaultDebt();
-        debt2.setCreator(user);
         debt2.setDeadline(deadline);
 
         Debt debt3 = Generator.generateDefaultDebt();
-        debt3.setCreator(user);
         debt3.setDeadline(deadline);
 
         Debt[] deadlineDebts = {debt, debt1, debt2, debt3};

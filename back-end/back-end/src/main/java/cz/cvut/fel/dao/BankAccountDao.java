@@ -2,6 +2,7 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.BankAccount;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class BankAccountDao extends AbstractDao<BankAccount> {
 
     BankAccountDao(EntityManager em) {
@@ -20,9 +22,9 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         return em.find(BankAccount.class, id);
     }
 
-    public List<BankAccount> getByName(String name, int uid) {
+    public List<BankAccount> getByNameAvailableBankAcc(String name, int uid) {
         try {
-            return em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency " +
+            return em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency, acc.user_id " +
                             "FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +
                             "ON relation.bank_account_id = acc.id" +
                             " where relation.user_id = :userId and acc.name = :name ",
@@ -36,9 +38,9 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         }
     }
 
-    public BankAccount getUsersBankAccountById(int uid, int bankAccId) throws Exception {
+    public BankAccount getUsersAvailableBankAccountById(int uid, int bankAccId) throws Exception {
         try {
-            return (BankAccount) em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency" +
+            return (BankAccount) em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency, acc.user_id" +
                             " FROM bank_account_table as acc inner JOIN relation_bank_account_user as relation " +
                             "ON relation.bank_account_id = acc.id " +
                             "where relation.user_id = :userId and relation.bank_account_id = :bankAccId",
@@ -69,6 +71,13 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     @Override
     public List<BankAccount> findAll() {
         return em.createNamedQuery("BankAccount.getAll", BankAccount.class).getResultList();
+    }
+
+    public List<BankAccount> getByNameCreated(String name, int uid) {
+        return em.createNamedQuery("BankAccount.getByNameCreated", BankAccount.class)
+                .setParameter("name", name)
+                .setParameter("uid", uid)
+                .getResultList();
     }
 
     @Override

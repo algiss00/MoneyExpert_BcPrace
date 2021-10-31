@@ -1,95 +1,241 @@
-GET:
-
-User
-/users - array of all users
-/users/{id} - get user by ID
-/users/getAvailableAccounts - get available bankAcc
-
-Debt
-/debt - array of all zavazky
-/debt/getAllUsersDebts - get all user's zavazky - todo controla if user ma pristup do toho
-/debt/getAllAccountsDebts - get all debts from BankAcc
-/debt/{id} - by Id
-
-BankAccount
-/bankAccount/{id} - get ucet by ID - kontorola pristupu
-/bankAccount/usersAcc - get all user's account
-/bankAccount/owners?accId=... - get all owners of this bankAcc accId = ...
-
-Transaction
-/transaction/account?accId={accountId} - get all transactions from bankAccount
-/transaction/{id} - get Transaction by ID - todo controla pristupu
-/transaction/category?catId={id}&accId={id} - get all transactions from Category from defined BankAccount
 
 
-Budget
-/budget - get all budgets
-/budget/accounts?accId={bankAccountId} - array of all budget from ucet
-/budget/{id} - get budget by ID - todo cotrola pristupu
 
-Category
-/category - array of all Category
-/category/{id} - get Category by ID
+METHOD GET:
+
+------------------------------------------------------------------------------
+USER
+
+/user/{id} - get user by id
+
+/user/current-user - get current user
+
+/user/available-accounts - get users available bankAccounts, not created BankAccounts
+
+/user/created-accounts - get users created bankAccounts, not available BankAccounts
+
+/user/categories - get all users Categories (but exists in Category Controller get users created categories, its mean that no default Categories, only User created Categories)
+
+------------------------------------------------------------------------------
+DEBT
+
+/debt/{id} - get debt by id
+
+/debt/by-name/{bankAccId}?name=... - get debt by name from bankAccount where name = debt.name
+
+------------------------------------------------------------------------------
+BANK_ACCOUNT
+
+/bankAccount/{id} - get ucet by ID
+
+/bankAccount/available-by-name?name=... - get by name available bankAccount
+
+/bankAccount/created-by-name?name=... - get by name created bankAccount
+
+/bankAccount/budgets/{accId} - get All budgets from BankAcc {accId} = BankAccId
+
+/bankAccount/transactions/{accId} - get All transactions from BankAcc {accId} = BankAccId
+
+/bankAccount/transactions-by-type/{accId}?type=... - get All transactions from BankAcc by Type, {accId} = BankAccId, type = TypeTransaction
+
+/bankAccount/debts/{accId} - get All debts from BankAcc {accId} = BankAccId
+
+/bankAccount/creator/{bankAccId} - get creator of BankAcc {bankAccId} = BankAccId
+
+/bankAccount/owners/{accId} - get all owners of bankAcc {accId} = BankAccId
+
+------------------------------------------------------------------------------
+TRANSACTION
+
+/transaction/between-date/{accId}?from={date}&to={date} - get transactions from BankAccount between dates from = String Date and to = String Date
+
+/transaction/category?catId={categoryId}&accId={bankAccountId} -  get transactions from BankAccount with defined Category
+
+/transaction/{id} - get transaction by id, if user is not owner or creator of BankAccount where transaction belongs then throw Exception NotAuthenticatedClient
+
+/transaction/sorted-transactions-month/{bankAccId}?month={month}&year={year} - get Transactions from BankAccount sorted by Month and Year
+
+/transaction/sum-expense/{bankAccId}?month={month}&year={year} - get Sum of all Expense Transactions from BankAccount by Month and Year
+
+/transaction/sum-income/{bankAccId}?month={month}&year={year} - get Sum of all Income Transactions from BankAccount by Month and Year
+
+/transaction/sum-expense-category/{bankAccId}?month={month}&year={year}&categoryId={categoryId} - get Sum of all Expense Transactions from BankAccount with defined Category by Month and Year
+
+/transaction/sum-income-category/{bankAccId}?month={month}&year={year}&categoryId={categoryId} - get Sum of all Income Transactions from BankAccount with defined Category by Month and Year
+
+------------------------------------------------------------------------------
+BUDGET
+
+/budget/{id} - get budget by ID
+
+/budget/name/{accId}?name={bankAccountName}. - get budget by name from bankAccount where name = bankAccount.name
+
+/budget/category/{accId}?categoryId={categoryId} - get budget by category from bankAccount where accId = bankAccId and categoryId={categoryId}
 
 
-POST:
+------------------------------------------------------------------------------
+CATEGORY
 
-User
-/users - add user
-/users/updateUser - update user
-/users/updateEmail?email={email} - update email
-/users/updateUsername?username={username} - update username
+/category/{id} - get Category by id
 
-debt
-/debt - add debt
-/debt/updateDebt?debtId={id} - update
+/category/default - get default Categories
 
-bankAccount
-/bankAccount - add bankAccount
-/bankAccount/addOwner?userId={userId}&accId={accId} - sdileni uctu
-/bankAccount/updateAcc?accId={id} - update
+/category/user-created - get user created Categories
 
-transaction
-/transaction/add?accId={id} - add transaction to bankAccount
-/transaction/updateTransaction?transId={id} - update
+/category/budget/{catId} - get budget from Category where categoryId = {catId}
 
-budget
-/budget - add rozpocet
-/budget/updateBudget?budId={id} - update
+/category/transactions/{catId} - get all Transactions from Category where categoryId = {catId}
 
-category
-/category - add kategorie
-/category/updateCategory?catId={id} - update
+------------------------------------------------------------------------------
+NOTIFY-BUDGET
+
+/notify-budget - get all notifyBudget
+
+/notify-budget/bank-account/{bankAccId} - get all notifyBudget from bankAccount where bankAccId = {bankAccId}
+
+/notify-budget/budget/{budgetId} - get all notifyBudget with Budget where budgetId = {budgetId}
+
+/notify-budget/budget-by-type/{budgetId}?type={TypeNotification} - get all notifyBudget with Budget by type where budgetId = {budgetId}
+
+/notify-budget/{id} - get notifyBudget by id
+
+------------------------------------------------------------------------------
+NOTIFY-DEBT
+
+/notify-debt - get all notifyDebt
+
+/notify-debt/debt/{debtId} - get all notifyDebt with Debt where debtId = {debtId}
+
+/notify-debt/bank-account/{bankAccId} - get all notifyDebt from bankAccount where bankAccId = {bankAccId}
+
+/notify-debt/debt-by-type/{debtId}?type={TypeNotification} - get all notifyDebt with Debt by type where debtId = {debtId}
+
+/notify-debt/{id} - get notifyDebt by id
+
+------------------------------------------------------------------------------
 
 
-DELETE:
 
-User
-/users/{userId} - delete user - todo controla pristupu
 
-debt
-/debt/{debtId} - delete zavazek
 
-bankAccount
-/bankAccount/{bankAccountId} - delete bankAcc
-/bankAccount/removeOwner?userId={userId}&accId={accId} - odstranit pristup k uctu
 
-transaction
-/transaction/{id} - delete transaction
-/transaction/category?transId={id}&catId={id} - remove trans from kategorie
-/transaction/bankAccount?transId={id}&bankAccountId={id} - remove trans from bankAccount
+METHOD POST:
 
-budget
-/budget/{Id} - delete budget
-/budget/removeBudFromAcc?budId={id}&bankAcc={id} - remove rozpocet from Ucet
-/budget/removeBudFromCategory?budId={id} - remove rozpocet from kategorie
+------------------------------------------------------------------------------
+USER
+/user - add user with @RequestBody User user
 
-category
-/category/{id} - delete category
+/user/basic-info - update user with @RequestBody User user, ONLY name and lastname
 
-STATISTIKA
+/user/email?email={email} - update email
 
-GET:
-/statistic/category?catId={categoryId} - get All Transactions From Category
+/user/username?username={username} - update username
 
-все потраченные деньги....
+------------------------------------------------------------------------------
+DEBT
+
+/debt?accId={bankAccountId} - create and add debt to bankAccount with @RequestBody Debt debt
+
+/debt/update?debtId={debtId} - update debt with @RequestBody Debt debt
+
+------------------------------------------------------------------------------
+BANK_ACCOUNT
+
+/bankAccount - add bankAccount with @RequestBody BankAccount bankAccount
+
+/bankAccount/owner?userId={userId}&accId={accId} - share bankAccount - add new Owner of BankAcc
+
+/bankAccount/update?accId={id} - update BankAcc with @RequestBody BankAccount bankAccount
+
+------------------------------------------------------------------------------
+TRANSACTION
+
+/transaction?accId={bankAccountId}&categoryId={categoryId} - add transaction to bankAccount with defined Category and @RequestBody Transaction transaction
+
+/transaction/transfer?fromAccId={bankAccountId}&toAccId={bankAccountId}&transId={TransactionId} - transfer Transaction with TransactionId = transId from BankAccount to another BankAccount
+
+/transaction/update?transId={TransactionId} - update Transaction by id and with @RequestBody Transaction transaction - ONLY attributes = amount, date and jottings
+
+/transaction/update-type?transId={TransactionId}&typeTransaction={TypeTransaction} - update Type of Transaction with @RequestParam typeTransaction
+
+/transaction/update-category?transId={TransactionId}&catId={CategoryId} - update Category of Transaction with @RequestParam catId
+
+------------------------------------------------------------------------------
+BUDGET
+
+/budget?accId={bankAccId}&categoryId={categoryId} - create new Budget with @RequestBody Budget budget
+
+/budget/update?budId={budgetId} - update with @RequestBody Budget budget of new Budget
+
+------------------------------------------------------------------------------
+CATEGORY
+
+/category - add category with @RequestBody Category category
+
+/category/transaction?transId={transactionId}&categoryId={categoryId} - add transaction to category
+
+/category/update?catId={categoryId} - update category by categoryId with @RequestBody Category category new category
+
+------------------------------------------------------------------------------
+
+
+
+
+
+
+
+METHOD DELETE:
+
+------------------------------------------------------------------------------
+USER
+
+/user/delete-account - delete current user from db
+
+------------------------------------------------------------------------------
+NOTIFY-BUDGET
+
+/notify-budget/{id} - delete NotifyBudget by id
+
+------------------------------------------------------------------------------
+NOTIFY-DEBT
+
+/notify-debt/{id} - delete NotifyDebt by id
+
+------------------------------------------------------------------------------
+DEBT
+
+/debt/{id} - delete debt by id
+
+------------------------------------------------------------------------------
+BANK_ACCOUNT
+
+/bankAccount/{id} - delete bankAcc by ID
+
+/bankAccount/budget?budId={budgetId}&bankAcc={bankAccId} - remove budget from BankAcc budId = budgetId, bankAcc = bankAccId
+
+/bankAccount/owner?userId={userId}&accId={accId} - remove owner from bankAccount, not allowed to remove creator of bankAcc
+
+/bankAccount/transaction?transId={transId}&bankAccountId={bankAccountId} - remove Transaction from BankAcc
+
+/bankAccount/debt?debtId={userId}&accId={accId} - remove debt from BankAcc
+
+------------------------------------------------------------------------------
+TRANSACTION
+
+/transaction/{id} - delete transaction by id
+
+/transaction/category?transId={TransactionId} - remove Category from Transaction
+
+------------------------------------------------------------------------------
+BUDGET
+
+/budget/{id} - delete budget by id
+
+/budget/category?budId={id} - delete category from Budget
+
+------------------------------------------------------------------------------
+CATEGORY
+
+/category/{id} - delete category by id
+
+------------------------------------------------------------------------------

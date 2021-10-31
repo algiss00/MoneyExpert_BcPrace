@@ -16,8 +16,7 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -72,6 +71,34 @@ public class CategoryServiceTest {
     }
 
     @Test
+    public void remove_MockTest_expectedThatTransactionsHaveNoCategory() throws Exception {
+        Transaction transaction = Generator.generateDefaultTransaction();
+        Category category = Generator.generateDefaultCategory();
+
+        Category noCategory = Generator.generateDefaultCategory();
+        noCategory.setName("No category");
+
+        transaction.setCategory(category);
+        category.getTransactions().add(transaction);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(categoryDao.find(category.getId())).thenReturn(category);
+            when(categoryDao.find(-12)).thenReturn(noCategory);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
+            categoryService.removeCategory(category.getId());
+            verify(categoryDao, times(1)).remove(category);
+            assertEquals("No category", transaction.getCategory().getName());
+        }
+    }
+
+    @Test
+    public void removeDefaultCategory_MockTest_throwException() {
+        assertThrows(Exception.class, () -> {
+            categoryService.removeCategory(-1);
+        });
+    }
+
+    @Test
     public void update_MockTest_success() throws Exception {
         Category category = Generator.generateDefaultCategory();
         category.setName("mock test");
@@ -111,7 +138,7 @@ public class CategoryServiceTest {
             when(categoryDao.find(anyInt())).thenReturn(category);
             when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-            when(bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
             categoryService.addTransactionToCategory(transaction.getId(), category.getId());
             verify(categoryDao, times(1)).update(any());

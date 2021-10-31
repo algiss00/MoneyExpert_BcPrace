@@ -24,8 +24,12 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.findAll();
     }
 
-    public List<BankAccount> getByName(String name) throws Exception {
-        return bankAccountDao.getByName(name, getAuthenticatedUser().getId());
+    public List<BankAccount> getByNameAvailableBankAcc(String name) throws Exception {
+        return bankAccountDao.getByNameAvailableBankAcc(name, getAuthenticatedUser().getId());
+    }
+
+    public List<BankAccount> getByNameCreatedBankAcc(String name) throws Exception {
+        return bankAccountDao.getByNameCreated(name, getAuthenticatedUser().getId());
     }
 
     public List<Budget> getAllAccountsBudgets(int accId) throws Exception {
@@ -50,14 +54,19 @@ public class BankAccountService extends AbstractServiceHelper {
         return byIdBankAccount.getOwners();
     }
 
+    public User getCreator(int accId) throws Exception {
+        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+        return byIdBankAccount.getCreator();
+    }
+
     public BankAccount persist(BankAccount bankAccount) throws Exception {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
             throw new NotValidDataException("bankAccount");
         User u = getAuthenticatedUser();
-        bankAccount.getOwners().add(u);
+        bankAccount.setCreator(u);
         BankAccount persistedEntity = bankAccountDao.persist(bankAccount);
-        u.getAvailableBankAccounts().add(bankAccount);
+        u.getCreatedBankAccounts().add(bankAccount);
         userDao.update(u);
         if (bankAccount.getBalance() != 0) {
             Transaction startTransaction = createStartTransaction(bankAccount);
@@ -71,6 +80,9 @@ public class BankAccountService extends AbstractServiceHelper {
         BankAccount bankAccount = getByIdBankAccount(accId);
         User user = getByIdUser(userId);
 
+        if (bankAccount.getOwners().contains(user)) {
+            return;
+        }
         bankAccount.getOwners().add(user);
         user.getAvailableBankAccounts().add(bankAccount);
         bankAccountDao.update(bankAccount);
@@ -92,9 +104,21 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.update(byIdBankAccount);
     }
 
+    /**
+     * Cannot remove not existed owner and creator of BankAcc
+     *
+     * @param userId
+     * @param accId
+     * @throws Exception
+     */
     public void removeOwner(int userId, int accId) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(accId);
         User user = getByIdUser(userId);
+
+        // not allowed to delete creator of BankAccount
+        if (!isUserOwnerOfBankAccount(user, bankAccount) || bankAccount.getCreator() == user) {
+            throw new NotAuthenticatedClient();
+        }
 
         bankAccount.getOwners().remove(user);
         user.getAvailableBankAccounts().remove(bankAccount);
@@ -129,7 +153,6 @@ public class BankAccountService extends AbstractServiceHelper {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getDebts().remove(debt);
-        debt.setCreator(null);
         debt.setBankAccount(null);
         debtDao.update(debt);
         bankAccountDao.update(bankAccount);

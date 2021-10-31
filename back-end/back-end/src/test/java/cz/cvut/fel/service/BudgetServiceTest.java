@@ -7,6 +7,7 @@ import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
+import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -62,8 +64,10 @@ public class BudgetServiceTest {
 
     @Test
     public void remove_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Budget budget = Generator.generateDefaultBudget();
-        budget.setCreator(user);
+        budget.setBankAccount(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.find(anyInt())).thenReturn(budget);
@@ -75,8 +79,10 @@ public class BudgetServiceTest {
 
     @Test
     public void update_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Budget budget = Generator.generateDefaultBudget();
-        budget.setCreator(user);
+        budget.setBankAccount(bankAccount);
         budget.setName("mock test");
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
@@ -91,15 +97,38 @@ public class BudgetServiceTest {
 
     @Test
     public void find_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
         Budget budget = Generator.generateDefaultBudget();
-        budget.setCreator(user);
+        budget.setBankAccount(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.find(anyInt())).thenReturn(budget);
+            when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
 
             Budget founded = budgetService.getByIdBudget(budget.getId());
             verify(budgetDao, times(1)).find(budget.getId());
             assertEquals(budget, founded);
+        }
+    }
+
+    @Test
+    public void find_mockTest_throwNotAuthenticatedClient() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        BankAccount bankAccount2 = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
+
+        Budget budget = Generator.generateDefaultBudget();
+        // belongs to other bankAccount
+        budget.setBankAccount(bankAccount2);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(budgetDao.find(anyInt())).thenReturn(budget);
+            when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
+
+            assertThrows(NotAuthenticatedClient.class, () -> {
+                budgetService.getByIdBudget(budget.getId());
+            });
         }
     }
 }

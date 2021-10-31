@@ -33,9 +33,15 @@ public class BankAccountController {
         return new ResponseEntity<>(bankAccount, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAccountByName(@RequestParam String name) throws Exception {
-        List<BankAccount> bankAccountList = bankAccountService.getByName(name);
+    @GetMapping(value = "/available-by-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getByNameAvailableBankAcc(@RequestParam String name) throws Exception {
+        List<BankAccount> bankAccountList = bankAccountService.getByNameAvailableBankAcc(name);
+        return new ResponseEntity<>(bankAccountList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/created-by-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getByNameCreatedBankAcc(@RequestParam String name) throws Exception {
+        List<BankAccount> bankAccountList = bankAccountService.getByNameCreatedBankAcc(name);
         return new ResponseEntity<>(bankAccountList, HttpStatus.OK);
     }
 
@@ -60,6 +66,13 @@ public class BankAccountController {
     ResponseEntity<?> getAllAccountsDebts(@PathVariable int accId) throws Exception {
         List<Debt> d = bankAccountService.getAllAccountsDebts(accId);
         return new ResponseEntity<>(d, HttpStatus.OK);
+    }
+
+
+    @GetMapping(value = "/creator/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getCreator(@PathVariable int bankAccId) throws Exception {
+        User user = bankAccountService.getCreator(bankAccId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(value = "/owners/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)

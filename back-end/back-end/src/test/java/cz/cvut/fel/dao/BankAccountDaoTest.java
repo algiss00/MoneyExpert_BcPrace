@@ -38,7 +38,7 @@ public class BankAccountDaoTest {
 
     @Test
     public void getByName() {
-        List<BankAccount> bankAccounts = bankAccountDao.getByName("CSOB Ucet", 10);
+        List<BankAccount> bankAccounts = bankAccountDao.getByNameAvailableBankAcc("CSOB Ucet", 10);
         assertFalse(bankAccounts.isEmpty());
         assertEquals(2, bankAccounts.size());
 
@@ -51,13 +51,13 @@ public class BankAccountDaoTest {
 
     @Test
     public void getByNameEmpty() {
-        List<BankAccount> bankAccounts = bankAccountDao.getByName("CSOB Ucet Test", 10);
+        List<BankAccount> bankAccounts = bankAccountDao.getByNameAvailableBankAcc("CSOB Ucet Test", 10);
         assertTrue(bankAccounts.isEmpty());
     }
 
     @Test
-    public void getUsersBankAccountById() throws Exception {
-        BankAccount bankAccount = bankAccountDao.getUsersBankAccountById(10, 15);
+    public void getUsersAvailableBankAccountById() throws Exception {
+        BankAccount bankAccount = bankAccountDao.getUsersAvailableBankAccountById(10, 15);
         assertNotNull(bankAccount);
         assertEquals("CSOB Ucet", bankAccount.getName());
         assertEquals(TypeCurrency.CZK, bankAccount.getCurrency());
@@ -66,8 +66,23 @@ public class BankAccountDaoTest {
 
     @Test
     public void getUsersBankAccountByIdNotFound() throws Exception {
-        BankAccount bankAccount = bankAccountDao.getUsersBankAccountById(10, 17);
+        BankAccount bankAccount = bankAccountDao.getUsersAvailableBankAccountById(10, 17);
         assertNull(bankAccount);
+    }
+
+    @Test
+    public void deleteRelationBankAcc() throws Exception {
+        bankAccountDao.deleteRelationBankAcc(10, 15);
+        BankAccount bankAccount = bankAccountDao.find(15);
+        assertTrue(bankAccount.getOwners().isEmpty());
+    }
+
+    @Test
+    public void deleteRelationBankAccNotExistsUser() throws Exception {
+        bankAccountDao.deleteRelationBankAcc(111, 15);
+        BankAccount bankAccount = bankAccountDao.find(15);
+        assertFalse(bankAccount.getOwners().isEmpty());
+        assertEquals(10, bankAccount.getOwners().get(0).getId());
     }
 
     @Test

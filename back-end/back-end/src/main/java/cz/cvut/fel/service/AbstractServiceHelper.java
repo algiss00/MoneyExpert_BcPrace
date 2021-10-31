@@ -67,18 +67,18 @@ abstract class AbstractServiceHelper {
         return c;
     }
 
-    public Debt getByIdDebt(int id) throws DebtNotFoundException, NotAuthenticatedClient {
+    public Debt getByIdDebt(int id) throws Exception {
         Debt d = debtDao.find(id);
         if (d == null) {
             throw new DebtNotFoundException(id);
         }
-        if (!isCreatorOfDebt(d)) {
+        if (!isOwnerOfDebt(d)) {
             throw new NotAuthenticatedClient();
         }
         return d;
     }
 
-    public Budget getByIdBudget(int id) throws BudgetNotFoundException, NotAuthenticatedClient {
+    public Budget getByIdBudget(int id) throws Exception {
         Budget budget = budgetDao.find(id);
         if (budget == null) {
             throw new BudgetNotFoundException(id);
@@ -89,15 +89,16 @@ abstract class AbstractServiceHelper {
         return budget;
     }
 
-    public boolean isOwnerOfBudget(Budget budget) throws NotAuthenticatedClient {
-        User user = getAuthenticatedUser();
-        User creator = budget.getCreator();
-        return creator.getId() == user.getId();
+    public boolean isOwnerOfBudget(Budget budget) throws Exception {
+        BankAccount budgetsBankAccount = budget.getBankAccount();
+
+        return isUserOwnerOfBankAccount(budgetsBankAccount);
     }
 
-    public boolean isCreatorOfDebt(Debt debt) throws NotAuthenticatedClient {
-        User user = getAuthenticatedUser();
-        return debt.getCreator().getId() == user.getId();
+    public boolean isOwnerOfDebt(Debt debt) throws Exception {
+        BankAccount debtBankAccount = debt.getBankAccount();
+
+        return isUserOwnerOfBankAccount(debtBankAccount);
     }
 
     public Transaction getByIdTransaction(int id) throws Exception {
@@ -129,7 +130,14 @@ abstract class AbstractServiceHelper {
 
     public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws Exception {
         User user = getAuthenticatedUser();
-        return bankAccountDao.getUsersBankAccountById(user.getId(), bankAccount.getId()) != null;
+        if (bankAccount.getCreator() == user) {
+            return true;
+        }
+        return bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId()) != null;
+    }
+
+    public boolean isUserOwnerOfBankAccount(User user, BankAccount bankAccount) throws Exception {
+        return bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 
     public void removeTransFromAccount(int transId, int accId) throws Exception {
@@ -157,7 +165,7 @@ abstract class AbstractServiceHelper {
 
     public void removeBudget(int id) throws Exception {
         Budget bu = getByIdBudget(id);
-        deleteNotifyBudgetByBudgetId(bu.getId());
+        removeNotifyBudgetByBudgetId(bu.getId());
         budgetDao.remove(bu);
     }
 
@@ -167,13 +175,12 @@ abstract class AbstractServiceHelper {
      * @param budgetId
      * @throws Exception
      */
-    private void deleteNotifyBudgetByBudgetId(int budgetId) throws Exception {
-        int uid = getAuthenticatedUser().getId();
+    private void removeNotifyBudgetByBudgetId(int budgetId) throws Exception {
         // get notifyBudget by budgetId test if exists
-        if (notifyBudgetDao.getNotifyBudgetByBudgetId(uid, budgetId).isEmpty()) {
+        if (notifyBudgetDao.getNotifyBudgetByBudgetId(budgetId).isEmpty()) {
             return;
         }
-        notifyBudgetDao.deleteNotifyBudgetByBudgetId(uid, budgetId);
+        notifyBudgetDao.deleteNotifyBudgetByBudgetId(budgetId);
     }
 
     public void removeDebt(int id) throws Exception {
@@ -184,33 +191,88 @@ abstract class AbstractServiceHelper {
 
     /**
      * Delete notifydebt by Debt Id, if not exists then do nothing
+     *
      * @param debtId
      * @throws Exception
      */
     private void removeNotifyDebtByDebtId(int debtId) throws Exception {
-        int uid = getAuthenticatedUser().getId();
         // get notifyDebt by debtId test if exists
-        if (notifyDebtDao.getNotifyDebtByDebtId(uid, debtId).isEmpty()) {
+        if (notifyDebtDao.getNotifyDebtByDebtId(debtId).isEmpty()) {
             return;
         }
-        notifyDebtDao.deleteNotifyDebtByDebtId(uid, debtId);
+        notifyDebtDao.deleteNotifyDebtByDebtId(debtId);
     }
 
     /**
-     * Nejdrive smazu relation a potom samotnou entitu
+     * Only Creator of BankAccount can delete the BankAccount
      *
      * @param id
      * @throws Exception
      */
     public void removeBankAcc(int id) throws Exception {
+        User user = getAuthenticatedUser();
         BankAccount bankAccount = getByIdBankAccount(id);
-        bankAccount.getOwners().clear();
-        bankAccount.getBudgets().clear();
-        bankAccount.getDebts().clear();
-        // delete relation
-        bankAccountDao.deleteRelationBankAcc(getAuthenticatedUser().getId(), id);
+
+        // pokud user neni creator throw Exception
+        if (bankAccount.getCreator() != user) {
+            throw new NotAuthenticatedClient();
+        }
+
+        for (Debt debt : bankAccount.getDebts()) {
+            removeDebt(debt.getId());
+        }
+
+        for (Budget budget : bankAccount.getBudgets()) {
+            removeBudget(budget.getId());
+        }
+
+        for (User owner : bankAccount.getOwners()) {
+            bankAccountDao.deleteRelationBankAcc(owner.getId(), bankAccount.getId());
+        }
+
+        bankAccount.setCreator(null);
         // delete entity from db
         bankAccountDao.remove(bankAccount);
     }
 
+
+    /**
+     * Pri smazani category nastavim defualt category u vsech jeji transakci na "No category"
+     * Je zakazno delete default categories - maji id od -1 do -12
+     *
+     * @param id
+     * @throws Exception
+     */
+    public void removeCategory(int id) throws Exception {
+        if (id < 0) {
+            throw new Exception("Deleting a category is prohibited ");
+        }
+
+        Category noCategory = getByIdCategory(-12);
+        Category category = getByIdCategory(id);
+        category.getTransactions().forEach(transaction -> {
+            try {
+                // "No category" entity
+                transaction.setCategory(noCategory);
+                transactionDao.update(transaction);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        Budget budget = category.getBudget();
+        if (budget != null) {
+            budget.setCategory(noCategory);
+            budgetDao.update(budget);
+        }
+
+        category.getTransactions().clear();
+        category.setBudget(null);
+        category.setCreators(null);
+        // delete relation
+        categoryDao.deleteUsersRelationCategoryById(getAuthenticatedUser().getId(), id);
+        //delete entity from db
+        categoryDao.remove(category);
+    }
 }

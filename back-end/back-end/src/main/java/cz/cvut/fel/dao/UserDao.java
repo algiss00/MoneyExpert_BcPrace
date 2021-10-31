@@ -3,12 +3,14 @@ package cz.cvut.fel.dao;
 import cz.cvut.fel.model.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class UserDao extends AbstractDao<User> {
 
     UserDao(EntityManager em) {

@@ -109,7 +109,6 @@ public class TransactionService extends AbstractServiceHelper {
             return;
         }
         NotifyBudget notifyBudgetEntity = new NotifyBudget();
-        notifyBudgetEntity.setCreator(budgetForTransaction.getCreator());
         notifyBudgetEntity.setBudget(budgetForTransaction);
         notifyBudgetEntity.setTypeNotification(typeNotification);
         notifyBudgetDao.persist(notifyBudgetEntity);

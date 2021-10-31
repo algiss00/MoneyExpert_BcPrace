@@ -40,22 +40,18 @@ public class UserService extends AbstractServiceHelper {
         return userDao.findAll();
     }
 
-    public List<BankAccount> getAvailableAccounts() throws NotAuthenticatedClient {
+    public List<BankAccount> getAvailableBankAccounts() throws NotAuthenticatedClient {
         User u = getAuthenticatedUser();
         return u.getAvailableBankAccounts();
     }
 
-    public List<Budget> getAllUsersBudgets() throws NotAuthenticatedClient {
+    public List<BankAccount> getCreatedBankAccounts() throws NotAuthenticatedClient {
         User u = getAuthenticatedUser();
-        return u.getMyBudgets();
+        return u.getCreatedBankAccounts();
     }
 
     public List<Category> getAllUsersCategories() throws Exception {
         return categoryDao.getAllUsersCategory(getAuthenticatedUser().getId());
-    }
-
-    public List<Debt> getAllUsersDebts() throws NotAuthenticatedClient {
-        return debtDao.getUsersDebt(getAuthenticatedUser().getId());
     }
 
     public User persist(User userObj) throws Exception {
@@ -100,35 +96,30 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * First delete debts and budgets in their is deleted all Notifies entities,
-     * after delete all relation with category then delete all user-created categories,
+     * first delete all relation with category then delete all user-created categories,
      * after delete all users bankAccounts
      *
      * @throws Exception
      */
     public void remove() throws Exception {
         User user = getAuthenticatedUser();
+        List<BankAccount> createdBankAccounts = user.getCreatedBankAccounts();
+        List<Category> createdCategories = categoryDao.getUsersCreatedCategory(user.getId());
 
-        for (Budget myBudget : user.getMyBudgets()) {
-            removeBudget(myBudget.getId());
-        }
 
-        for (Debt myDebt : user.getMyDebts()) {
-            removeDebt(myDebt.getId());
+        for (Category category : createdCategories) {
+            // delete created categories
+            removeCategory(category.getId());
         }
 
         for (Category myCategory : user.getMyCategories()) {
-            // delete all relations
+            // delete all relations with categories
             categoryDao.deleteUsersRelationCategoryById(user.getId(), myCategory.getId());
         }
 
-        for (Category category : categoryDao.getUsersCreatedCategory(user.getId())) {
-            categoryDao.remove(category);
-        }
-
-        // todo - u dont know if user is not just a guest, he not able to delete account
-        for (BankAccount availableBankAccount : user.getAvailableBankAccounts()) {
-            removeBankAcc(availableBankAccount.getId());
+        // delete all created by User BankAccounts
+        for (BankAccount createdBankAcc : createdBankAccounts) {
+            removeBankAcc(createdBankAcc.getId());
         }
 
         userDao.remove(user);

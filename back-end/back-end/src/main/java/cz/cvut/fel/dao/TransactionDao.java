@@ -4,6 +4,7 @@ import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Transaction;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class TransactionDao extends AbstractDao<Transaction> {
     TransactionDao(EntityManager em) {
         super(em);
@@ -105,7 +107,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Internal error");
+            return 0;
         }
     }
 
@@ -119,7 +121,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Internal error");
+            return 0;
         }
     }
 
@@ -135,7 +137,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Internal error");
+            return 0;
         }
     }
 
@@ -151,7 +153,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new Exception("Internal error");
+            return 0;
         }
     }
 

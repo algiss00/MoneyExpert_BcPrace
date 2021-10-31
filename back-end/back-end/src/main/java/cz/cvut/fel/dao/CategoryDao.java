@@ -2,6 +2,7 @@ package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.Category;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
+@Transactional
 public class CategoryDao extends AbstractDao<Category> {
     CategoryDao(EntityManager em) {
         super(em);

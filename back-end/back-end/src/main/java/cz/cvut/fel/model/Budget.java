@@ -3,6 +3,7 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "budget_table")
@@ -27,7 +28,7 @@ public class Budget extends AbstractEntity {
 
     @Column
     private double sumAmount;
-    
+
     @ManyToOne
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
@@ -37,29 +38,19 @@ public class Budget extends AbstractEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User creator;
-
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<NotifyBudget> notifyBudgets;
 
     public List<NotifyBudget> getNotifyBudgets() {
+        if (notifyBudgets == null) {
+            setNotifyBudgets(new ArrayList<>());
+        }
         return notifyBudgets;
     }
 
     public void setNotifyBudgets(List<NotifyBudget> notifyBudget) {
         this.notifyBudgets = notifyBudget;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
     }
 
     public double getSumAmount() {
