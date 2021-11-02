@@ -32,7 +32,7 @@ public class NotifyDebtService extends AbstractServiceHelper {
         return notifyDebtDao.getDebtsNotifyDebts(debt.getId());
     }
 
-    public List<NotifyDebt> getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) throws Exception {
+    public NotifyDebt getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) throws Exception {
         Debt debt = getByIdDebt(debtId);
         return notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), typeNotification);
     }

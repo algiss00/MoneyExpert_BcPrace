@@ -28,7 +28,7 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.getUsersCreatedCategory(getAuthenticatedUser().getId());
     }
 
-    public Budget getBudget(int catId) throws Exception {
+    public List<Budget> getAllBudgetsFromCategory(int catId) throws Exception {
         return getByIdCategory(catId).getBudget();
     }
 
@@ -66,9 +66,9 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.getUsersCategoryByName(user.getId(), category.getName()) == null;
     }
 
-    public Category updateCategory(int id, Category category) throws Exception {
+    public Category updateCategoryName(int id, String name) throws Exception {
         Category c = getByIdCategory(id);
-        c.setName(category.getName());
+        c.setName(name);
         return categoryDao.update(c);
     }
 }

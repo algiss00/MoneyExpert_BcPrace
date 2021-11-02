@@ -33,12 +33,20 @@ INSERT INTO relation_bank_account_user VALUES (11, 17);
 INSERT INTO relation_bank_account_user VALUES (12, 18);
 
 -- budget table
-INSERT INTO budget_table VALUES (19,1000,'Jidlo budget',50,0,15,-2);
-INSERT INTO budget_table VALUES (20,1500,'Auto budget',65,0,16,-1);
-INSERT INTO budget_table VALUES (21,2000,'Byt budget',80,0,17,-4);
+INSERT INTO budget_table VALUES (19,1000,'Jidlo budget',50,0,15);
+INSERT INTO budget_table VALUES (20,1500,'Auto budget',65,0,16);
+INSERT INTO budget_table VALUES (21,2000,'Byt budget',80,0,17);
 
-INSERT INTO budget_table VALUES (22,2000,'Byt budget',80,0,17,-3);
-INSERT INTO budget_table VALUES (23,2000,'Byt budget',80,0,17,-7);
+INSERT INTO budget_table VALUES (22,2000,'Byt budget',80,0,17);
+INSERT INTO budget_table VALUES (23,2000,'Byt budget',80,0,17);
+
+
+-- relation_budget_category table
+INSERT INTO relation_budget_category VALUES (19, -2);
+INSERT INTO relation_budget_category VALUES (20, -1);
+INSERT INTO relation_budget_category VALUES (21, -4);
+INSERT INTO relation_budget_category VALUES (22, -3);
+INSERT INTO relation_budget_category VALUES (23, -7);
 
 -- debt table
 INSERT INTO debt_table VALUES (22,1000,'2021-10-10','Debt to Honza','Honza dluh','2021-10-09',16);

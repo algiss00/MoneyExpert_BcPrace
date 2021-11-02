@@ -69,11 +69,8 @@ public class NotifyDebtDaoTest {
 
     @Test
     public void getDebtsNotifyDebtsByType() {
-        List<NotifyDebt> notifyDebts = notifyDebtDao.getDebtsNotifyDebtsByType(22, TypeNotification.DEBT_NOTIFY);
-        assertFalse(notifyDebts.isEmpty());
-        assertEquals(1, notifyDebts.size());
-
-        assertEquals(28, notifyDebts.get(0).getId());
+        NotifyDebt notifyDebts = notifyDebtDao.getDebtsNotifyDebtsByType(22, TypeNotification.DEBT_NOTIFY);
+        assertEquals(28, notifyDebts.getId());
     }
 
     @Test

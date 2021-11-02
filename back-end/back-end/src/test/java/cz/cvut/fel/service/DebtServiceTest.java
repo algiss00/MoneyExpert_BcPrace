@@ -3,7 +3,6 @@ package cz.cvut.fel.service;
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
@@ -93,7 +92,7 @@ public class DebtServiceTest {
             when(debtDao.find(debt.getId())).thenReturn(debt);
             when(debtDao.update(debt)).thenReturn(debt);
 
-            Debt updated = debtService.updateDebt(debt.getId(), debt);
+            Debt updated = debtService.updateDebtBasic(debt.getId(), debt);
             verify(debtDao, times(1)).update(debt);
             assertEquals(debt, updated);
         }

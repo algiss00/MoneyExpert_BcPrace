@@ -40,16 +40,18 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * get All budgets with Notifybudget by Type
+     * get budget with Notifybudget by Type
      *
      * @param budgetId
      * @return
      */
-    public List<NotifyBudget> getBudgetsNotifyBudgetByType(int budgetId, TypeNotification typeNotification) {
+    public NotifyBudget getBudgetsNotifyBudgetByType(int budgetId, TypeNotification typeNotification) {
         return em.createNamedQuery("NotifyBudget.getBudgetsNotifyBudgetByType", NotifyBudget.class)
                 .setParameter("budgetId", budgetId)
                 .setParameter("typeNotif", typeNotification)
-                .getResultList();
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) throws Exception {
@@ -92,6 +94,17 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         try {
             em.createNamedQuery("NotifyBudget.deleteNotifyBudgetByBudgetId")
                     .setParameter("budgetId", budgetId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception NotifyBudgetDao");
+        }
+    }
+
+    public void deleteNotifyBudgetById(int notifyId) throws Exception {
+        try {
+            em.createNamedQuery("NotifyBudget.deleteNotifyBudgetById")
+                    .setParameter("notifyId", notifyId)
                     .executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();

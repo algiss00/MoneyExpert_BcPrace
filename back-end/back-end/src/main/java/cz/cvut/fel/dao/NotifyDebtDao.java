@@ -40,16 +40,18 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * get All Debts with Notify by Type
+     * get Debt with Notify by Type
      *
      * @param debtId
      * @return
      */
-    public List<NotifyDebt> getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) {
+    public NotifyDebt getDebtsNotifyDebtsByType(int debtId, TypeNotification typeNotification) {
         return em.createNamedQuery("Notify.getDebtsNotifyDebtsByType", NotifyDebt.class)
                 .setParameter("debtId", debtId)
                 .setParameter("typeNotif", typeNotification)
-                .getResultList();
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     public List<NotifyDebt> getNotifyDebtsFromBankAccount(int bankAccId) {
@@ -92,6 +94,18 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         try {
             em.createNamedQuery("Notify.deleteNotifyDebtByDebtId")
                     .setParameter("debtId", debtId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception NotifyDebtDao");
+        }
+    }
+
+    public void deleteNotifyDebtByDebtIdAndType(int debtId, TypeNotification typeNotification) throws Exception {
+        try {
+            em.createNamedQuery("Notify.deleteNotifyDebtByDebtIdAndType")
+                    .setParameter("debtId", debtId)
+                    .setParameter("type", typeNotification)
                     .executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();

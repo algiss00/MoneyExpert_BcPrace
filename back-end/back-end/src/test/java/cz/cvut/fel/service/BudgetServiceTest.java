@@ -17,6 +17,8 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -30,6 +32,7 @@ public class BudgetServiceTest {
     private UserDao userDao;
     private CategoryDao categoryDao;
     private BankAccountDao bankAccountDao;
+    private NotifyBudgetDao notifyBudgetDao;
 
     @BeforeEach
     public void setUp() {
@@ -38,7 +41,7 @@ public class BudgetServiceTest {
         TransactionDao transactionDao = mock(TransactionDao.class);
         bankAccountDao = mock(BankAccountDao.class);
         DebtDao debtDao = mock(DebtDao.class);
-        NotifyBudgetDao notifyBudgetDao = mock(NotifyBudgetDao.class);
+        notifyBudgetDao = mock(NotifyBudgetDao.class);
         NotifyDebtDao notifyDebtDao = mock(NotifyDebtDao.class);
         userDao = mock(UserDao.class);
 
@@ -71,9 +74,10 @@ public class BudgetServiceTest {
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.find(anyInt())).thenReturn(budget);
+            when(notifyBudgetDao.getNotifyBudgetByBudgetId(anyInt())).thenReturn(Collections.emptyList());
 
             budgetService.removeBudget(budget.getId());
-            verify(budgetDao, times(1)).remove(budget);
+            verify(budgetDao, times(1)).deleteBudgetById(budget.getId());
         }
     }
 
@@ -83,15 +87,14 @@ public class BudgetServiceTest {
         bankAccount.setCreator(user);
         Budget budget = Generator.generateDefaultBudget();
         budget.setBankAccount(bankAccount);
-        budget.setName("mock test");
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.update(budget)).thenReturn(budget);
             when(budgetDao.find(anyInt())).thenReturn(budget);
 
-            Budget updated = budgetService.updateBudget(budget.getId(), budget);
+            Budget updated = budgetService.updateBudgetName(budget.getId(), "TestName");
             verify(budgetDao, times(1)).update(budget);
-            assertEquals(budget, updated);
+            assertEquals("TestName", updated.getName());
         }
     }
 

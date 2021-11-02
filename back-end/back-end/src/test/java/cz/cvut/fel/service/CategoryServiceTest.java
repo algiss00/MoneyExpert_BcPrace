@@ -101,16 +101,15 @@ public class CategoryServiceTest {
     @Test
     public void update_MockTest_success() throws Exception {
         Category category = Generator.generateDefaultCategory();
-        category.setName("mock test");
+        String name = "Test name";
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(categoryDao.find(anyInt())).thenReturn(category);
             when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
-            when(categoryDao.update(category)).thenReturn(category);
 
-            Category updated = categoryService.updateCategory(category.getId(), category);
+            categoryService.updateCategoryName(category.getId(), name);
             verify(categoryDao, times(1)).update(category);
-            assertEquals(category, updated);
+            assertEquals("Test name", category.getName());
         }
     }
 

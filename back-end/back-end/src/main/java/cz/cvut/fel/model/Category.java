@@ -11,15 +11,15 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c"),
-        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id between -12 and -1")
+        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id between -14 and -1")
 })
 public class Category extends AbstractEntity {
     @Column
     private String name;
 
-    @OneToOne(mappedBy = "category")
+    @ManyToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Budget budget;
+    private List<Budget> budget;
 
     @ManyToMany(mappedBy = "myCategories")
     @JsonIgnore
@@ -48,11 +48,14 @@ public class Category extends AbstractEntity {
         this.name = name;
     }
 
-    public Budget getBudget() {
+    public List<Budget> getBudget() {
+        if (budget == null) {
+            setBudget(new ArrayList<>());
+        }
         return budget;
     }
 
-    public void setBudget(Budget budget) {
+    public void setBudget(List<Budget> budget) {
         this.budget = budget;
     }
 

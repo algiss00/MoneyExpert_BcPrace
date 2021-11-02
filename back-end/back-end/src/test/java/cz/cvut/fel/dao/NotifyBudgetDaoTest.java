@@ -68,11 +68,9 @@ public class NotifyBudgetDaoTest {
 
     @Test
     public void getBudgetsNotifyBudgetByType() {
-        List<NotifyBudget> notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(19, TypeNotification.BUDGET_AMOUNT);
-        assertFalse(notifyBudget.isEmpty());
-        assertEquals(1, notifyBudget.size());
+        NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(19, TypeNotification.BUDGET_AMOUNT);
 
-        assertEquals(25, notifyBudget.get(0).getId());
+        assertEquals(25, notifyBudget.getId());
     }
 
     @Test

@@ -47,14 +47,24 @@ public class BudgetController {
         return new ResponseEntity<>(budget, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestBody Budget budget) throws Exception {
-        return new ResponseEntity<>(budgetService.updateBudget(budId, budget), HttpStatus.CREATED);
+    @PostMapping(value = "/update-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Budget> updateBudget(@RequestParam int budId, @RequestParam String name) throws Exception {
+        return new ResponseEntity<>(budgetService.updateBudgetName(budId, name), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update-amount", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Budget> updateBudgetAmount(@RequestParam int budId, @RequestParam Double amount) throws Exception {
+        return new ResponseEntity<>(budgetService.updateBudgetAmount(budId, amount), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update-percent", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Budget> updateBudgetPercent(@RequestParam int budId, @RequestParam int percent) throws Exception {
+        return new ResponseEntity<>(budgetService.updateBudgetPercent(budId, percent), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
-       budgetService.removeBudget(id);
+        budgetService.removeBudget(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

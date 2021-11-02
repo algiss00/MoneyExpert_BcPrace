@@ -136,7 +136,11 @@ DEBT
 
 /debt?accId={bankAccountId} - create and add debt to bankAccount with @RequestBody Debt debt
 
-/debt/update?debtId={debtId} - update debt with @RequestBody Debt debt
+/debt/update-basic?debtId={debtId} - update debt with @RequestBody Debt debt - ONLY basic update - name, amount, description
+
+/debt/update-notify-date?debtId={debtId}&notifyDate={notifyDate} - update notify date in debt
+
+/debt/update-deadline-date?debtId={debtId}&deadline={deadlineDate} - update deadline date in debt
 
 ------------------------------------------------------------------------------
 BANK_ACCOUNT
@@ -154,7 +158,7 @@ TRANSACTION
 
 /transaction/transfer?fromAccId={bankAccountId}&toAccId={bankAccountId}&transId={TransactionId} - transfer Transaction with TransactionId = transId from BankAccount to another BankAccount
 
-/transaction/update?transId={TransactionId} - update Transaction by id and with @RequestBody Transaction transaction - ONLY attributes = amount, date and jottings
+/transaction/update-basic?transId={TransactionId} - update Transaction by id and with @RequestBody Transaction transaction - ONLY attributes = amount, date and jottings
 
 /transaction/update-type?transId={TransactionId}&typeTransaction={TypeTransaction} - update Type of Transaction with @RequestParam typeTransaction
 
@@ -165,7 +169,11 @@ BUDGET
 
 /budget?accId={bankAccId}&categoryId={categoryId} - create new Budget with @RequestBody Budget budget
 
-/budget/update?budId={budgetId} - update with @RequestBody Budget budget of new Budget
+/budget/update-name?budId={budgetId}&name={name} - update name of budget
+
+/budget/update-amount?budId={budgetId}&amount={amount} - update amount of budget
+
+/budget/update-percent?budId={budgetId}&percent={percent} - update percentNotify of budget
 
 ------------------------------------------------------------------------------
 CATEGORY
@@ -174,7 +182,7 @@ CATEGORY
 
 /category/transaction?transId={transactionId}&categoryId={categoryId} - add transaction to category
 
-/category/update?catId={categoryId} - update category by categoryId with @RequestBody Category category new category
+/category/update-name?catId={categoryId}&name={name} - update category name by categoryId
 
 ------------------------------------------------------------------------------
 

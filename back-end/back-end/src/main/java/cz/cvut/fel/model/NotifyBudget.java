@@ -18,7 +18,9 @@ import javax.persistence.*;
         @NamedQuery(name = "NotifyBudget.deleteNotifyBudgetByBudgetId", query = "delete FROM NotifyBudget n " +
                 "where n.budget.id = :budgetId"),
         @NamedQuery(name = "NotifyBudget.getNotifyBudgetsFromBankAccount", query = "SELECT n FROM NotifyBudget n" +
-                " where n.budget.bankAccount.id = :bankAccId")
+                " where n.budget.bankAccount.id = :bankAccId"),
+        @NamedQuery(name = "NotifyBudget.deleteNotifyBudgetById", query = "delete FROM NotifyBudget n " +
+                "where n.id = :notifyId"),
 })
 public class NotifyBudget extends AbstractEntity {
     @ManyToOne

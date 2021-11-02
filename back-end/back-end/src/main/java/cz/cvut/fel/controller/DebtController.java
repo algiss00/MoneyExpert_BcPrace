@@ -44,9 +44,19 @@ public class DebtController {
         return new ResponseEntity<>(debt, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update-basic", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws Exception {
-        return new ResponseEntity<>(debtService.updateDebt(debtId, debt), HttpStatus.CREATED);
+        return new ResponseEntity<>(debtService.updateDebtBasic(debtId, debt), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update-notify-date", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Debt> updateNotifyDate(@RequestParam int debtId, @RequestParam String notifyDate) throws Exception {
+        return new ResponseEntity<>(debtService.updateDebtNotifyDate(debtId, notifyDate), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update-deadline-date", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Debt> updateDeadlineDate(@RequestParam int debtId, @RequestParam String deadline) throws Exception {
+        return new ResponseEntity<>(debtService.updateDebtDeadlineDate(debtId, deadline), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

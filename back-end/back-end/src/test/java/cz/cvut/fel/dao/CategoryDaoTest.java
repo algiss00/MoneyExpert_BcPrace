@@ -30,7 +30,7 @@ public class CategoryDaoTest {
     public void find() {
         Category category = categoryDao.find(-1);
         assertNotNull(category);
-        assertEquals("Auto", category.getName());
+        assertEquals("Palivo", category.getName());
     }
 
     @Test

@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -102,8 +103,8 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getExpenseSumException() {
-        assertThrows(Exception.class, () -> transactionDao.getExpenseSum(9, 2020, 18));
+    public void getExpenseSumException() throws Exception {
+        assertEquals(0, transactionDao.getExpenseSum(9, 2020, 18));
     }
 
     @Test
@@ -113,8 +114,8 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getExpenseSumExceptionException() {
-        assertThrows(Exception.class, () -> transactionDao.getExpenseSumWithCategory(9, 2020, 18, -4));
+    public void getExpenseSumExceptionException() throws Exception {
+        assertEquals(0 ,transactionDao.getExpenseSumWithCategory(9, 2020, 18, -4));
     }
 
     @Test

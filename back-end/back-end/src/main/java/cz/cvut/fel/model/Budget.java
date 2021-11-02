@@ -3,6 +3,8 @@ package cz.cvut.fel.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +12,8 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
-        @NamedQuery(name = "Budget.getBudgetByCategory", query = "SELECT b FROM Budget b where b.category.id = :categoryId" +
-                " and b.bankAccount.id = :bankAccId"),
+//        @NamedQuery(name = "Budget.getBudgetByCategory", query = "SELECT b FROM Budget b where b.category.id = :categoryId" +
+//                " and b.bankAccount.id = :bankAccId"),
         @NamedQuery(name = "Budget.getByBankAccId", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
                 " and b.id = :buId"),
         @NamedQuery(name = "Budget.getByName", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
@@ -20,11 +22,14 @@ import java.util.List;
 
 public class Budget extends AbstractEntity {
     @Column
+    @Min(value = 0, message = "amount should not be less than 0")
     private double amount;
     @Column
     private String name;
     @Column
-    private int percentNotif;
+    @Min(value = 0, message = "percentNotify should not be less than 0")
+    @Max(value = 100, message = "percentNotify should not be bigger than 100")
+    private int percentNotify;
 
     @Column
     private double sumAmount;
@@ -34,9 +39,12 @@ public class Budget extends AbstractEntity {
     @JsonIgnore
     private BankAccount bankAccount;
 
-    @OneToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "relation_budget_category",
+            joinColumns = @JoinColumn(name = "budget_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private List<Category> category;
 
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -77,12 +85,12 @@ public class Budget extends AbstractEntity {
         this.name = name;
     }
 
-    public int getPercentNotif() {
-        return percentNotif;
+    public int getPercentNotify() {
+        return percentNotify;
     }
 
-    public void setPercentNotif(int percentNotif) {
-        this.percentNotif = percentNotif;
+    public void setPercentNotify(int percentNotif) {
+        this.percentNotify = percentNotif;
     }
 
     public BankAccount getBankAccount() {
@@ -93,11 +101,14 @@ public class Budget extends AbstractEntity {
         this.bankAccount = bankAccountId;
     }
 
-    public Category getCategory() {
+    public List<Category> getCategory() {
+        if (category == null) {
+            setCategory(new ArrayList<>());
+        }
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(List<Category> category) {
         this.category = category;
     }
 }

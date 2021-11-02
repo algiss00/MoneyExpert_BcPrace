@@ -1,5 +1,6 @@
 package cz.cvut.fel.service;
 
+import cz.cvut.fel.controller.BankAccountController;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.*;
@@ -10,12 +11,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 @Service
 @Transactional
 public class DebtService extends AbstractServiceHelper {
+    private static final Logger log = Logger.getLogger(DebtService.class.getName());
 
     public DebtService(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                        BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
@@ -41,20 +46,18 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.persist(debt);
     }
 
-    //every 12 hours - "0 0 */12 * * * "
+    //every 6 hours - "0 0 */6 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
     @Scheduled(cron = "30 * * * * * ")
     public void checkNotifyDates() throws Exception {
-        System.out.println("NOTIFY");
+        log.info("check DEBT NotifyDate");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
         if (notifyDebts.isEmpty()) {
-            System.out.println("EMPTY");
             return;
         }
-        notifyDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
+
         for (Debt notifiedDebt : notifyDebts) {
             if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_NOTIFY)) {
-                System.out.println("Already exists");
                 continue;
             }
             NotifyDebt notifyDebtEntity = new NotifyDebt();
@@ -62,7 +65,7 @@ public class DebtService extends AbstractServiceHelper {
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_NOTIFY);
 
             notifyDebtDao.persist(notifyDebtEntity);
-            System.out.println("ADDED TO NOTIFY " + notifyDebtEntity.getDebt().getName());
+            log.info("DEBT added to NotifyDebt with notify type" + notifyDebtEntity.getDebt().getName());
         }
     }
 
@@ -72,17 +75,14 @@ public class DebtService extends AbstractServiceHelper {
 
     @Scheduled(cron = "*/20 * * * * * ")
     public void checkDeadlineDates() throws Exception {
-        System.out.println("DEADLINE");
+        log.info("check DEBT DEADLINE date");
         List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
         if (deadlineDebts.isEmpty()) {
-            System.out.println("EMPTY");
             return;
         }
-        deadlineDebts.forEach(debt -> System.out.println("LIST: " + debt.getName()));
 
         for (Debt notifiedDebt : deadlineDebts) {
             if (notifyDebtExits(notifiedDebt.getId(), TypeNotification.DEBT_DEADLINE)) {
-                System.out.println("Already exists");
                 continue;
             }
             NotifyDebt notifyDebtEntity = new NotifyDebt();
@@ -90,7 +90,7 @@ public class DebtService extends AbstractServiceHelper {
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_DEADLINE);
 
             notifyDebtDao.persist(notifyDebtEntity);
-            System.out.println("ADDED TO NOTIFY " + notifyDebtEntity.getDebt().getName());
+            log.info("DEBT added to NotifyDebt with deadline type" + notifyDebtEntity.getDebt().getName());
         }
     }
 
@@ -101,15 +101,59 @@ public class DebtService extends AbstractServiceHelper {
         return true;
     }
 
-    public Debt updateDebt(int id, Debt debt) throws Exception {
-        Debt da = getByIdDebt(id);
+    public Debt updateDebtBasic(int id, Debt updatedDebt) throws Exception {
+        Debt debt = getByIdDebt(id);
 
-        da.setName(debt.getName());
-        da.setAmount(debt.getAmount());
-        da.setDescription(debt.getDescription());
-        da.setDeadline(debt.getDeadline());
-        da.setNotifyDate(debt.getNotifyDate());
+        debt.setName(updatedDebt.getName());
+        debt.setAmount(updatedDebt.getAmount());
+        debt.setDescription(updatedDebt.getDescription());
 
-        return debtDao.update(da);
+        return debtDao.update(debt);
+    }
+
+    public Debt updateDebtNotifyDate(int id, String notifyDate) throws Exception {
+        Debt debt = getByIdDebt(id);
+        Date updatedNotifyDate = new SimpleDateFormat("yyyy-MM-dd").parse(notifyDate);
+
+        if (debt.getDeadline().before(updatedNotifyDate)) {
+            throw new NotValidDataException("Notify date is after deadline date!");
+        }
+        updateDebtNotifyDateLogic(debt, updatedNotifyDate, "NotifyDate");
+        debt.setNotifyDate(updatedNotifyDate);
+
+        return debtDao.update(debt);
+    }
+
+    private void updateDebtNotifyDateLogic(Debt debt, Date updatedNotifyDate, String typeOfNotify) throws Exception {
+        if (typeOfNotify.equals("NotifyDate")) {
+            if (debt.getNotifyDate().before(updatedNotifyDate)) {
+                NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_NOTIFY);
+                if (notifyDebt != null) {
+                    notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_NOTIFY);
+                }
+            }
+        } else if (typeOfNotify.equals("Deadline")) {
+            if (debt.getDeadline().before(updatedNotifyDate)) {
+                NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_DEADLINE);
+                if (notifyDebt != null) {
+                    notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_DEADLINE);
+                }
+            }
+        }
+
+    }
+
+    public Debt updateDebtDeadlineDate(int id, String deadline) throws Exception {
+        Debt debt = getByIdDebt(id);
+        Date updatedDeadline = new SimpleDateFormat("yyyy-MM-dd").parse(deadline);
+
+        if (debt.getNotifyDate().after(updatedDeadline)) {
+            throw new NotValidDataException("Deadline date is after notifyDate date!");
+        }
+
+        updateDebtNotifyDateLogic(debt, updatedDeadline, "Deadline");
+        debt.setDeadline(updatedDeadline);
+
+        return debtDao.update(debt);
     }
 }

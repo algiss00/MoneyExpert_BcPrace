@@ -44,7 +44,7 @@ public class NotifyDebtController {
 
     @GetMapping(value = "/debt-by-type/{debtId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getDebtsNotifyDebtsByType(@PathVariable int debtId, @RequestParam TypeNotification type) throws Exception {
-        List<NotifyDebt> notifyDebts = notifyDebtService.getDebtsNotifyDebtsByType(debtId, type);
+        NotifyDebt notifyDebts = notifyDebtService.getDebtsNotifyDebtsByType(debtId, type);
         return new ResponseEntity<>(notifyDebts, HttpStatus.OK);
     }
 

@@ -1,10 +1,8 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.dto.TypeNotification;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +37,7 @@ public class BudgetService extends AbstractServiceHelper {
         if (!validate(budget, bankAccount.getId(), categoryId)) {
             throw new NotValidDataException("budget");
         }
-        budget.setCategory(category);
+        budget.getCategory().add(category);
         budget.setBankAccount(bankAccount);
         budget.setSumAmount(0);
         Budget persistedBudget = budgetDao.persist(budget);
@@ -50,25 +48,90 @@ public class BudgetService extends AbstractServiceHelper {
 
     private boolean validate(Budget budget, int bankAccountId, int catId) throws Exception {
         if (budget.getName().trim().isEmpty() || budget.getAmount() <= 0
-                || budget.getPercentNotif() > 100) {
+                || budget.getPercentNotify() > 100 || budget.getPercentNotify() < 0) {
             return false;
         }
         return getBudgetByCategoryInBankAcc(catId, bankAccountId) == null;
     }
 
     public Budget getBudgetByCategoryInBankAcc(int catId, int bankAccId) throws Exception {
-        getByIdCategory(catId);
-        return budgetDao.getByCategory(catId, bankAccId);
+        return budgetDao.getByCategory(getByIdCategory(catId).getId(), getByIdBankAccount(bankAccId).getId());
     }
 
-    public Budget updateBudget(int id, Budget budget) throws Exception {
-        Budget b = getByIdBudget(id);
-        b.setName(budget.getName());
-        b.setAmount(budget.getAmount());
-        b.setPercentNotif(budget.getPercentNotif());
-        b.setCategory(budget.getCategory());
+    public Budget updateBudgetName(int id, String name) throws Exception {
+        Budget budget = getByIdBudget(id);
+        if (name.trim().isEmpty()) {
+            throw new NotValidDataException("Name of budget is empty!");
+        }
+        budget.setName(name);
+        return budgetDao.update(budget);
+    }
 
-        return budgetDao.update(b);
+    public Budget updateBudgetAmount(int id, Double amount) throws Exception {
+        Budget budget = getByIdBudget(id);
+        if (amount == null || amount <= 0 || budget.getAmount() == amount) {
+            throw new NotValidDataException("amount of budget not valid!");
+        }
+        updateAmountLogic(budget, amount);
+
+        budget.setAmount(amount);
+        checkPercentBudget(budget);
+
+        return budgetDao.update(budget);
+    }
+
+    private void checkPercentBudget(Budget budget) throws Exception {
+        double percentOfSumAmount = budget.getSumAmount() * 100 / budget.getAmount();
+        if (percentOfSumAmount >= budget.getPercentNotify()) {
+            createNotifyBudget(budget, TypeNotification.BUDGET_PERCENT);
+        } else {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(budget.getId(), TypeNotification.BUDGET_PERCENT);
+            if (notifyBudget != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            }
+        }
+    }
+
+    public Budget updateBudgetPercent(int id, int percent) throws Exception {
+        Budget budget = getByIdBudget(id);
+        if (percent > 100 || percent < 0) {
+            throw new NotValidDataException("percent of budget not valid!");
+        }
+
+        budget.setPercentNotify(percent);
+        checkPercentBudget(budget);
+
+        return budgetDao.update(budget);
+    }
+
+    private void updateAmountLogic(Budget budget, Double updatedAmount) throws Exception {
+        double oldAmount = budget.getAmount();
+        double actualSumAmount = budget.getSumAmount();
+        if (oldAmount > updatedAmount) {
+            if (actualSumAmount >= updatedAmount) {
+                NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(budget.getId(), TypeNotification.BUDGET_AMOUNT);
+                if (notifyBudget == null) {
+                    NotifyBudget notifyBudget2 = new NotifyBudget();
+                    notifyBudget2.setTypeNotification(TypeNotification.BUDGET_AMOUNT);
+                    notifyBudget2.setBudget(budget);
+                    notifyBudgetDao.persist(notifyBudget2);
+                }
+            }
+        } else {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(budget.getId(), TypeNotification.BUDGET_AMOUNT);
+            if (actualSumAmount < updatedAmount) {
+                if (notifyBudget != null) {
+                    notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+                }
+            } else {
+                if (notifyBudget == null) {
+                    NotifyBudget notifyBudget2 = new NotifyBudget();
+                    notifyBudget2.setTypeNotification(TypeNotification.BUDGET_AMOUNT);
+                    notifyBudget2.setBudget(budget);
+                    notifyBudgetDao.persist(notifyBudget2);
+                }
+            }
+        }
     }
 
     public void removeCategoryFromBudget(int buId) throws Exception {

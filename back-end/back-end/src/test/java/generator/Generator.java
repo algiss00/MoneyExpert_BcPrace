@@ -90,7 +90,7 @@ public class Generator {
 
     public static Budget generateDefaultBudget() {
         final Budget budget = new Budget();
-        budget.setPercentNotif(50);
+        budget.setPercentNotify(50);
         budget.setAmount(1000);
         budget.setName("Test budget" + randomInt());
         return budget;

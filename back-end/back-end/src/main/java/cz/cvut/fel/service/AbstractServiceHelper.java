@@ -1,12 +1,14 @@
 package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 abstract class AbstractServiceHelper {
     protected UserDao userDao;
@@ -17,6 +19,8 @@ abstract class AbstractServiceHelper {
     protected CategoryDao categoryDao;
     protected NotifyBudgetDao notifyBudgetDao;
     protected NotifyDebtDao notifyDebtDao;
+
+    private static final Logger log = Logger.getLogger(AbstractServiceHelper.class.getName());
 
     public AbstractServiceHelper(UserDao userDao, BankAccountDao bankAccountDao, TransactionDao transactionDao,
                                  BudgetDao budgetDao, DebtDao debtDao, CategoryDao categoryDao,
@@ -140,6 +144,101 @@ abstract class AbstractServiceHelper {
         return bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 
+    public Transaction updateCategoryTransaction(int tid, int catId) throws Exception {
+        Transaction transaction = getByIdTransaction(tid);
+        Category oldCategory = transaction.getCategory();
+        Category category = getByIdCategory(catId);
+        if (transaction.getCategory() == category) {
+            return null;
+        }
+        transaction.setCategory(category);
+        category.getTransactions().add(transaction);
+        categoryDao.update(category);
+        Transaction updatedTransaction = transactionDao.update(transaction);
+        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            budgetLogicTransactionUpdateCategory(oldCategory, transaction);
+        }
+        return updatedTransaction;
+    }
+
+    private void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
+        BankAccount bankAccount = transaction.getBankAccount();
+        double transAmount = transaction.getAmount();
+        Budget budgetForTransaction = budgetDao.getByCategory(oldCategory.getId(), bankAccount.getId());
+        if (budgetForTransaction == null) {
+            return;
+        }
+
+        double sumAmount = budgetForTransaction.getSumAmount();
+        budgetForTransaction.setSumAmount(sumAmount - transAmount);
+        budgetDao.update(budgetForTransaction);
+
+        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
+
+        checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
+
+        budgetLogic(bankAccount, transaction);
+    }
+
+    /**
+     * kontroluju pokud se zmenil stav budgetu, pokud se zmenil tak odstranim notifyBudget
+     *
+     * @param actualBudget
+     * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
+     * @throws Exception
+     */
+    public void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
+        if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
+            if (notifyBudget != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            }
+        }
+        if (percentOfSumAmount < actualBudget.getPercentNotify()) {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
+            if (notifyBudget != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            }
+        }
+    }
+
+    public void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
+        Category transCategory = transaction.getCategory();
+        double transAmount = transaction.getAmount();
+
+        Budget budgetForTransaction = budgetDao.getByCategory(transCategory.getId(), bankAccount.getId());
+        if (budgetForTransaction == null) {
+            return;
+        }
+
+        double sumAmount = budgetForTransaction.getSumAmount();
+
+        budgetForTransaction.setSumAmount(sumAmount + transAmount);
+        budgetDao.update(budgetForTransaction);
+
+        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
+        if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
+            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_AMOUNT);
+            log.info("BUDGET added to NotifyBudget with AmountType" + budgetForTransaction.getName());
+        }
+
+        if (percentOfSumAmount >= budgetForTransaction.getPercentNotify()) {
+            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_PERCENT);
+            log.info("BUDGET added to NotifyBudget with PercentType " + budgetForTransaction.getName());
+        }
+    }
+
+
+    public void createNotifyBudget(Budget budgetForTransaction, TypeNotification typeNotification) throws Exception {
+        if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), typeNotification)) {
+            return;
+        }
+        NotifyBudget notifyBudgetEntity = new NotifyBudget();
+        notifyBudgetEntity.setBudget(budgetForTransaction);
+        notifyBudgetEntity.setTypeNotification(typeNotification);
+        notifyBudgetDao.persist(notifyBudgetEntity);
+    }
+
     public void removeTransFromAccount(int transId, int accId) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(accId);
         Transaction transaction = getByIdTransaction(transId);
@@ -166,7 +265,8 @@ abstract class AbstractServiceHelper {
     public void removeBudget(int id) throws Exception {
         Budget bu = getByIdBudget(id);
         removeNotifyBudgetByBudgetId(bu.getId());
-        budgetDao.remove(bu);
+        budgetDao.deleteAllBudgetRelationWithCategoryById(bu.getId());
+        budgetDao.deleteBudgetById(bu.getId());
     }
 
     /**
@@ -260,11 +360,8 @@ abstract class AbstractServiceHelper {
             }
         });
 
-
-        Budget budget = category.getBudget();
-        if (budget != null) {
-            budget.setCategory(noCategory);
-            budgetDao.update(budget);
+        for (Budget budget : category.getBudget()) {
+            removeBudget(budget.getId());
         }
 
         category.getTransactions().clear();

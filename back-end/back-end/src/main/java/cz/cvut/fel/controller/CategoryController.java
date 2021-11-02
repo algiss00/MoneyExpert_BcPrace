@@ -42,8 +42,8 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBudget(@PathVariable int catId) throws Exception {
-        Budget budget = categoryService.getBudget(catId);
+    ResponseEntity<?> getAllBudgetsFromCategory(@PathVariable int catId) throws Exception {
+        List<Budget> budget = categoryService.getAllBudgetsFromCategory(catId);
         return new ResponseEntity<>(budget, HttpStatus.OK);
     }
 
@@ -68,9 +68,9 @@ public class CategoryController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Category> updateCat(@RequestParam int catId, @RequestBody Category category) throws Exception {
-        return new ResponseEntity<>(categoryService.updateCategory(catId, category), HttpStatus.CREATED);
+    @PostMapping(value = "/update-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Category> updateCategoryName(@RequestParam int catId, @RequestParam String name) throws Exception {
+        return new ResponseEntity<>(categoryService.updateCategoryName(catId, name), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

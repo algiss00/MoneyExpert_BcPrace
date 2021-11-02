@@ -18,6 +18,8 @@ import javax.persistence.*;
                 "where n.debt.id = :debtId"),
         @NamedQuery(name = "Notify.deleteNotifyDebtByDebtId", query = "delete FROM NotifyDebt n " +
                 "where n.debt.id = :debtId"),
+        @NamedQuery(name = "Notify.deleteNotifyDebtByDebtIdAndType", query = "delete FROM NotifyDebt n " +
+                "where n.debt.id = :debtId and n.typeNotification = :type"),
         @NamedQuery(name = "Notify.getNotifyDebtsFromBankAccount", query = "SELECT n FROM NotifyDebt n" +
                 " where n.debt.bankAccount.id = :bankAccId")
 })

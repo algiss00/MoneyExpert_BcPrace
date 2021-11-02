@@ -30,7 +30,7 @@ public class BudgetDaoTest {
         assertNotNull(budget);
         assertEquals("Jidlo budget", budget.getName());
         assertEquals(1000, budget.getAmount(), 0.0);
-        assertEquals(50, budget.getPercentNotif());
+        assertEquals(50, budget.getPercentNotify());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class BudgetDaoTest {
         assertNotNull(persistedBudget);
         assertEquals(generatedBudget.getName(), persistedBudget.getName());
         assertEquals(generatedBudget.getAmount(), persistedBudget.getAmount(), 0.0);
-        assertEquals(generatedBudget.getPercentNotif(), persistedBudget.getPercentNotif());
+        assertEquals(generatedBudget.getPercentNotify(), persistedBudget.getPercentNotify());
     }
 
     @Test

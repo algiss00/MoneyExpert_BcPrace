@@ -101,6 +101,7 @@ public class BankAccountService extends AbstractServiceHelper {
         BankAccount byIdBankAccount = getByIdBankAccount(id);
         byIdBankAccount.setName(bankAccount.getName());
         byIdBankAccount.setCurrency(bankAccount.getCurrency());
+        byIdBankAccount.setBalance(bankAccount.getBalance());
         return bankAccountDao.update(byIdBankAccount);
     }
 
@@ -133,9 +134,8 @@ public class BankAccountService extends AbstractServiceHelper {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getBudgets().remove(budget);
-        budget.setBankAccount(null);
-        budgetDao.update(budget);
         bankAccountDao.update(bankAccount);
+        removeBudget(budget.getId());
     }
 
     private boolean isBudgetInBankAcc(Budget budget, BankAccount bankAccount) throws Exception {
@@ -153,9 +153,8 @@ public class BankAccountService extends AbstractServiceHelper {
             throw new NotAuthenticatedClient();
         }
         bankAccount.getDebts().remove(debt);
-        debt.setBankAccount(null);
-        debtDao.update(debt);
         bankAccountDao.update(bankAccount);
+        removeDebt(debt.getId());
     }
 
     private Transaction createStartTransaction(BankAccount bankAccount) throws Exception {

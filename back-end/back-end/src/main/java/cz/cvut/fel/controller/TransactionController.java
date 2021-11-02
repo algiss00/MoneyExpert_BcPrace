@@ -93,7 +93,7 @@ public class TransactionController {
         return new ResponseEntity<>(t, HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/update-basic", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> updateTrans(@RequestParam int transId, @RequestBody Transaction transaction) throws Exception {
         return new ResponseEntity<>(transactionService.updateBasic(transId, transaction), HttpStatus.CREATED);
     }
@@ -105,7 +105,7 @@ public class TransactionController {
 
     @PostMapping(value = "/update-category", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Transaction> updateCategory(@RequestParam int transId, @RequestParam int catId) throws Exception {
-        return new ResponseEntity<>(transactionService.updateCategory(transId, catId), HttpStatus.CREATED);
+        return new ResponseEntity<>(transactionService.updateCategoryTransaction(transId, catId), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

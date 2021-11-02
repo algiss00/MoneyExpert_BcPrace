@@ -28,8 +28,12 @@ public class BudgetDao extends AbstractDao<Budget> {
 
     public Budget getByCategory(int categoryId, int bankAccId) throws Exception {
         try {
-            return em.createNamedQuery("Budget.getBudgetByCategory", Budget.class)
-                    .setParameter("categoryId", categoryId)
+            return (Budget) em.createNativeQuery("SELECT bud.id, bud.amount, bud.name, bud.percent_notify, bud.sum_amount,  bud.bank_account_id " +
+                            "FROM budget_table as bud inner JOIN relation_budget_category as relation" +
+                            " ON relation.budget_id = bud.id " +
+                            "where relation.category_id = :catId and bud.bank_account_id = :bankAccId",
+                    Budget.class)
+                    .setParameter("catId", categoryId)
                     .setParameter("bankAccId", bankAccId)
                     .setMaxResults(1)
                     .getResultList()
@@ -59,6 +63,43 @@ public class BudgetDao extends AbstractDao<Budget> {
                 .setParameter("bankAccId", bankAccId)
                 .setParameter("name", name)
                 .getResultList();
+    }
+
+    public void deleteBudgetRelationCategoryById(int budgetId, int catId) throws Exception {
+        try {
+            em.createNativeQuery("DELETE FROM relation_budget_category " +
+                    "WHERE category_id = :catId and budget_id = :budgetId")
+                    .setParameter("budgetId", budgetId)
+                    .setParameter("catId", catId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BudgetDao");
+        }
+    }
+
+    public void deleteAllBudgetRelationWithCategoryById(int budgetId) throws Exception {
+        try {
+            em.createNativeQuery("DELETE FROM relation_budget_category " +
+                    "WHERE budget_id = :budgetId")
+                    .setParameter("budgetId", budgetId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BudgetDao");
+        }
+    }
+
+    public void deleteBudgetById(int budgetId) throws Exception {
+        try {
+            em.createNativeQuery("DELETE FROM budget_table " +
+                    "WHERE id = :budgetId")
+                    .setParameter("budgetId", budgetId)
+                    .executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new Exception("Exception BudgetDao");
+        }
     }
 
     @Override

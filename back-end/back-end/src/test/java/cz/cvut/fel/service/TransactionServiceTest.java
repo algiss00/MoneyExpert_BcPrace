@@ -70,11 +70,12 @@ public class TransactionServiceTest {
         Transaction transaction = Generator.generateDefaultTransaction();
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         transaction.setBankAccount(bankAccount);
+        transaction.setCategory(Generator.generateDefaultCategory());
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
             when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
-
+            when(budgetDao.getByCategory(anyInt(), anyInt())).thenReturn(Generator.generateDefaultBudget());
             transactionService.remove(transaction.getId());
             verify(transactionDao, times(1)).remove(transaction);
         }
@@ -87,17 +88,18 @@ public class TransactionServiceTest {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         transaction.setBankAccount(bankAccount);
 
+        transaction.setCategory(Generator.generateDefaultCategory());
         updatedTransaction.setJottings("mock test");
         updatedTransaction.setAmount(100);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
-            when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
             when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
 
-            Transaction updated = transactionService.updateBasic(transaction.getId(), updatedTransaction);
+            transactionService.updateBasic(transaction.getId(), updatedTransaction);
             verify(transactionDao, times(1)).update(transaction);
-            assertEquals(updatedTransaction, updated);
+            assertEquals("mock test", transaction.getJottings());
+            assertEquals(100, transaction.getAmount());
             assertEquals(1900, bankAccount.getBalance());
         }
     }
@@ -121,12 +123,38 @@ public class TransactionServiceTest {
             when(categoryDao.find(category2.getId())).thenReturn(category2);
             when(categoryDao.getUsersCategoryById(user.getId(), category2.getId())).thenReturn(category2);
 
-            Transaction updated = transactionService.updateCategory(transaction.getId(), category2.getId());
+            Transaction updated = transactionService.updateCategoryTransaction(transaction.getId(), category2.getId());
             verify(transactionDao, times(1)).update(transaction);
             verify(categoryDao, times(1)).update(category2);
             assertEquals(updatedTransaction, updated);
         }
     }
+
+//    @Test
+//    public void updateCategoryCorrectBudgetLogic_mockTest_success() throws Exception {
+//        Category category1 = Generator.generateDefaultCategory();
+//        Category category2 = Generator.generateDefaultCategory();
+//        Transaction transaction = Generator.generateDefaultTransaction();
+//        Transaction updatedTransaction = Generator.generateDefaultTransaction();
+//        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+//        transaction.setBankAccount(bankAccount);
+//        transaction.setCategory(category1);
+//
+//        updatedTransaction.setCategory(category2);
+//        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+//            HelperFunctions.authUser(utilities, userDao, user);
+//            when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
+//            when(transactionDao.find(transaction.getId())).thenReturn(transaction);
+//            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
+//            when(categoryDao.find(category2.getId())).thenReturn(category2);
+//            when(categoryDao.getUsersCategoryById(user.getId(), category2.getId())).thenReturn(category2);
+//
+//            Transaction updated = transactionService.updateCategoryTransaction(transaction.getId(), category2.getId());
+//            verify(transactionDao, times(1)).update(transaction);
+//            verify(categoryDao, times(1)).update(category2);
+//            assertEquals(updatedTransaction, updated);
+//        }
+//    }
 
     @Test
     public void updateTransactionType_mockTest_success() throws Exception {
@@ -135,6 +163,7 @@ public class TransactionServiceTest {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         transaction.setBankAccount(bankAccount);
 
+        transaction.setCategory(Generator.generateDefaultCategory());
         updatedTransaction.setTypeTransaction(TypeTransaction.INCOME);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
@@ -206,13 +235,20 @@ public class TransactionServiceTest {
         }
     }
 
+    /**
+     * Pridani transakce a kontrola pokud budget a bankAccount logic funguji spravne
+     * Tranascke ma amount 600 ale budget ma amount 500, tzn. ze pro budget se vytvori dve NotifyBudget entity pro Amount a PercentNotify
+     * Pak kontrouju pokud BankAcc balance je spravny
+     *
+     * @throws Exception
+     */
     @Test
-    public void persistBankAccountLogicWithBudgetLogic_mockTest_success() throws Exception {
+    public void persistCheckBankAccountLogicWithBudgetLogic_mockTest_success() throws Exception {
         Category category = Generator.generateDefaultCategory();
         category.setName("mock test category");
 
         Budget budget = Generator.generateDefaultBudget();
-        budget.setCategory(category);
+        budget.getCategory().add(category);
         budget.setAmount(500);
 
         Transaction transaction = Generator.generateDefaultTransaction();
@@ -221,6 +257,7 @@ public class TransactionServiceTest {
 
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.getBudgets().add(budget);
+        budget.setBankAccount(bankAccount);
 
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
@@ -232,7 +269,7 @@ public class TransactionServiceTest {
             Transaction persisted = transactionService.persist(transaction, bankAccount.getId(), category.getId());
             verify(transactionDao, times(1)).persist(transaction);
             verify(budgetDao, times(1)).update(budget);
-            verify(notifyBudgetDao, times(1)).persist(any());
+            verify(notifyBudgetDao, times(2)).persist(any());
 
             assertEquals(transaction, persisted);
             assertEquals(400, bankAccount.getBalance());
