@@ -103,7 +103,7 @@ public class TransactionService extends AbstractServiceHelper {
         BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
 
         if (!isTransactionInBankAcc(fromAccId, transactionId)) {
-            throw new NotValidDataException();
+            throw new NotValidDataException("Transaction is not in From BankAccount");
         }
 
         transferTransaction.setBankAccount(toBankAcc);

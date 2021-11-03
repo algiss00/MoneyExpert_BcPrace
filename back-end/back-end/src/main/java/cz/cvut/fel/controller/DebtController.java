@@ -43,7 +43,7 @@ public class DebtController {
         }
         return new ResponseEntity<>(debt, HttpStatus.CREATED);
     }
-
+    
     @PostMapping(value = "/update-basic", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws Exception {
         return new ResponseEntity<>(debtService.updateDebtBasic(debtId, debt), HttpStatus.CREATED);
