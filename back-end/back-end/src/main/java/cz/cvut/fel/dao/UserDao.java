@@ -28,29 +28,19 @@ public class UserDao extends AbstractDao<User> {
     }
 
     public User getByUsername(String username) throws UsernameNotFoundException {
-        try {
-            return em.createNamedQuery("User.getByUsername", User.class)
-                    .setParameter("name", username)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new UsernameNotFoundException("Exception UserDao");
-        }
+        return em.createNamedQuery("User.getByUsername", User.class)
+                .setParameter("name", username)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
-    public User getByEmail(String email) throws Exception {
-        try {
-            return em.createNamedQuery("User.getByEmail", User.class)
-                    .setParameter("email", email)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception UserDao");
-        }
+    public User getByEmail(String email) {
+        return em.createNamedQuery("User.getByEmail", User.class)
+                .setParameter("email", email)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     @Override

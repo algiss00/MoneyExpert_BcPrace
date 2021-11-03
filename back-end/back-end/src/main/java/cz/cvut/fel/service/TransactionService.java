@@ -2,14 +2,11 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeCurrency;
-import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 import java.util.List;
@@ -28,8 +25,12 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.findAll();
     }
 
-    public List<Transaction> getSortedByMonth(int month, int year, int bankAccId) throws Exception {
-        return transactionDao.getByMonthSorted(month, year, getByIdBankAccount(bankAccId).getId());
+    public List<Transaction> getSortedByMonthAndYear(int month, int year, int bankAccId) throws Exception {
+        return transactionDao.getByMonthSortedAndYear(month, year, getByIdBankAccount(bankAccId).getId());
+    }
+
+    public List<Transaction> getTransactionsByType(int accId, TypeTransaction type, int month, int year) throws Exception {
+        return transactionDao.getTransactionsByType(getByIdBankAccount(accId).getId(), type, month, year);
     }
 
     public double getSumOfExpenseOnMonth(int month, int year, int bankAccId) throws Exception {
@@ -50,9 +51,14 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.getIncomeSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
-    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId) throws
+    public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId, int month, int year) throws
             Exception {
-        return transactionDao.getAllTransFromCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId());
+        return transactionDao.getAllTransFromCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId(), month, year);
+    }
+
+    public List<Transaction> getTransactionsByTypeAndCategory(int catId, int accountId, TypeTransaction type, int month, int year) throws
+            Exception {
+        return transactionDao.getTransactionsByTypeAndCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId(), type, month, year);
     }
 
     public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
@@ -180,6 +186,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     /**
      * Logic for update TransactionType
+     *
      * @param transaction
      * @throws Exception
      */

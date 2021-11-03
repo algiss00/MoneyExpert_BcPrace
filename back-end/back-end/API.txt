@@ -8,6 +8,8 @@ USER
 
 /user/{id} - get user by id
 
+/user/username?username={username} - get user by username
+
 /user/current-user - get current user
 
 /user/available-accounts - get users available bankAccounts, not created BankAccounts
@@ -38,6 +40,10 @@ BANK_ACCOUNT
 
 /bankAccount/transactions-by-type/{accId}?type=... - get All transactions from BankAcc by Type, {accId} = BankAccId, type = TypeTransaction
 
+/bankAccount/transactions-by-category/{accId}?categoryId={CategoryId} - get All transactions from BankAcc by Category
+
+/bankAccount/transactions-by-category-type/{accId}?categoryId={CategoryId}&type={TypeTransaction} - get All transactions from BankAcc by Category and TypeTransaction
+
 /bankAccount/debts/{accId} - get All debts from BankAcc {accId} = BankAccId
 
 /bankAccount/creator/{bankAccId} - get creator of BankAcc {bankAccId} = BankAccId
@@ -49,11 +55,15 @@ TRANSACTION
 
 /transaction/between-date/{accId}?from={date}&to={date} - get transactions from BankAccount between dates from = String Date and to = String Date
 
-/transaction/category?catId={categoryId}&accId={bankAccountId} -  get transactions from BankAccount with defined Category
+/transaction/sorted-category/{accId}?catId={categoryId}&month={month}&year={year} -  get transactions from BankAccount with Category and in month and year
 
 /transaction/{id} - get transaction by id, if user is not owner or creator of BankAccount where transaction belongs then throw Exception NotAuthenticatedClient
 
-/transaction/sorted-transactions-month/{bankAccId}?month={month}&year={year} - get Transactions from BankAccount sorted by Month and Year
+/transaction/sorted-month-year/{bankAccId}?month={month}&year={year} - get Transactions from BankAccount sorted by Month and Year
+
+/transaction/sorted-type/{accId}?type={TypeTransaction}&month={month}&year={year} - get Transactions from BankAccount sorted by type and Month and Year
+
+/transaction/sorted-type-category/{accId}?type={TypeTransaction}&catId={categoryId}&month={month}&year={year} - get sorted Transactions from BankAcc by type and category and month, year
 
 /transaction/sum-expense/{bankAccId}?month={month}&year={year} - get Sum of all Expense Transactions from BankAccount by Month and Year
 
@@ -131,6 +141,8 @@ USER
 
 /user/username?username={username} - update username
 
+/user/password?oldPassword={password}&newPassword={password} - update password
+
 ------------------------------------------------------------------------------
 DEBT
 
@@ -147,7 +159,7 @@ BANK_ACCOUNT
 
 /bankAccount - add bankAccount with @RequestBody BankAccount bankAccount
 
-/bankAccount/owner?userId={userId}&accId={accId} - share bankAccount - add new Owner of BankAcc
+/bankAccount/owner?username={username}&accId={accId} - share bankAccount - add new Owner by username to BankAcc, Can only Creator of BankAcc
 
 /bankAccount/update?accId={id} - update BankAcc with @RequestBody BankAccount bankAccount
 

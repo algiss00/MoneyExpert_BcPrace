@@ -12,9 +12,6 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "Transaction.getAll", query = "SELECT t FROM Transaction t order by t.date desc"),
         @NamedQuery(
-                name = "Transaction.getAllFromCategory",
-                query = "SELECT t FROM Transaction t WHERE t.category.id = :catId AND t.bankAccount.id = :accId order by t.date desc"),
-        @NamedQuery(
                 name = "Transaction.getFromBankAccount",
                 query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.id = :transId"),
         @NamedQuery(
@@ -22,7 +19,14 @@ import java.util.Date;
                 query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId order by t.date desc"),
         @NamedQuery(
                 name = "Transaction.getByTransactionType",
-                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.typeTransaction = :type order by t.date desc")
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.typeTransaction = :type order by t.date desc"),
+        @NamedQuery(
+                name = "Transaction.getAllTransactionsByCategory",
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId and t.category.id = :categoryId order by t.date desc"),
+        @NamedQuery(
+                name = "Transaction.getAllTransactionsByCategoryAndType",
+                query = "SELECT t FROM Transaction t WHERE t.bankAccount.id = :bankAccId " +
+                        "and t.category.id = :categoryId and t.typeTransaction = :type order by t.date desc")
 })
 
 public class Transaction extends AbstractEntity {

@@ -45,17 +45,12 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     public Budget getByBankAcc(int buId, int bankAccId) throws Exception {
-        try {
-            return em.createNamedQuery("Budget.getByBankAccId", Budget.class)
-                    .setParameter("buId", buId)
-                    .setParameter("bankAccId", bankAccId)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception BudgetDao");
-        }
+        return em.createNamedQuery("Budget.getByBankAccId", Budget.class)
+                .setParameter("buId", buId)
+                .setParameter("bankAccId", bankAccId)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     public List<Budget> getByName(int bankAccId, String name) {
@@ -65,18 +60,18 @@ public class BudgetDao extends AbstractDao<Budget> {
                 .getResultList();
     }
 
-    public void deleteBudgetRelationCategoryById(int budgetId, int catId) throws Exception {
-        try {
-            em.createNativeQuery("DELETE FROM relation_budget_category " +
-                    "WHERE category_id = :catId and budget_id = :budgetId")
-                    .setParameter("budgetId", budgetId)
-                    .setParameter("catId", catId)
-                    .executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception BudgetDao");
-        }
-    }
+//    public void deleteBudgetRelationCategoryById(int budgetId, int catId) throws Exception {
+//        try {
+//            em.createNativeQuery("DELETE FROM relation_budget_category " +
+//                    "WHERE category_id = :catId and budget_id = :budgetId")
+//                    .setParameter("budgetId", budgetId)
+//                    .setParameter("catId", catId)
+//                    .executeUpdate();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            throw new Exception("Exception BudgetDao");
+//        }
+//    }
 
     public void deleteAllBudgetRelationWithCategoryById(int budgetId) throws Exception {
         try {

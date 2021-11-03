@@ -54,40 +54,25 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
                 .stream().findFirst().orElse(null);
     }
 
-    public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) throws Exception {
-        try {
-            return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
-                    .setParameter("budgetId", budgetId)
-                    .setParameter("type", type)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null) != null;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception NotifyBudgetDao");
-        }
+    public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) {
+        return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
+                .setParameter("budgetId", budgetId)
+                .setParameter("type", type)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null) != null;
     }
 
     public List<NotifyBudget> getNotifyBudgetByBudgetId(int budgetId) {
-        try {
-            return em.createNamedQuery("NotifyBudget.getNotifyBudgetByBudgetId", NotifyBudget.class)
-                    .setParameter("budgetId", budgetId)
-                    .getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
+        return em.createNamedQuery("NotifyBudget.getNotifyBudgetByBudgetId", NotifyBudget.class)
+                .setParameter("budgetId", budgetId)
+                .getResultList();
     }
 
     public List<NotifyBudget> getNotifyBudgetsFromBankAccount(int bankAccId) {
-        try {
-            return em.createNamedQuery("NotifyBudget.getNotifyBudgetsFromBankAccount", NotifyBudget.class)
-                    .setParameter("bankAccId", bankAccId)
-                    .getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
+        return em.createNamedQuery("NotifyBudget.getNotifyBudgetsFromBankAccount", NotifyBudget.class)
+                .setParameter("bankAccId", bankAccId)
+                .getResultList();
     }
 
     public void deleteNotifyBudgetByBudgetId(int budgetId) throws Exception {

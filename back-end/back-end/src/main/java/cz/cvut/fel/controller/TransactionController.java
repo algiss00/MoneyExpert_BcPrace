@@ -30,9 +30,24 @@ public class TransactionController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @RequestParam int accId) throws Exception {
-        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId);
+    @GetMapping(value = "/sorted-type/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionsByType(@RequestParam TypeTransaction type, @PathVariable int accId,
+                                            @RequestParam int month, @RequestParam int year) throws Exception {
+        List<Transaction> transactions = transactionService.getTransactionsByType(accId, type, month, year);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sorted-category/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransFromCategoryFromBankAcc(@RequestParam int catId, @PathVariable int accId,
+                                                         @RequestParam int month, @RequestParam int year) throws Exception {
+        List<Transaction> transactions = transactionService.getAllTransFromCategoryFromBankAcc(catId, accId, month, year);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/sorted-type-category/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionsByTypeAndCategory(@RequestParam int catId, @PathVariable int accId, @RequestParam TypeTransaction type,
+                                                       @RequestParam int month, @RequestParam int year) throws Exception {
+        List<Transaction> transactions = transactionService.getTransactionsByTypeAndCategory(catId, accId, type, month, year);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
@@ -42,10 +57,10 @@ public class TransactionController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/sorted-transactions-month/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getTransactionSortedByMonth(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
+    @GetMapping(value = "/sorted-month-year/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getSortedByMonthAndYear(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
             throws Exception {
-        List<Transaction> transactions = transactionService.getSortedByMonth(month, year, bankAccId);
+        List<Transaction> transactions = transactionService.getSortedByMonthAndYear(month, year, bankAccId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 

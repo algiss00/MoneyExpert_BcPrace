@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -72,7 +71,7 @@ public class TransactionDaoTest {
 
     @Test
     public void getByMonthSorted() throws ParseException {
-        List<Transaction> transactions = transactionDao.getByMonthSorted(9, 2021, 18);
+        List<Transaction> transactions = transactionDao.getByMonthSortedAndYear(9, 2021, 18);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = formatter.parse("2021-09-01");
 
@@ -86,13 +85,13 @@ public class TransactionDaoTest {
 
     @Test
     public void getByMonthSortedEmptyMonth() {
-        List<Transaction> transactions = transactionDao.getByMonthSorted(5, 2021, 18);
+        List<Transaction> transactions = transactionDao.getByMonthSortedAndYear(5, 2021, 18);
         assertTrue(transactions.isEmpty());
     }
 
     @Test
     public void getByMonthSortedEmptyByYear() {
-        List<Transaction> transactions = transactionDao.getByMonthSorted(9, 2020, 18);
+        List<Transaction> transactions = transactionDao.getByMonthSortedAndYear(9, 2020, 18);
         assertTrue(transactions.isEmpty());
     }
 

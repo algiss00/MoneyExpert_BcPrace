@@ -56,6 +56,10 @@ abstract class AbstractServiceHelper {
         return u;
     }
 
+    public User getByUsername(String username) {
+        return userDao.getByUsername(username);
+    }
+
     public List<Category> getDefaultCategories() {
         return categoryDao.getDefaultCategories();
     }

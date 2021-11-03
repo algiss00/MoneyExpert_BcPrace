@@ -4,6 +4,7 @@ import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,10 +22,6 @@ public class UserService extends AbstractServiceHelper {
                        NotifyBudgetDao notifyBudgetDao, NotifyDebtDao notifyDebtDao, PasswordEncoder passwordEncoder) {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
         this.passwordEncoder = passwordEncoder;
-    }
-
-    public User getByUsername(String username) {
-        return userDao.getByUsername(username);
     }
 
     public User getByEmail(String email) throws Exception {
@@ -93,6 +90,18 @@ public class UserService extends AbstractServiceHelper {
         }
         u.setEmail(email);
         return userDao.update(u);
+    }
+
+    public void updatePassword(String oldPassword, String newPassword) throws Exception {
+        User user = getAuthenticatedUser();
+        if (oldPassword.equals(newPassword)) {
+            throw new NotValidDataException();
+        }
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword()))
+            throw new BadCredentialsException("Bad Credentials.");
+
+        user.setPassword(passwordEncoder.encode(newPassword));
     }
 
     /**

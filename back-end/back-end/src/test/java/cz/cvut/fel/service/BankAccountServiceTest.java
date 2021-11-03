@@ -6,6 +6,7 @@ import cz.cvut.fel.dto.TypeCurrency;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -179,19 +180,44 @@ public class BankAccountServiceTest {
     public void addNewOwner_mockTest_success() throws Exception {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);
+        User newOwner = Generator.generateDefaultUser();
+        newOwner.setId(15);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
             when(bankAccountDao.getUsersAvailableBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
+            when(userDao.getByUsername(newOwner.getUsername())).thenReturn(newOwner);
 
-            bankAccountService.addNewOwner(user.getId(), bankAccount.getId());
+            bankAccountService.addNewOwner(newOwner.getUsername(), bankAccount.getId());
             assertEquals(1, bankAccount.getOwners().size());
-            assertEquals(bankAccount.getOwners().get(0), user);
-            assertEquals(1, user.getAvailableBankAccounts().size());
-            assertEquals(user.getAvailableBankAccounts().get(0), bankAccount);
+            assertEquals(bankAccount.getOwners().get(0), newOwner);
+            assertEquals(1, newOwner.getAvailableBankAccounts().size());
+            assertEquals(newOwner.getAvailableBankAccounts().get(0), bankAccount);
 
             verify(bankAccountDao, times(1)).update(bankAccount);
-            verify(userDao, times(1)).update(user);
+            verify(userDao, times(1)).update(newOwner);
+        }
+    }
+
+
+    @Test
+    public void addNewOwnerNotCreator_mockTest_throwNotValidData() throws Exception {
+        User creator = Generator.generateDefaultUser();
+        creator.setId(11);
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(creator);
+        bankAccount.getOwners().add(user);
+        User newOwner = Generator.generateDefaultUser();
+        newOwner.setId(15);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
+            when(bankAccountDao.getUsersAvailableBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
+            when(userDao.getByUsername(newOwner.getUsername())).thenReturn(newOwner);
+
+            assertThrows(NotValidDataException.class, () -> {
+                bankAccountService.addNewOwner(newOwner.getUsername(), bankAccount.getId());
+            });
         }
     }
 
@@ -201,6 +227,7 @@ public class BankAccountServiceTest {
         bankAccount.setCreator(user);
 
         User user2 = Generator.generateDefaultUser();
+        user2.setId(22);
         bankAccount.getOwners().add(user2);
         user2.getAvailableBankAccounts().add(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {

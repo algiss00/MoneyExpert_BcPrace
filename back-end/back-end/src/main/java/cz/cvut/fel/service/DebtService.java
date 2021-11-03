@@ -49,7 +49,7 @@ public class DebtService extends AbstractServiceHelper {
     //every 6 hours - "0 0 */6 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
     @Scheduled(cron = "30 * * * * * ")
-    public void checkNotifyDates() throws Exception {
+    public void checkNotifyDates() {
         log.info("check DEBT NotifyDate");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
         if (notifyDebts.isEmpty()) {
@@ -69,7 +69,7 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
-    private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) throws Exception {
+    private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
@@ -94,7 +94,7 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
-    private boolean validate(Debt debt) throws Exception {
+    private boolean validate(Debt debt) {
         if (debt.getName().trim().isEmpty() || debt.getAmount() <= 0 || debt.getDeadline().before(debt.getNotifyDate())) {
             return false;
         }

@@ -30,6 +30,15 @@ public class UserController {
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/username", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUserByUsername(@RequestParam String username) throws UserNotFoundException {
+        User u = userService.getByUsername(username);
+        if (u == null) {
+            throw new UserNotFoundException(username);
+        }
+        return new ResponseEntity<>(u, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/current-user", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCurrentUser() throws NotAuthenticatedClient {
         User user = userService.getAuthenticatedUser();
@@ -76,6 +85,12 @@ public class UserController {
     @PostMapping(value = "/username", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> updateUsername(@RequestParam String username) throws Exception {
         return new ResponseEntity<>(userService.updateUsername(username), HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/password", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<User> updatePassword(@RequestParam String oldPassword, @RequestParam String newPassword) throws Exception {
+        userService.updatePassword(oldPassword, newPassword);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/delete-account")

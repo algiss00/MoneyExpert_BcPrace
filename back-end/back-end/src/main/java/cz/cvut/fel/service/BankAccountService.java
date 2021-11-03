@@ -45,6 +45,15 @@ public class BankAccountService extends AbstractServiceHelper {
         return transactionDao.getFromBankAccByTransactionType(getByIdBankAccount(accountId).getId(), typeTransaction);
     }
 
+    public List<Transaction> getAllTransactionsByCategory(int accountId, int categoryId) throws Exception {
+        return transactionDao.getAllTransactionsByCategory(getByIdBankAccount(accountId).getId(), getByIdCategory(categoryId).getId());
+    }
+
+    public List<Transaction> getAllTransactionsByCategoryAndType(int accountId, int categoryId, TypeTransaction type) throws Exception {
+        return transactionDao.getAllTransactionsByCategoryAndType(getByIdBankAccount(accountId).getId(),
+                getByIdCategory(categoryId).getId(), type);
+    }
+
     public List<Debt> getAllAccountsDebts(int accId) throws Exception {
         return debtDao.getSortedByDeadlineFromBankAcc(getByIdBankAccount(accId).getId());
     }
@@ -76,12 +85,26 @@ public class BankAccountService extends AbstractServiceHelper {
         return persistedEntity;
     }
 
-    public void addNewOwner(int userId, int accId) throws Exception {
+    /**
+     * Pridani noveho ownera ma pravo pouze Creator of BankAcc
+     *
+     * @param username
+     * @param accId    - bankAcc Id
+     * @throws Exception
+     */
+    public void addNewOwner(String username, int accId) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(accId);
-        User user = getByIdUser(userId);
+        if (bankAccount.getCreator() != getAuthenticatedUser()) {
+            throw new NotValidDataException("You are not creator!");
+        }
 
-        if (bankAccount.getOwners().contains(user)) {
-            return;
+        User user = getByUsername(username);
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
+
+        if (bankAccount.getOwners().contains(user) || bankAccount.getCreator() == user) {
+            throw new NotValidDataException("Add existed owner!");
         }
         bankAccount.getOwners().add(user);
         user.getAvailableBankAccounts().add(bankAccount);
@@ -97,8 +120,19 @@ public class BankAccountService extends AbstractServiceHelper {
         return true;
     }
 
+    /**
+     * Na update BankAcc ma pravo pouze creator of BankAcc
+     *
+     * @param id
+     * @param bankAccount
+     * @return
+     * @throws Exception
+     */
     public BankAccount updateAccount(int id, BankAccount bankAccount) throws Exception {
         BankAccount byIdBankAccount = getByIdBankAccount(id);
+        if (byIdBankAccount.getCreator() != getAuthenticatedUser()) {
+            throw new NotValidDataException("Cannot update BankAccount, you are not creator!");
+        }
         byIdBankAccount.setName(bankAccount.getName());
         byIdBankAccount.setCurrency(bankAccount.getCurrency());
         byIdBankAccount.setBalance(bankAccount.getBalance());
@@ -107,6 +141,7 @@ public class BankAccountService extends AbstractServiceHelper {
 
     /**
      * Cannot remove not existed owner and creator of BankAcc
+     * Ma pravo pouze Creator
      *
      * @param userId
      * @param accId
@@ -114,6 +149,9 @@ public class BankAccountService extends AbstractServiceHelper {
      */
     public void removeOwner(int userId, int accId) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(accId);
+        if (bankAccount.getCreator() != getAuthenticatedUser()) {
+            throw new NotValidDataException("You are not creator!");
+        }
         User user = getByIdUser(userId);
 
         // not allowed to delete creator of BankAccount

@@ -64,13 +64,20 @@ public class UserServiceTest {
     @Test
     public void update_mockTest_success() throws Exception {
         User user = Generator.generateDefaultUser();
-        user.setName("mock-test");
+        user.setId(1);
+
+        User user2 = Generator.generateDefaultUser();
+        user2.setId(2);
+        user2.setName("test name");
+        user2.setLastname("test lastname");
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             utilities.when(SecurityUtils::getCurrentUser).thenReturn(user);
             assertEquals(user, SecurityUtils.getCurrentUser());
-            when(userDao.find(anyInt())).thenReturn(user);
-            when(userDao.update(any())).thenReturn(user);
-            assertEquals(user, userService.updateUserBasic(user));
+            when(userDao.find(user.getId())).thenReturn(user);
+
+            userService.updateUserBasic(user2);
+            assertEquals("test lastname", user.getLastname());
+            assertEquals("test name", user.getName());
             verify(userDao, times(1)).update(user);
         }
     }

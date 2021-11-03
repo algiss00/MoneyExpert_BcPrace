@@ -62,6 +62,19 @@ public class BankAccountController {
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/transactions-by-category/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransactionsByCategory(@PathVariable int accId, @RequestParam int categoryId) throws Exception {
+        List<Transaction> transactions = bankAccountService.getAllTransactionsByCategory(accId, categoryId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/transactions-by-category-type/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllTransactionsByCategoryAndType(@PathVariable int accId, @RequestParam int categoryId,
+                                                          @RequestParam TypeTransaction type) throws Exception {
+        List<Transaction> transactions = bankAccountService.getAllTransactionsByCategoryAndType(accId, categoryId, type);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/debts/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllAccountsDebts(@PathVariable int accId) throws Exception {
         List<Debt> d = bankAccountService.getAllAccountsDebts(accId);
@@ -91,8 +104,8 @@ public class BankAccountController {
     }
 
     @PostMapping(value = "/owner", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<BankAccount> addNewOwner(@RequestParam int userId, @RequestParam int accId) throws Exception {
-        bankAccountService.addNewOwner(userId, accId);
+    ResponseEntity<BankAccount> addNewOwner(@RequestParam String username, @RequestParam int accId) throws Exception {
+        bankAccountService.addNewOwner(username, accId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

@@ -55,39 +55,24 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     public List<NotifyDebt> getNotifyDebtsFromBankAccount(int bankAccId) {
-        try {
-            return em.createNamedQuery("Notify.getNotifyDebtsFromBankAccount", NotifyDebt.class)
-                    .setParameter("bankAccId", bankAccId)
-                    .getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
+        return em.createNamedQuery("Notify.getNotifyDebtsFromBankAccount", NotifyDebt.class)
+                .setParameter("bankAccId", bankAccId)
+                .getResultList();
     }
 
-    public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) throws Exception {
-        try {
-            return em.createNamedQuery("Notify.alreadyExists", NotifyDebt.class)
-                    .setParameter("debtId", debtId)
-                    .setParameter("type", type)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception NotifyDebtDao");
-        }
+    public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) {
+        return em.createNamedQuery("Notify.alreadyExists", NotifyDebt.class)
+                .setParameter("debtId", debtId)
+                .setParameter("type", type)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
-    public List<NotifyDebt> getNotifyDebtByDebtId(int debtId) throws Exception {
-        try {
-            return em.createNamedQuery("Notify.getNotifyDebtByDebtId", NotifyDebt.class)
-                    .setParameter("debtId", debtId)
-                    .getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
+    public List<NotifyDebt> getNotifyDebtByDebtId(int debtId) {
+        return em.createNamedQuery("Notify.getNotifyDebtByDebtId", NotifyDebt.class)
+                .setParameter("debtId", debtId)
+                .getResultList();
     }
 
     public void deleteNotifyDebtByDebtId(int debtId) throws Exception {

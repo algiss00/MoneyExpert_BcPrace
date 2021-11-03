@@ -42,29 +42,19 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     public List<Debt> getByNameFromBankAcc(int baId, String debtName) {
-        try {
-            return em.createNamedQuery("Debt.getByNameFromBankAcc", Debt.class)
-                    .setParameter("baId", baId)
-                    .setParameter("debtName", debtName)
-                    .getResultList();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return Collections.emptyList();
-        }
+        return em.createNamedQuery("Debt.getByNameFromBankAcc", Debt.class)
+                .setParameter("baId", baId)
+                .setParameter("debtName", debtName)
+                .getResultList();
     }
 
     public Debt getByBankAccId(int debtId, int bankAccId) throws Exception {
-        try {
-            return em.createNamedQuery("Debt.getByBankAccount", Debt.class)
-                    .setParameter("bankAccId", bankAccId)
-                    .setParameter("debtId", debtId)
-                    .setMaxResults(1)
-                    .getResultList()
-                    .stream().findFirst().orElse(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception DebtDao");
-        }
+        return em.createNamedQuery("Debt.getByBankAccount", Debt.class)
+                .setParameter("bankAccId", bankAccId)
+                .setParameter("debtId", debtId)
+                .setMaxResults(1)
+                .getResultList()
+                .stream().findFirst().orElse(null);
     }
 
     @Override
