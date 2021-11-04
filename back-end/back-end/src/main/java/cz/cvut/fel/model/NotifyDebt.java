@@ -13,9 +13,7 @@ import javax.persistence.*;
                 " AND n.typeNotification = :type"),
         @NamedQuery(name = "Notify.getDebtsNotifyDebtsByType", query = "SELECT n FROM NotifyDebt n where n.debt.id = :debtId " +
                 "and n.typeNotification = :typeNotif"),
-        @NamedQuery(name = "Notify.getDebtsNotifyDebts", query = "SELECT n FROM NotifyDebt n where n.debt.id = :debtId"),
-        @NamedQuery(name = "Notify.getNotifyDebtByDebtId", query = "SELECT n FROM NotifyDebt n " +
-                "where n.debt.id = :debtId"),
+        @NamedQuery(name = "Notify.getNotifyDebtByDebtId", query = "SELECT n FROM NotifyDebt n where n.debt.id = :debtId"),
         @NamedQuery(name = "Notify.deleteNotifyDebtByDebtId", query = "delete FROM NotifyDebt n " +
                 "where n.debt.id = :debtId"),
         @NamedQuery(name = "Notify.deleteNotifyDebtByDebtIdAndType", query = "delete FROM NotifyDebt n " +

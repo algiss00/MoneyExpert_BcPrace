@@ -53,16 +53,16 @@ public class Transaction extends AbstractEntity {
         return jottings;
     }
 
-    public void setJottings(String pozanamky) {
-        this.jottings = pozanamky;
+    public void setJottings(String jottings) {
+        this.jottings = jottings;
     }
 
     public double getAmount() {
         return amount;
     }
 
-    public void setAmount(double castka) {
-        this.amount = castka;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public Date getDate() {

@@ -27,28 +27,58 @@ public class DebtDao extends AbstractDao<Debt> {
         return em.createNamedQuery("Debt.getAll", Debt.class).getResultList();
     }
 
+    /**
+     * Vrati vse Debt u kterych notifyDebt uz nastal ale deadline jeste ne
+     *
+     * @return
+     */
     public List<Debt> getNotifyDebts() {
         return em.createNamedQuery("Debt.getNotifyDebts", Debt.class).getResultList();
     }
 
-    public List<Debt> getSortedByDeadlineFromBankAcc(int bId) {
+    /**
+     * get Debts from BankAccount sorted by Deadline
+     *
+     * @param bankAccId
+     * @return
+     */
+    public List<Debt> getSortedByDeadlineFromBankAcc(int bankAccId) {
         return em.createNamedQuery("Debt.getSortedByDeadlineFromBankAcc", Debt.class)
-                .setParameter("bId", bId)
+                .setParameter("bId", bankAccId)
                 .getResultList();
     }
 
+    /**
+     * Vrati vse debt u kterych deadline date uz nastal
+     *
+     * @return
+     */
     public List<Debt> getDeadlineDebts() {
         return em.createNamedQuery("Debt.getDeadlineDebts", Debt.class).getResultList();
     }
 
-    public List<Debt> getByNameFromBankAcc(int baId, String debtName) {
+    /**
+     * get debt by name in BankAccount
+     *
+     * @param bankAccId - bankAccount Id
+     * @param debtName
+     * @return
+     */
+    public List<Debt> getByNameFromBankAcc(int bankAccId, String debtName) {
         return em.createNamedQuery("Debt.getByNameFromBankAcc", Debt.class)
-                .setParameter("baId", baId)
+                .setParameter("baId", bankAccId)
                 .setParameter("debtName", debtName)
                 .getResultList();
     }
 
-    public Debt getByBankAccId(int debtId, int bankAccId) throws Exception {
+    /**
+     * Get Debt from BankAccount by Id
+     *
+     * @param debtId
+     * @param bankAccId
+     * @return
+     */
+    public Debt getByBankAccId(int debtId, int bankAccId) {
         return em.createNamedQuery("Debt.getByBankAccount", Debt.class)
                 .setParameter("bankAccId", bankAccId)
                 .setParameter("debtId", debtId)

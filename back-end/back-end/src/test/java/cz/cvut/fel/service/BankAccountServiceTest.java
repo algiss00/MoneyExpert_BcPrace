@@ -332,7 +332,7 @@ public class BankAccountServiceTest {
             when(transactionDao.find(anyInt())).thenReturn(transaction);
             when(transactionDao.getFromBankAcc(anyInt(), anyInt())).thenReturn(transaction);
 
-            bankAccountService.removeTransFromAccount(transaction.getId(), bankAccount.getId());
+            bankAccountService.removeTransactionFromBankAccount(transaction.getId(), bankAccount.getId());
             verify(bankAccountDao, times(1)).update(bankAccount);
             verify(transactionDao, times(1)).update(transaction);
             verify(transactionDao, times(1)).remove(transaction);

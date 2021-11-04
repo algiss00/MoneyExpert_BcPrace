@@ -27,6 +27,13 @@ public class UserDao extends AbstractDao<User> {
         return em.createNamedQuery("User.getAll", User.class).getResultList();
     }
 
+    /**
+     * get User by username
+     *
+     * @param username
+     * @return
+     * @throws UsernameNotFoundException
+     */
     public User getByUsername(String username) throws UsernameNotFoundException {
         return em.createNamedQuery("User.getByUsername", User.class)
                 .setParameter("name", username)
@@ -35,6 +42,12 @@ public class UserDao extends AbstractDao<User> {
                 .stream().findFirst().orElse(null);
     }
 
+    /**
+     * get User by Email
+     *
+     * @param email
+     * @return
+     */
     public User getByEmail(String email) {
         return em.createNamedQuery("User.getByEmail", User.class)
                 .setParameter("email", email)

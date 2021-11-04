@@ -2,10 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.Transaction;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +12,8 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,15 +27,17 @@ public class CategoryServiceTest {
     private UserDao userDao;
     private TransactionDao transactionDao;
     private BankAccountDao bankAccountDao;
+    private BudgetDao budgetDao;
+    private NotifyBudgetDao notifyBudgetDao;
 
     @BeforeEach
     public void setUp() {
         categoryDao = mock(CategoryDao.class);
         transactionDao = mock(TransactionDao.class);
         bankAccountDao = mock(BankAccountDao.class);
-        BudgetDao budgetDao = mock(BudgetDao.class);
+        budgetDao = mock(BudgetDao.class);
         DebtDao debtDao = mock(DebtDao.class);
-        NotifyBudgetDao notifyBudgetDao = mock(NotifyBudgetDao.class);
+        notifyBudgetDao = mock(NotifyBudgetDao.class);
         NotifyDebtDao notifyDebtDao = mock(NotifyDebtDao.class);
         userDao = mock(UserDao.class);
 
@@ -88,6 +89,39 @@ public class CategoryServiceTest {
             categoryService.removeCategory(category.getId());
             verify(categoryDao, times(1)).remove(category);
             assertEquals("No category", transaction.getCategory().getName());
+        }
+    }
+
+    @Test
+    public void remove_MockTest_expectedThatBudgetsAreDeleted() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setId(3);
+        bankAccount.setCreator(user);
+
+        Category noCategory = Generator.generateDefaultCategory();
+        noCategory.setId(-12);
+        noCategory.setName("No category");
+
+        Category category = Generator.generateDefaultCategory();
+        category.setId(1);
+
+        Budget budget = Generator.generateDefaultBudget();
+        budget.setId(2);
+        budget.getCategory().add(category);
+        category.getBudget().add(budget);
+        budget.setBankAccount(bankAccount);
+
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(categoryDao.find(category.getId())).thenReturn(category);
+            when(categoryDao.find(-12)).thenReturn(noCategory);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
+            when(budgetDao.find(budget.getId())).thenReturn(budget);
+            when(notifyBudgetDao.getNotifyBudgetByBudgetId(budget.getId())).thenReturn(Collections.emptyList());
+
+            categoryService.removeCategory(category.getId());
+            verify(categoryDao, times(1)).remove(category);
+            verify(budgetDao, times(1)).remove(budget);
         }
     }
 

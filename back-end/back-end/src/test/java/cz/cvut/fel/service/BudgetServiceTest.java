@@ -77,7 +77,7 @@ public class BudgetServiceTest {
             when(notifyBudgetDao.getNotifyBudgetByBudgetId(anyInt())).thenReturn(Collections.emptyList());
 
             budgetService.removeBudget(budget.getId());
-            verify(budgetDao, times(1)).deleteBudgetById(budget.getId());
+            verify(budgetDao, times(1)).remove(budget);
         }
     }
 

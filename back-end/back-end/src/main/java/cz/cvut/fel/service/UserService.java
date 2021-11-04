@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -45,6 +47,14 @@ public class UserService extends AbstractServiceHelper {
     public List<BankAccount> getCreatedBankAccounts() throws NotAuthenticatedClient {
         User u = getAuthenticatedUser();
         return u.getCreatedBankAccounts();
+    }
+
+    public List<BankAccount> getAllUsersBankAccounts() throws Exception {
+        List<BankAccount> availableBankAccounts = getAvailableBankAccounts();
+        List<BankAccount> createdBankAcc = getCreatedBankAccounts();
+
+        return Stream.concat(availableBankAccounts.stream(), createdBankAcc.stream())
+                .collect(Collectors.toList());
     }
 
     public List<Category> getAllUsersCategories() throws Exception {

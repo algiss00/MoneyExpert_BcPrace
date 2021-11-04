@@ -28,19 +28,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * get All budgets with Notifybudget
-     *
-     * @param budgetId
-     * @return
-     */
-    public List<NotifyBudget> getBudgetsNotifyBudgets(int budgetId) {
-        return em.createNamedQuery("NotifyBudget.getBudgetsNotifyBudgets", NotifyBudget.class)
-                .setParameter("budgetId", budgetId)
-                .getResultList();
-    }
-
-    /**
-     * get budget with Notifybudget by Type
+     * vrati NoitfyBudget pro urcity Budget podle Typu notifikace
      *
      * @param budgetId
      * @return
@@ -54,6 +42,13 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
                 .stream().findFirst().orElse(null);
     }
 
+    /**
+     * pokud notifyBudget pro tento budget s urcitym typem jiz existuje
+     *
+     * @param budgetId
+     * @param type
+     * @return
+     */
     public Boolean alreadyExistsBudget(int budgetId, TypeNotification type) {
         return em.createNamedQuery("NotifyBudget.alreadyExists", NotifyBudget.class)
                 .setParameter("budgetId", budgetId)
@@ -63,18 +58,36 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
                 .stream().findFirst().orElse(null) != null;
     }
 
+    /**
+     * vrati NoitfyBudgets pro urcity Budget
+     *
+     * @param budgetId
+     * @return
+     */
     public List<NotifyBudget> getNotifyBudgetByBudgetId(int budgetId) {
         return em.createNamedQuery("NotifyBudget.getNotifyBudgetByBudgetId", NotifyBudget.class)
                 .setParameter("budgetId", budgetId)
                 .getResultList();
     }
 
+    /**
+     * vrati vse NotifyBudgets z BankAccount
+     *
+     * @param bankAccId
+     * @return
+     */
     public List<NotifyBudget> getNotifyBudgetsFromBankAccount(int bankAccId) {
         return em.createNamedQuery("NotifyBudget.getNotifyBudgetsFromBankAccount", NotifyBudget.class)
                 .setParameter("bankAccId", bankAccId)
                 .getResultList();
     }
 
+    /**
+     * Odstrani vse NotifyBudgets, ktere maji urcity budget
+     *
+     * @param budgetId
+     * @throws Exception
+     */
     public void deleteNotifyBudgetByBudgetId(int budgetId) throws Exception {
         try {
             em.createNamedQuery("NotifyBudget.deleteNotifyBudgetByBudgetId")
@@ -86,6 +99,12 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
         }
     }
 
+    /**
+     * Delete NotifyBudget by Id
+     *
+     * @param notifyId
+     * @throws Exception
+     */
     public void deleteNotifyBudgetById(int notifyId) throws Exception {
         try {
             em.createNamedQuery("NotifyBudget.deleteNotifyBudgetById")

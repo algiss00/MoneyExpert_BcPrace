@@ -28,6 +28,10 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.getByName(getByIdBankAccount(accId).getId(), name);
     }
 
+    public Category getCategoryOfBudget(int budgetId) throws Exception {
+        return getByIdBudget(budgetId).getCategory().stream().findFirst().orElse(null);
+    }
+
     public Budget persist(Budget budget, int accId, int categoryId) throws
             Exception {
         Objects.requireNonNull(budget);

@@ -87,7 +87,7 @@ public class BankAccountService extends AbstractServiceHelper {
 
     /**
      * Pridani noveho ownera ma pravo pouze Creator of BankAcc
-     *
+     * nelze pridat uz existujiciho uzivatele
      * @param username
      * @param accId    - bankAcc Id
      * @throws Exception

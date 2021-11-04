@@ -28,19 +28,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * get All Debts with Notify
-     *
-     * @param debtId
-     * @return
-     */
-    public List<NotifyDebt> getDebtsNotifyDebts(int debtId) {
-        return em.createNamedQuery("Notify.getDebtsNotifyDebts", NotifyDebt.class)
-                .setParameter("debtId", debtId)
-                .getResultList();
-    }
-
-    /**
-     * get Debt with Notify by Type
+     * vrati NotifyDebt pro urcity Debt podle Typu notifikace
      *
      * @param debtId
      * @return
@@ -54,12 +42,25 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
                 .stream().findFirst().orElse(null);
     }
 
+    /**
+     * vrati vse NotifyDebts z BankAccount
+     *
+     * @param bankAccId
+     * @return
+     */
     public List<NotifyDebt> getNotifyDebtsFromBankAccount(int bankAccId) {
         return em.createNamedQuery("Notify.getNotifyDebtsFromBankAccount", NotifyDebt.class)
                 .setParameter("bankAccId", bankAccId)
                 .getResultList();
     }
 
+    /**
+     * pokud NotifyDebt pro tento debt s urcitym typem jiz existuje
+     *
+     * @param debtId
+     * @param type
+     * @return
+     */
     public NotifyDebt alreadyExistsDebt(int debtId, TypeNotification type) {
         return em.createNamedQuery("Notify.alreadyExists", NotifyDebt.class)
                 .setParameter("debtId", debtId)
@@ -69,12 +70,24 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
                 .stream().findFirst().orElse(null);
     }
 
+    /**
+     * vrati NotifyDebts pro urcity Debt
+     *
+     * @param debtId
+     * @return
+     */
     public List<NotifyDebt> getNotifyDebtByDebtId(int debtId) {
         return em.createNamedQuery("Notify.getNotifyDebtByDebtId", NotifyDebt.class)
                 .setParameter("debtId", debtId)
                 .getResultList();
     }
 
+    /**
+     * Odstranit vse Notifydebts, ktere maji urcity debt
+     *
+     * @param debtId
+     * @throws Exception
+     */
     public void deleteNotifyDebtByDebtId(int debtId) throws Exception {
         try {
             em.createNamedQuery("Notify.deleteNotifyDebtByDebtId")
@@ -86,6 +99,13 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
         }
     }
 
+    /**
+     * Odstranit Notifydebt, ktere maji urcity debt podle typu
+     *
+     * @param debtId
+     * @param typeNotification
+     * @throws Exception
+     */
     public void deleteNotifyDebtByDebtIdAndType(int debtId, TypeNotification typeNotification) throws Exception {
         try {
             em.createNamedQuery("Notify.deleteNotifyDebtByDebtIdAndType")

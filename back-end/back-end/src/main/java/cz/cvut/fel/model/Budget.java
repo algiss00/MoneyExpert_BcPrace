@@ -12,8 +12,6 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Budget.getAll", query = "SELECT b FROM Budget b"),
-//        @NamedQuery(name = "Budget.getBudgetByCategory", query = "SELECT b FROM Budget b where b.category.id = :categoryId" +
-//                " and b.bankAccount.id = :bankAccId"),
         @NamedQuery(name = "Budget.getByBankAccId", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
                 " and b.id = :buId"),
         @NamedQuery(name = "Budget.getByName", query = "SELECT b FROM Budget b where b.bankAccount.id = :bankAccId" +
@@ -73,8 +71,8 @@ public class Budget extends AbstractEntity {
         return amount;
     }
 
-    public void setAmount(double castka) {
-        this.amount = castka;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public String getName() {
@@ -89,8 +87,8 @@ public class Budget extends AbstractEntity {
         return percentNotify;
     }
 
-    public void setPercentNotify(int percentNotif) {
-        this.percentNotify = percentNotif;
+    public void setPercentNotify(int percentNotify) {
+        this.percentNotify = percentNotify;
     }
 
     public BankAccount getBankAccount() {

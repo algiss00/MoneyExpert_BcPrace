@@ -28,7 +28,16 @@ public class TransactionDao extends AbstractDao<Transaction> {
         return em.createNamedQuery("Transaction.getAll", Transaction.class).getResultList();
     }
 
-    public List<Transaction> getAllTransFromCategory(int catId, int accountId, int month, int year) {
+    /**
+     * Vrati vse transacke z BankAccount, ktere patri k urcite Category a jsou v urcitem obdobi
+     *
+     * @param categoryId - categoryId
+     * @param accountId
+     * @param month
+     * @param year
+     * @return
+     */
+    public List<Transaction> getAllTransFromCategory(int categoryId, int accountId, int month, int year) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
                             "where MONTH(t.date) = :month and YEAR(t.date) = :year " +
@@ -37,7 +46,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("month", month)
                     .setParameter("year", year)
                     .setParameter("bankAccId", accountId)
-                    .setParameter("categoryId", catId)
+                    .setParameter("categoryId", categoryId)
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -45,6 +54,13 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
+    /**
+     * get All transactions from BankAccount
+     *
+     * @param accountId
+     * @param transId
+     * @return
+     */
     public Transaction getFromBankAcc(int accountId, int transId) {
         return em.createNamedQuery("Transaction.getFromBankAccount", Transaction.class)
                 .setParameter("bankAccId", accountId)
@@ -54,34 +70,63 @@ public class TransactionDao extends AbstractDao<Transaction> {
                 .stream().findFirst().orElse(null);
     }
 
-    public List<Transaction> getFromBankAccByTransactionType(int accountId, TypeTransaction typeTransaction) {
+    /**
+     * get All transactions from BankAccount by TypeTransaction
+     *
+     * @param bankAccountId
+     * @param typeTransaction
+     * @return
+     */
+    public List<Transaction> getFromBankAccByTransactionType(int bankAccountId, TypeTransaction typeTransaction) {
         return em.createNamedQuery("Transaction.getByTransactionType", Transaction.class)
                 .setParameter("type", typeTransaction)
-                .setParameter("bankAccId", accountId)
+                .setParameter("bankAccId", bankAccountId)
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransactionsByCategory(int accId, int categoryId) {
+    /**
+     * Get all transactions from BankAccount, which belongs to defined Category
+     *
+     * @param bankAccountId
+     * @param categoryId
+     * @return
+     */
+    public List<Transaction> getAllTransactionsByCategory(int bankAccountId, int categoryId) {
         return em.createNamedQuery("Transaction.getAllTransactionsByCategory", Transaction.class)
-                .setParameter("bankAccId", accId)
+                .setParameter("bankAccId", bankAccountId)
                 .setParameter("categoryId", categoryId)
                 .getResultList();
     }
 
-    public List<Transaction> getAllTransactionsByCategoryAndType(int accId, int categoryId, TypeTransaction typeTransaction) {
+    /**
+     * Get all transactions from BankAccount, which belongs to Category and have TypeTransaction
+     *
+     * @param bankAccountId
+     * @param categoryId
+     * @param typeTransaction
+     * @return
+     */
+    public List<Transaction> getAllTransactionsByCategoryAndType(int bankAccountId, int categoryId, TypeTransaction typeTransaction) {
         return em.createNamedQuery("Transaction.getAllTransactionsByCategoryAndType", Transaction.class)
-                .setParameter("bankAccId", accId)
+                .setParameter("bankAccId", bankAccountId)
                 .setParameter("categoryId", categoryId)
                 .setParameter("type", typeTransaction)
                 .getResultList();
     }
 
+    /**
+     * get all transactions from BankAccount sorted by Date - desc
+     *
+     * @param bankAccId
+     * @return
+     */
     public List<Transaction> getAllTransactionsFromBankAccSortedByDate(int bankAccId) {
         return em.createNamedQuery("Transaction.getAllFromBankAccount", Transaction.class)
                 .setParameter("bankAccId", bankAccId)
                 .getResultList();
     }
 
+    // Tahle funkce zatim vynehana, ale mozna bude potreba v budoucnu
 //    public List<Transaction> getAllSortedFromBankAcc(SortAttribute by, SortOrder order, BankAccount bankAccId) throws Exception {
 //        try {
 //            CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -102,6 +147,14 @@ public class TransactionDao extends AbstractDao<Transaction> {
 //        }
 //    }
 
+    /**
+     * get All Transactions from BankAccount sorted by month and year
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     */
     public List<Transaction> getByMonthSortedAndYear(int month, int year, int bankAccId) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
@@ -117,6 +170,15 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
+    /**
+     * vrati vse transakce z BankAccount podle TypeTransaction v urcitem obdobi
+     *
+     * @param bankAccId
+     * @param type
+     * @param month
+     * @param year
+     * @return
+     */
     public List<Transaction> getTransactionsByType(int bankAccId, TypeTransaction type, int month, int year) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
@@ -134,6 +196,16 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
+    /**
+     * vrati vse transakce z BankAccount podle category a typu zaroven v urcitem obdobi
+     *
+     * @param categoryId
+     * @param bankAccId
+     * @param type
+     * @param month
+     * @param year
+     * @return
+     */
     public List<Transaction> getTransactionsByTypeAndCategory(int categoryId, int bankAccId, TypeTransaction type, int month, int year) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
@@ -153,7 +225,16 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public double getExpenseSum(int month, int year, int bankAccId) throws Exception {
+    /**
+     * Vrati soucet vsech vydaju v urcitem obdobi z bankAccount
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
+    public double getExpenseSum(int month, int year, int bankAccId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
                     "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE'")
@@ -167,7 +248,16 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public double getIncomeSum(int month, int year, int bankAccId) throws Exception {
+    /**
+     * Vrati soucet vsech prijmu v urcitem obdobi z bankAccount
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
+    public double getIncomeSum(int month, int year, int bankAccId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
                     "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME'")
@@ -181,7 +271,17 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public double getExpenseSumWithCategory(int month, int year, int bankAccId, int catId) throws Exception {
+    /**
+     * Vrati soucet vsech vydaju, ktere patri do Category, v urcitem obdobi z bankAccount
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @param categoryId
+     * @return
+     * @throws Exception
+     */
+    public double getExpenseSumWithCategory(int month, int year, int bankAccId, int categoryId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
                     "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE' " +
@@ -189,7 +289,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("month", month)
                     .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
-                    .setParameter("categoryId", catId)
+                    .setParameter("categoryId", categoryId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -197,7 +297,17 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
-    public double getIncomeSumWithCategory(int month, int year, int bankAccId, int catId) throws Exception {
+    /**
+     * Vrati soucet vsech prijmu, ktere patri do Category, v urcitem obdobi z bankAccount
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @param categoryId
+     * @return
+     * @throws Exception
+     */
+    public double getIncomeSumWithCategory(int month, int year, int bankAccId, int categoryId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
                     "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME' " +
@@ -205,7 +315,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("month", month)
                     .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
-                    .setParameter("categoryId", catId)
+                    .setParameter("categoryId", categoryId)
                     .getSingleResult();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -213,6 +323,14 @@ public class TransactionDao extends AbstractDao<Transaction> {
         }
     }
 
+    /**
+     * get Transactions which date is between some date
+     *
+     * @param from          - date from
+     * @param to            - date to
+     * @param bankAccountId
+     * @return
+     */
     public List<Transaction> getBetweenDate(String from, String to, int bankAccountId) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t where t.bank_account_id = :bankAccId " +

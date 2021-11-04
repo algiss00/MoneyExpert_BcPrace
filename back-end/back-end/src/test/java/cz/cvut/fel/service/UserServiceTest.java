@@ -2,6 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import generator.Generator;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -88,5 +91,41 @@ public class UserServiceTest {
         when(userDao.find(anyInt())).thenReturn(user);
         User returned = userService.getByIdUser(user.getId());
         assertEquals(user, returned);
+    }
+
+    /**
+     * get all users bankAccounts, including available and created bankAccounts
+     *
+     * @throws Exception
+     */
+    @Test
+    public void getAllBankAccounts_mockTest_success() throws Exception {
+        User user = Generator.generateDefaultUser();
+        user.setId(1);
+
+        User user2 = Generator.generateDefaultUser();
+        user2.setId(3);
+
+
+        BankAccount createdBank = Generator.generateDefaultBankAccount();
+        createdBank.setId(2);
+        createdBank.setCreator(user);
+        user.getCreatedBankAccounts().add(createdBank);
+
+        BankAccount availableBank = Generator.generateDefaultBankAccount();
+        availableBank.setId(3);
+        availableBank.setCreator(user2);
+
+        availableBank.getOwners().add(user);
+        user.getAvailableBankAccounts().add(availableBank);
+
+
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            utilities.when(SecurityUtils::getCurrentUser).thenReturn(user);
+            when(userDao.find(anyInt())).thenReturn(user);
+
+            List<BankAccount> returned = userService.getAllUsersBankAccounts();
+            assertEquals(2, returned.size());
+        }
     }
 }

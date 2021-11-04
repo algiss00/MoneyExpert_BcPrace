@@ -22,6 +22,13 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         return em.find(BankAccount.class, id);
     }
 
+    /**
+     * get available BankAccount by name
+     *
+     * @param name - name of BankAcc
+     * @param uid  - userId
+     * @return
+     */
     public List<BankAccount> getByNameAvailableBankAcc(String name, int uid) {
         try {
             return em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency, acc.user_id " +
@@ -38,6 +45,14 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         }
     }
 
+    /**
+     * get available BankAccount by Id
+     *
+     * @param uid       - user Id
+     * @param bankAccId - bankAcc id
+     * @return
+     * @throws Exception
+     */
     public BankAccount getUsersAvailableBankAccountById(int uid, int bankAccId) throws Exception {
         try {
             return (BankAccount) em.createNativeQuery("SELECT acc.name, acc.id, acc.balance, acc.currency, acc.user_id" +
@@ -56,6 +71,13 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         }
     }
 
+    /**
+     * Delete relation between user and BankAccount - delete available Bank Account
+     *
+     * @param uid
+     * @param bankAccId
+     * @throws Exception
+     */
     public void deleteRelationBankAcc(int uid, int bankAccId) throws Exception {
         try {
             em.createNativeQuery("DELETE FROM relation_bank_account_user WHERE user_id = :uid and bank_account_id = :bankAccId")
@@ -73,6 +95,13 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
         return em.createNamedQuery("BankAccount.getAll", BankAccount.class).getResultList();
     }
 
+    /**
+     * get created Bank Accounts by name
+     *
+     * @param name - name of BankAcc
+     * @param uid  - userId
+     * @return
+     */
     public List<BankAccount> getByNameCreated(String name, int uid) {
         return em.createNamedQuery("BankAccount.getByNameCreated", BankAccount.class)
                 .setParameter("name", name)

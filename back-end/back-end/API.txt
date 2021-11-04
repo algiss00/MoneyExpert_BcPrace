@@ -14,6 +14,8 @@ USER
 
 /user/available-accounts - get users available bankAccounts, not created BankAccounts
 
+/user/all-accounts - get users All bankAccounts
+
 /user/created-accounts - get users created bankAccounts, not available BankAccounts
 
 /user/categories - get all users Categories (but exists in Category Controller get users created categories, its mean that no default Categories, only User created Categories)
@@ -77,6 +79,8 @@ TRANSACTION
 BUDGET
 
 /budget/{id} - get budget by ID
+
+/budget-category/{budgetId} - get Category of Budget
 
 /budget/name/{accId}?name={bankAccountName}. - get budget by name from bankAccount where name = bankAccount.name
 

@@ -10,6 +10,9 @@ import cz.cvut.fel.service.exceptions.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Trida slouzi pro sdileni funkci mezi Service tridami
+ */
 abstract class AbstractServiceHelper {
     protected UserDao userDao;
     protected BankAccountDao bankAccountDao;
@@ -35,6 +38,12 @@ abstract class AbstractServiceHelper {
         this.notifyDebtDao = notifyDebtDao;
     }
 
+    /**
+     * Vrati Autentizovaneho Usera
+     *
+     * @return
+     * @throws NotAuthenticatedClient
+     */
     public User getAuthenticatedUser() throws NotAuthenticatedClient {
         try {
             User user = userDao.find(SecurityUtils.getCurrentUser().getId());
@@ -97,16 +106,32 @@ abstract class AbstractServiceHelper {
         return budget;
     }
 
+    /**
+     * pokud user ma pravo pristupovat do Budget
+     * to zjistim pokud user je vlastnikem BankAccount, ke kteremu parti Budget
+     *
+     * @param budget
+     * @return
+     * @throws Exception
+     */
     public boolean isOwnerOfBudget(Budget budget) throws Exception {
         BankAccount budgetsBankAccount = budget.getBankAccount();
 
-        return isUserOwnerOfBankAccount(budgetsBankAccount);
+        return isUserOwnerOrCreatorOfBankAccount(budgetsBankAccount);
     }
 
+    /**
+     * pokud user ma pravo pristupovat do Debt
+     * to zjistim pokud user je vlastnikem BankAccount, ke kteremu parti Debt
+     *
+     * @param debt
+     * @return
+     * @throws Exception
+     */
     public boolean isOwnerOfDebt(Debt debt) throws Exception {
         BankAccount debtBankAccount = debt.getBankAccount();
 
-        return isUserOwnerOfBankAccount(debtBankAccount);
+        return isUserOwnerOrCreatorOfBankAccount(debtBankAccount);
     }
 
     public Transaction getByIdTransaction(int id) throws Exception {
@@ -114,12 +139,19 @@ abstract class AbstractServiceHelper {
         if (t == null) {
             throw new TransactionNotFoundException(id);
         }
-        if (!isUserOwnerOfBankAccount(t.getBankAccount())) {
+        if (!isUserOwnerOrCreatorOfBankAccount(t.getBankAccount())) {
             throw new NotAuthenticatedClient();
         }
         return t;
     }
 
+    /**
+     * Pokud user je vlastni Category
+     *
+     * @param categoryId
+     * @return
+     * @throws Exception
+     */
     public boolean isCreatorOfCategory(int categoryId) throws Exception {
         User user = getAuthenticatedUser();
         return categoryDao.getUsersCategoryById(user.getId(), categoryId) != null;
@@ -130,13 +162,20 @@ abstract class AbstractServiceHelper {
         if (bankAccount == null) {
             throw new BankAccountNotFoundException(id);
         }
-        if (!isUserOwnerOfBankAccount(bankAccount)) {
+        if (!isUserOwnerOrCreatorOfBankAccount(bankAccount)) {
             throw new NotAuthenticatedClient();
         }
         return bankAccount;
     }
 
-    public boolean isUserOwnerOfBankAccount(BankAccount bankAccount) throws Exception {
+    /**
+     * pokud user je mezi Owners bankAccount nebo je creator
+     *
+     * @param bankAccount
+     * @return
+     * @throws Exception
+     */
+    public boolean isUserOwnerOrCreatorOfBankAccount(BankAccount bankAccount) throws Exception {
         User user = getAuthenticatedUser();
         if (bankAccount.getCreator() == user) {
             return true;
@@ -144,96 +183,26 @@ abstract class AbstractServiceHelper {
         return bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 
+    /**
+     * Pokud user je pouze mezi Owners v BankAccount
+     *
+     * @param user
+     * @param bankAccount
+     * @return
+     * @throws Exception
+     */
     public boolean isUserOwnerOfBankAccount(User user, BankAccount bankAccount) throws Exception {
         return bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId()) != null;
     }
 
-    public Transaction updateCategoryTransaction(int tid, int catId) throws Exception {
-        Transaction transaction = getByIdTransaction(tid);
-        Category oldCategory = transaction.getCategory();
-        Category category = getByIdCategory(catId);
-        if (transaction.getCategory() == category) {
-            return null;
-        }
-        transaction.setCategory(category);
-        category.getTransactions().add(transaction);
-        categoryDao.update(category);
-        Transaction updatedTransaction = transactionDao.update(transaction);
-        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
-            budgetLogicTransactionUpdateCategory(oldCategory, transaction);
-        }
-        return updatedTransaction;
-    }
-
-    private void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
-        BankAccount bankAccount = transaction.getBankAccount();
-        double transAmount = transaction.getAmount();
-        Budget budgetForTransaction = budgetDao.getByCategory(oldCategory.getId(), bankAccount.getId());
-        if (budgetForTransaction == null) {
-            return;
-        }
-
-        double sumAmount = budgetForTransaction.getSumAmount();
-        budgetForTransaction.setSumAmount(sumAmount - transAmount);
-        budgetDao.update(budgetForTransaction);
-
-        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
-
-        checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
-
-        budgetLogic(bankAccount, transaction);
-    }
-
     /**
-     * kontroluju pokud se zmenil stav budgetu, pokud se zmenil tak odstranim notifyBudget
+     * Create NotifyBudget s TypeNotification
      *
-     * @param actualBudget
-     * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
+     * @param budgetForTransaction
+     * @param typeNotification
      * @throws Exception
      */
-    public void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
-        if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
-            }
-        }
-        if (percentOfSumAmount < actualBudget.getPercentNotify()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
-            }
-        }
-    }
-
-    public void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
-        Category transCategory = transaction.getCategory();
-        double transAmount = transaction.getAmount();
-
-        Budget budgetForTransaction = budgetDao.getByCategory(transCategory.getId(), bankAccount.getId());
-        if (budgetForTransaction == null) {
-            return;
-        }
-
-        double sumAmount = budgetForTransaction.getSumAmount();
-
-        budgetForTransaction.setSumAmount(sumAmount + transAmount);
-        budgetDao.update(budgetForTransaction);
-
-        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
-        if (budgetForTransaction.getSumAmount() >= budgetForTransaction.getAmount()) {
-            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_AMOUNT);
-            log.info("BUDGET added to NotifyBudget with AmountType" + budgetForTransaction.getName());
-        }
-
-        if (percentOfSumAmount >= budgetForTransaction.getPercentNotify()) {
-            createNotifyBudget(budgetForTransaction, TypeNotification.BUDGET_PERCENT);
-            log.info("BUDGET added to NotifyBudget with PercentType " + budgetForTransaction.getName());
-        }
-    }
-
-
-    public void createNotifyBudget(Budget budgetForTransaction, TypeNotification typeNotification) throws Exception {
+    public void createNotifyBudget(Budget budgetForTransaction, TypeNotification typeNotification) {
         if (notifyBudgetDao.alreadyExistsBudget(budgetForTransaction.getId(), typeNotification)) {
             return;
         }
@@ -243,9 +212,16 @@ abstract class AbstractServiceHelper {
         notifyBudgetDao.persist(notifyBudgetEntity);
     }
 
-    public void removeTransFromAccount(int transId, int accId) throws Exception {
-        BankAccount bankAccount = getByIdBankAccount(accId);
-        Transaction transaction = getByIdTransaction(transId);
+    /**
+     * Odstraneni Transaction z BankAccount - odstrani se z DB taky
+     *
+     * @param transactionId
+     * @param bankAccId
+     * @throws Exception
+     */
+    public void removeTransactionFromBankAccount(int transactionId, int bankAccId) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
+        Transaction transaction = getByIdTransaction(transactionId);
         if (!isTransactionInBankAcc(bankAccount.getId(), transaction.getId())) {
             throw new NotAuthenticatedClient();
         }
@@ -262,15 +238,28 @@ abstract class AbstractServiceHelper {
         transactionDao.remove(transaction);
     }
 
+    /**
+     * pokud Transaction in BankAccount
+     *
+     * @param bankAccountId
+     * @param transactionId
+     * @return
+     */
     public boolean isTransactionInBankAcc(int bankAccountId, int transactionId) {
         return transactionDao.getFromBankAcc(bankAccountId, transactionId) != null;
     }
 
-    public void removeBudget(int id) throws Exception {
-        Budget bu = getByIdBudget(id);
-        removeNotifyBudgetByBudgetId(bu.getId());
-        budgetDao.deleteAllBudgetRelationWithCategoryById(bu.getId());
-        budgetDao.deleteBudgetById(bu.getId());
+    /**
+     * Odstraneni Budget z DB
+     *
+     * @param budgetId
+     * @throws Exception
+     */
+    public void removeBudget(int budgetId) throws Exception {
+        Budget budget = getByIdBudget(budgetId);
+        removeNotifyBudgetByBudgetId(budget.getId());
+        budgetDao.deleteAllBudgetRelationWithCategoryById(budget.getId());
+        budgetDao.remove(budget);
     }
 
     /**
@@ -287,9 +276,15 @@ abstract class AbstractServiceHelper {
         notifyBudgetDao.deleteNotifyBudgetByBudgetId(budgetId);
     }
 
-    public void removeDebt(int id) throws Exception {
-        Debt debt = getByIdDebt(id);
-        removeNotifyDebtByDebtId(id);
+    /**
+     * Odstranit Debt z DB
+     *
+     * @param debtId
+     * @throws Exception
+     */
+    public void removeDebt(int debtId) throws Exception {
+        Debt debt = getByIdDebt(debtId);
+        removeNotifyDebtByDebtId(debtId);
         debtDao.remove(debt);
     }
 
@@ -310,12 +305,12 @@ abstract class AbstractServiceHelper {
     /**
      * Only Creator of BankAccount can delete the BankAccount
      *
-     * @param id
+     * @param bankAccId
      * @throws Exception
      */
-    public void removeBankAcc(int id) throws Exception {
+    public void removeBankAcc(int bankAccId) throws Exception {
         User user = getAuthenticatedUser();
-        BankAccount bankAccount = getByIdBankAccount(id);
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
 
         // pokud user neni creator throw Exception
         if (bankAccount.getCreator() != user) {
@@ -342,28 +337,27 @@ abstract class AbstractServiceHelper {
 
     /**
      * Pri smazani category nastavim defualt category u vsech jeji transakci na "No category"
-     * Je zakazno delete default categories - maji id od -1 do -12
+     * Take odstrani se vsechny Budget z DB, ktere meli odstranenou Category
+     * Je zakazno delete default categories - maji id od -1 do -14
      *
-     * @param id
+     * @param categoryId
      * @throws Exception
      */
-    public void removeCategory(int id) throws Exception {
-        if (id < 0) {
+    public void removeCategory(int categoryId) throws Exception {
+        if (categoryId < 0) {
             throw new Exception("Deleting a category is prohibited ");
         }
 
         Category noCategory = getByIdCategory(-12);
-        Category category = getByIdCategory(id);
-        category.getTransactions().forEach(transaction -> {
-            try {
-                // "No category" entity
-                transaction.setCategory(noCategory);
-                transactionDao.update(transaction);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        Category category = getByIdCategory(categoryId);
 
+        for (Transaction transaction : category.getTransactions()) {
+            // "No category" entity
+            transaction.setCategory(noCategory);
+            transactionDao.update(transaction);
+        }
+
+        // odstraneni Budgets z DB
         for (Budget budget : category.getBudget()) {
             removeBudget(budget.getId());
         }
@@ -372,7 +366,7 @@ abstract class AbstractServiceHelper {
         category.setBudget(null);
         category.setCreators(null);
         // delete relation
-        categoryDao.deleteUsersRelationCategoryById(getAuthenticatedUser().getId(), id);
+        categoryDao.deleteUsersRelationCategoryById(getAuthenticatedUser().getId(), categoryId);
         //delete entity from db
         categoryDao.remove(category);
     }

@@ -26,10 +26,21 @@ public class CategoryDao extends AbstractDao<Category> {
         return em.createNamedQuery("Category.getAll", Category.class).getResultList();
     }
 
+    /**
+     * Vrati default Categories
+     *
+     * @return
+     */
     public List<Category> getDefaultCategories() {
         return em.createNamedQuery("Category.getDefault", Category.class).getResultList();
     }
 
+    /**
+     * Get All users category include default and created categories
+     *
+     * @param uid
+     * @return
+     */
     public List<Category> getAllUsersCategory(int uid) {
         try {
             return em.createNativeQuery("SELECT id, name FROM category_table as cat inner JOIN relation_category_user as relation " +
@@ -44,6 +55,12 @@ public class CategoryDao extends AbstractDao<Category> {
         }
     }
 
+    /**
+     * vrati vse userem vytvorene categorie - pouziva se protoze jenom je ma prarvo editovat, do defult categoies nema pravo zasahovat
+     *
+     * @param uid
+     * @return
+     */
     public List<Category> getUsersCreatedCategory(int uid) {
         try {
             return em.createNativeQuery("SELECT cat.id, cat.name  FROM category_table as cat inner JOIN relation_category_user as relation " +
@@ -58,6 +75,14 @@ public class CategoryDao extends AbstractDao<Category> {
         }
     }
 
+    /**
+     * Vrati category userove category
+     *
+     * @param uid
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     public Category getUsersCategoryById(int uid, int catId) throws Exception {
         try {
             return (Category) em.createNativeQuery("SELECT cat.id, cat.name FROM category_table as cat inner JOIN relation_category_user as relation" +
@@ -75,6 +100,14 @@ public class CategoryDao extends AbstractDao<Category> {
         }
     }
 
+    /**
+     * get Users category By name
+     *
+     * @param uid
+     * @param catName
+     * @return
+     * @throws Exception
+     */
     public Category getUsersCategoryByName(int uid, String catName) throws Exception {
         try {
             return (Category) em.createNativeQuery("SELECT cat.id, cat.name FROM category_table as cat inner JOIN relation_category_user as relation " +
@@ -92,6 +125,13 @@ public class CategoryDao extends AbstractDao<Category> {
         }
     }
 
+    /**
+     * Odstrani realce mezi Category a User v tabulce relation_category_user
+     *
+     * @param uid
+     * @param catId
+     * @throws Exception
+     */
     public void deleteUsersRelationCategoryById(int uid, int catId) throws Exception {
         try {
             em.createNativeQuery("DELETE FROM relation_category_user " +

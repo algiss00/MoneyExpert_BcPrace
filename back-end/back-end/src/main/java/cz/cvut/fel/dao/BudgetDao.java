@@ -26,6 +26,15 @@ public class BudgetDao extends AbstractDao<Budget> {
         return em.createNamedQuery("Budget.getAll", Budget.class).getResultList();
     }
 
+    /**
+     * Vrati budget podle category v urcitem BankAccount
+     * v jednom bankAccount je pouze jeden budget na urcitou Category, tj. nejsou dva budgety na stejnou Category v jednom BankAcc
+     *
+     * @param categoryId
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
     public Budget getByCategory(int categoryId, int bankAccId) throws Exception {
         try {
             return (Budget) em.createNativeQuery("SELECT bud.id, bud.amount, bud.name, bud.percent_notify, bud.sum_amount,  bud.bank_account_id " +
@@ -44,15 +53,30 @@ public class BudgetDao extends AbstractDao<Budget> {
         }
     }
 
-    public Budget getByBankAcc(int buId, int bankAccId) throws Exception {
+    /**
+     * get Budget z urciteho BankAccount
+     *
+     * @param budgetId  - budget Id
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
+    public Budget getByBankAcc(int budgetId, int bankAccId) {
         return em.createNamedQuery("Budget.getByBankAccId", Budget.class)
-                .setParameter("buId", buId)
+                .setParameter("buId", budgetId)
                 .setParameter("bankAccId", bankAccId)
                 .setMaxResults(1)
                 .getResultList()
                 .stream().findFirst().orElse(null);
     }
 
+    /**
+     * get Budget by name from BankAccount
+     *
+     * @param bankAccId
+     * @param name
+     * @return
+     */
     public List<Budget> getByName(int bankAccId, String name) {
         return em.createNamedQuery("Budget.getByName", Budget.class)
                 .setParameter("bankAccId", bankAccId)
@@ -60,35 +84,16 @@ public class BudgetDao extends AbstractDao<Budget> {
                 .getResultList();
     }
 
-//    public void deleteBudgetRelationCategoryById(int budgetId, int catId) throws Exception {
-//        try {
-//            em.createNativeQuery("DELETE FROM relation_budget_category " +
-//                    "WHERE category_id = :catId and budget_id = :budgetId")
-//                    .setParameter("budgetId", budgetId)
-//                    .setParameter("catId", catId)
-//                    .executeUpdate();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            throw new Exception("Exception BudgetDao");
-//        }
-//    }
-
+    /**
+     * Odstrani vsechny realce mezi budget a category v tabulce relation_budget_category
+     *
+     * @param budgetId
+     * @throws Exception
+     */
     public void deleteAllBudgetRelationWithCategoryById(int budgetId) throws Exception {
         try {
             em.createNativeQuery("DELETE FROM relation_budget_category " +
                     "WHERE budget_id = :budgetId")
-                    .setParameter("budgetId", budgetId)
-                    .executeUpdate();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw new Exception("Exception BudgetDao");
-        }
-    }
-
-    public void deleteBudgetById(int budgetId) throws Exception {
-        try {
-            em.createNativeQuery("DELETE FROM budget_table " +
-                    "WHERE id = :budgetId")
                     .setParameter("budgetId", budgetId)
                     .executeUpdate();
         } catch (Exception ex) {

@@ -39,7 +39,7 @@ public class NotifyDebtDaoTest {
 
     @Test
     public void getDebtsNotifyDebts() {
-        List<NotifyDebt> notifyDebts = notifyDebtDao.getDebtsNotifyDebts(22);
+        List<NotifyDebt> notifyDebts = notifyDebtDao.getNotifyDebtByDebtId(22);
         assertFalse(notifyDebts.isEmpty());
         assertEquals(2, notifyDebts.size());
 

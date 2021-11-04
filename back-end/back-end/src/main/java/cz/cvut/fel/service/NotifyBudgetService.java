@@ -28,7 +28,7 @@ public class NotifyBudgetService extends AbstractServiceHelper {
 
     public List<NotifyBudget> getBudgetsNotifyBudgets(int budgetId) throws Exception {
         Budget budget = getByIdBudget(budgetId);
-        return notifyBudgetDao.getBudgetsNotifyBudgets(budget.getId());
+        return notifyBudgetDao.getNotifyBudgetByBudgetId(budget.getId());
     }
 
     public List<NotifyBudget> getNotifyBudgetsFromBankAccount(int bankAccId) throws Exception {

@@ -51,6 +51,12 @@ public class UserController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/all-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getAllAccounts() throws Exception {
+        List<BankAccount> accounts = userService.getAllUsersBankAccounts();
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/created-accounts", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getCreatedBankAccounts() throws NotAuthenticatedClient {
         List<BankAccount> accounts = userService.getCreatedBankAccounts();
