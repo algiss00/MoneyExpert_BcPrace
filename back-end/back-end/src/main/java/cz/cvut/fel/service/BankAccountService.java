@@ -88,6 +88,7 @@ public class BankAccountService extends AbstractServiceHelper {
     /**
      * Pridani noveho ownera ma pravo pouze Creator of BankAcc
      * nelze pridat uz existujiciho uzivatele
+     *
      * @param username
      * @param accId    - bankAcc Id
      * @throws Exception
@@ -114,7 +115,7 @@ public class BankAccountService extends AbstractServiceHelper {
 
     private boolean validate(BankAccount bankAccount) {
         if (bankAccount.getName().trim().isEmpty() || bankAccount.getCurrency() == null
-                || bankAccount.getBalance() == null) {
+                || bankAccount.getBalance() == null || bankAccount.getBalance() < 0) {
             return false;
         }
         return true;
@@ -176,11 +177,11 @@ public class BankAccountService extends AbstractServiceHelper {
         removeBudget(budget.getId());
     }
 
-    private boolean isBudgetInBankAcc(Budget budget, BankAccount bankAccount) throws Exception {
+    private boolean isBudgetInBankAcc(Budget budget, BankAccount bankAccount) {
         return budgetDao.getByBankAcc(budget.getId(), bankAccount.getId()) != null;
     }
 
-    private boolean isDebtInBankAcc(Debt d, BankAccount bankAccount) throws Exception {
+    private boolean isDebtInBankAcc(Debt d, BankAccount bankAccount) {
         return debtDao.getByBankAccId(d.getId(), bankAccount.getId()) != null;
     }
 
