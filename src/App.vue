@@ -1,82 +1,40 @@
 <template>
+    <div id="app">
+        <v-app-bar
+                color="deep-purple accent-4"
+                dark
+        >
+          <v-btn icon>
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
 
-    <v-card
-            class="mx-auto "
-            max-width="344"
-            outlined
-    >
-        <v-list-item two-line>
-            <v-list-item-content>
-                <div>
-                    <v-text-field
-                            label="Username"
-                            v-model="username"
-                            hide-details="auto"
-                    />
-                    <v-text-field
-                            label="Password"
-                            v-model="password"
-                            type=password
-                            hide-details="auto"
-                    />
-                </div>
-            </v-list-item-content>
-        </v-list-item>
-
-        <v-card-actions>
-            <button @click="login"> Login</button>
-        </v-card-actions>
-    </v-card>
+            <v-spacer></v-spacer>
+            <v-toolbar-title>MoneyExpert</v-toolbar-title>
+            <v-spacer></v-spacer>
+        </v-app-bar>
+        <router-view/>
+    </div>
 </template>
 
-<script>
-    import axios from "axios"
+<style lang="scss">
+    #app {
+        font-family: Avenir, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-align: center;
+        color: #2c3e50;
+    }
 
-    export default {
-        name: 'App',
+    #nav {
+        padding: 30px;
 
-        components: {},
+        a {
+            font-weight: bold;
+            color: #2c3e50;
 
-        data: () => ({
-            username: "",
-            password: ""
-        }),
-
-        methods: {
-            async login() {
-                console.log(this.username, this.password)
-                axios.post("http://localhost:8080/login", null, {
-                    params: {
-                        username: this.username,
-                        password: this.password
-                    }
-                })
-                    .then(response => {
-                        console.log(response)
-                        response.status
-                    })
-                    .catch(err => console.warn(err));
+            &.router-link-exact-active {
+                color: #42b983;
             }
-            // async get() {
-            //     const res = await axios.get("http://localhost:8080/user/");
-            //     console.log(res)
-            // },
-            //
-            // async registr() {
-            //     const json = JSON.stringify({
-            //         email: "12qwqqwsda@123",
-            //         name: "qweqwe",
-            //         lastname: "s",
-            //         username: "qwe",
-            //         password: "qwe"
-            //     });
-            //     const res = await axios.post("http://localhost:8080/user", json, {
-            //         "headers": {
-            //             "content-type": "application/json",
-            //         }
-            //     });
-            //     console.log(res)
-            // }
         }
-    };
-</script>
+    }
+</style>
