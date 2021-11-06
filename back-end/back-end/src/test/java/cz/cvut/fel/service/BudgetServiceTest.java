@@ -82,7 +82,7 @@ public class BudgetServiceTest {
     }
 
     @Test
-    public void update_mockTest_success() throws Exception {
+    public void updateBudgetName_mockTest_success() throws Exception {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);
         Budget budget = Generator.generateDefaultBudget();
@@ -95,6 +95,47 @@ public class BudgetServiceTest {
             Budget updated = budgetService.updateBudgetName(budget.getId(), "TestName");
             verify(budgetDao, times(1)).update(budget);
             assertEquals("TestName", updated.getName());
+        }
+    }
+
+    @Test
+    public void updateBudgetAmount_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setId(1);
+        bankAccount.setCreator(user);
+        Budget budget = Generator.generateDefaultBudget();
+        budget.setId(2);
+        budget.setAmount(1000);
+        budget.setBankAccount(bankAccount);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(budgetDao.update(budget)).thenReturn(budget);
+            when(budgetDao.find(anyInt())).thenReturn(budget);
+
+            budgetService.updateBudgetAmount(budget.getId(), 100D);
+            verify(budgetDao, times(1)).update(budget);
+            assertEquals(100, budget.getAmount());
+        }
+    }
+
+    @Test
+    public void updateBudgetPercent_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setId(1);
+        bankAccount.setCreator(user);
+        Budget budget = Generator.generateDefaultBudget();
+        budget.setId(2);
+        budget.setAmount(1000);
+        budget.setPercentNotify(50);
+        budget.setBankAccount(bankAccount);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(budgetDao.update(budget)).thenReturn(budget);
+            when(budgetDao.find(anyInt())).thenReturn(budget);
+
+            budgetService.updateBudgetPercent(budget.getId(), 75);
+            verify(budgetDao, times(1)).update(budget);
+            assertEquals(75, budget.getPercentNotify());
         }
     }
 
@@ -116,7 +157,7 @@ public class BudgetServiceTest {
     }
 
     @Test
-    public void find_mockTest_throwNotAuthenticatedClient() throws Exception {
+    public void find_mockTest_throwNotAuthenticatedClient() {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         BankAccount bankAccount2 = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);

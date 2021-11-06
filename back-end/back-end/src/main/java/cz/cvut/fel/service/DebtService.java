@@ -1,11 +1,8 @@
 package cz.cvut.fel.service;
 
-import cz.cvut.fel.controller.BankAccountController;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.service.exceptions.DebtNotFoundException;
-import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -28,17 +25,21 @@ public class DebtService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
-    public List<Debt> getAll() {
-        return debtDao.findAll();
-    }
-
     public List<Debt> getByNameFromBankAcc(int bankAccountId, String name) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(bankAccountId);
         return debtDao.getByNameFromBankAcc(bankAccount.getId(), name);
     }
 
-    public Debt persist(Debt debt, int accId) throws Exception {
-        BankAccount bankAccount = getByIdBankAccount(accId);
+    /**
+     * Persist debt to BankAccount
+     *
+     * @param debt
+     * @param bankAccountId
+     * @return
+     * @throws Exception
+     */
+    public Debt persist(Debt debt, int bankAccountId) throws Exception {
+        BankAccount bankAccount = getByIdBankAccount(bankAccountId);
         Objects.requireNonNull(debt);
         if (!validate(debt))
             throw new NotValidDataException("debt");
@@ -46,6 +47,11 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.persist(debt);
     }
 
+    /**
+     * Scheduled funkce, ktera se vola kazde 6 hodin
+     * Kontroluje vsechny Debts u kterych nastal NotifyDate
+     * pak ty co najde prida do NotifyDebt entity
+     */
     //every 6 hours - "0 0 */6 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
     @Scheduled(cron = "30 * * * * * ")
@@ -73,8 +79,13 @@ public class DebtService extends AbstractServiceHelper {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
+    /**
+     * Scheduled funkce, ktera se vola kazde 6 hodin
+     * Kontroluje vsechny Debts u kterych nastal Deadline
+     * pak ty co najde prida do NotifyDebt entity
+     */
     @Scheduled(cron = "*/20 * * * * * ")
-    public void checkDeadlineDates() throws Exception {
+    public void checkDeadlineDates() {
         log.info("check DEBT DEADLINE date");
         List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
         if (deadlineDebts.isEmpty()) {
@@ -101,6 +112,14 @@ public class DebtService extends AbstractServiceHelper {
         return true;
     }
 
+    /**
+     * update Debt only name amount and description
+     *
+     * @param id
+     * @param updatedDebt
+     * @return
+     * @throws Exception
+     */
     public Debt updateDebtBasic(int id, Debt updatedDebt) throws Exception {
         Debt debt = getByIdDebt(id);
 
@@ -111,6 +130,15 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.update(debt);
     }
 
+    /**
+     * update only NotifyDate
+     * nelze editovat na vetsi nez deadline datum
+     *
+     * @param id
+     * @param notifyDate
+     * @return
+     * @throws Exception
+     */
     public Debt updateDebtNotifyDate(int id, String notifyDate) throws Exception {
         Debt debt = getByIdDebt(id);
         Date updatedNotifyDate = new SimpleDateFormat("yyyy-MM-dd").parse(notifyDate);
@@ -124,6 +152,15 @@ public class DebtService extends AbstractServiceHelper {
         return debtDao.update(debt);
     }
 
+    /**
+     * logic of updating NotifyDate
+     * check NotifyDebts
+     *
+     * @param debt
+     * @param updatedNotifyDate
+     * @param typeOfNotify
+     * @throws Exception
+     */
     private void updateDebtNotifyDateLogic(Debt debt, Date updatedNotifyDate, String typeOfNotify) throws Exception {
         if (typeOfNotify.equals("NotifyDate")) {
             if (debt.getNotifyDate().before(updatedNotifyDate)) {
@@ -143,6 +180,14 @@ public class DebtService extends AbstractServiceHelper {
 
     }
 
+    /**
+     * update only Deadline
+     *
+     * @param id
+     * @param deadline
+     * @return
+     * @throws Exception
+     */
     public Debt updateDebtDeadlineDate(int id, String deadline) throws Exception {
         Debt debt = getByIdDebt(id);
         Date updatedDeadline = new SimpleDateFormat("yyyy-MM-dd").parse(deadline);

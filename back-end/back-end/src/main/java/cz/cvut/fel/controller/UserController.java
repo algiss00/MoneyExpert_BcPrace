@@ -1,7 +1,6 @@
 package cz.cvut.fel.controller;
 
 import cz.cvut.fel.model.*;
-import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.UserService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;

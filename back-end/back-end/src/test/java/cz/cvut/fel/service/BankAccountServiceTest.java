@@ -90,6 +90,17 @@ public class BankAccountServiceTest {
     }
 
     @Test
+    public void persist_negativeBalance_mockTest_success() {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
+        bankAccount.setBalance((double) -100);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            assertThrows(NotValidDataException.class, () -> bankAccountService.persist(bankAccount));
+        }
+    }
+
+    @Test
     public void remove_MockTest_success() throws Exception {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);

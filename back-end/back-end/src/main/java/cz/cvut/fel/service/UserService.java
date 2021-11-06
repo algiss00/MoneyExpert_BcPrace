@@ -26,11 +26,11 @@ public class UserService extends AbstractServiceHelper {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User getByEmail(String email) throws Exception {
+    public User getByEmail(String email) {
         return userDao.getByEmail(email);
     }
 
-    public boolean alreadyExists(User user) throws Exception {
+    public boolean alreadyExists(User user) {
         return getByUsername(user.getUsername()) != null
                 || getByEmail(user.getEmail()) != null;
     }
@@ -49,6 +49,15 @@ public class UserService extends AbstractServiceHelper {
         return u.getCreatedBankAccounts();
     }
 
+    /**
+     * Get all users BankAccounts
+     * First get available BankAccounts
+     * Second get created BankAccounts
+     * After union this two lists
+     *
+     * @return
+     * @throws Exception
+     */
     public List<BankAccount> getAllUsersBankAccounts() throws Exception {
         List<BankAccount> availableBankAccounts = getAvailableBankAccounts();
         List<BankAccount> createdBankAcc = getCreatedBankAccounts();
@@ -61,6 +70,14 @@ public class UserService extends AbstractServiceHelper {
         return categoryDao.getAllUsersCategory(getAuthenticatedUser().getId());
     }
 
+    /**
+     * persist user
+     * password je zahashovan
+     *
+     * @param userObj
+     * @return
+     * @throws Exception
+     */
     public User persist(User userObj) throws Exception {
         Objects.requireNonNull(userObj);
         if (alreadyExists(userObj))
@@ -76,6 +93,13 @@ public class UserService extends AbstractServiceHelper {
         return userDao.persist(user);
     }
 
+    /**
+     * update only name and lastname
+     *
+     * @param user
+     * @return
+     * @throws Exception
+     */
     public User updateUserBasic(User user) throws Exception {
         User u = getAuthenticatedUser();
         u.setName(user.getName());
@@ -84,6 +108,13 @@ public class UserService extends AbstractServiceHelper {
 
     }
 
+    /**
+     * update only Username
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
     public User updateUsername(String username) throws Exception {
         User u = getAuthenticatedUser();
         if (getByUsername(username) != null) {
@@ -93,6 +124,13 @@ public class UserService extends AbstractServiceHelper {
         return userDao.update(u);
     }
 
+    /**
+     * update only Email
+     *
+     * @param email
+     * @return
+     * @throws Exception
+     */
     public User updateEmail(String email) throws Exception {
         User u = getAuthenticatedUser();
         if (getByEmail(email) != null) {
@@ -102,12 +140,20 @@ public class UserService extends AbstractServiceHelper {
         return userDao.update(u);
     }
 
+    /**
+     * update only Password
+     *
+     * @param oldPassword
+     * @param newPassword
+     * @throws Exception
+     */
     public void updatePassword(String oldPassword, String newPassword) throws Exception {
         User user = getAuthenticatedUser();
         if (oldPassword.equals(newPassword)) {
             throw new NotValidDataException();
         }
 
+        // kontrola pokud user vi aktualni password
         if (!passwordEncoder.matches(oldPassword, user.getPassword()))
             throw new BadCredentialsException("Bad Credentials.");
 
@@ -115,6 +161,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
+     * Delete User
      * first delete all relation with category then delete all user-created categories,
      * after delete all users bankAccounts
      *

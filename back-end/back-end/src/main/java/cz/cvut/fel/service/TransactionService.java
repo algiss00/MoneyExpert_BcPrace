@@ -26,10 +26,6 @@ public class TransactionService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
-    public List<Transaction> getAll() {
-        return transactionDao.findAll();
-    }
-
     public List<Transaction> getSortedByMonthAndYear(int month, int year, int bankAccId) throws Exception {
         return transactionDao.getByMonthSortedAndYear(month, year, getByIdBankAccount(bankAccId).getId());
     }
@@ -70,12 +66,21 @@ public class TransactionService extends AbstractServiceHelper {
         return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId).getId());
     }
 
-    public Transaction persist(Transaction transaction, int accId, int categoryId) throws Exception {
+    /**
+     * Persist transaction to BankAccount with Category
+     *
+     * @param transaction
+     * @param bankAccId
+     * @param categoryId
+     * @return
+     * @throws Exception
+     */
+    public Transaction persist(Transaction transaction, int bankAccId, int categoryId) throws Exception {
         Objects.requireNonNull(transaction);
         if (!validate(transaction))
             throw new NotValidDataException("transaction");
 
-        BankAccount b = getByIdBankAccount(accId);
+        BankAccount b = getByIdBankAccount(bankAccId);
         Category category = getByIdCategory(categoryId);
         transaction.setBankAccount(b);
         transaction.setCategory(category);
@@ -83,6 +88,7 @@ public class TransactionService extends AbstractServiceHelper {
         Transaction persistedTransaction = transactionDao.persist(transaction);
 
         b.getTransactions().add(transaction);
+        // bankAccount logic
         bankAccountLogic(b, transaction);
         bankAccountDao.update(b);
         return persistedTransaction;
@@ -95,6 +101,13 @@ public class TransactionService extends AbstractServiceHelper {
         return true;
     }
 
+    /**
+     * Logika pri pridani transakce do BankAccount
+     *
+     * @param bankAccount
+     * @param transaction
+     * @throws Exception
+     */
     private void bankAccountLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             bankAccount.setBalance(bankAccount.getBalance() - transaction.getAmount());
@@ -105,7 +118,14 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
+    /**
+     * Logika pro Budget, kdyz se pridat transakce typu Expense s Category ktera patri do Budget
+     *
+     * @param bankAccount
+     * @param transaction
+     * @throws Exception
+     */
+    private void budgetLogic(BankAccount bankAccount, Transaction transaction) throws Exception {
         Category transCategory = transaction.getCategory();
         double transAmount = transaction.getAmount();
 
@@ -131,15 +151,25 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    public Transaction transferTransaction(int fromAccId, int toAccId, int transactionId) throws Exception {
+    /**
+     * Logic for Transfer transaction to another BankAccount
+     *
+     * @param fromBankAccId - from bankAccount
+     * @param toBankAccId   - to BankAccount
+     * @param transactionId - Transaction id
+     * @return
+     * @throws Exception
+     */
+    public Transaction transferTransaction(int fromBankAccId, int toBankAccId, int transactionId) throws Exception {
         Transaction transaction = getByIdTransaction(transactionId);
         Transaction transferTransaction = new Transaction();
 
         double actualCurrencyAmount = transaction.getAmount();
-        BankAccount toBankAcc = getByIdBankAccount(toAccId);
-        BankAccount fromBankAcc = getByIdBankAccount(fromAccId);
+        BankAccount toBankAcc = getByIdBankAccount(toBankAccId);
+        BankAccount fromBankAcc = getByIdBankAccount(fromBankAccId);
 
-        if (!isTransactionInBankAcc(fromAccId, transactionId)) {
+        //cehck if Tranascke je v BankAcc
+        if (!isTransactionInBankAcc(fromBankAccId, transactionId)) {
             throw new NotValidDataException("Transaction is not in From BankAccount");
         }
 
@@ -152,6 +182,7 @@ public class TransactionService extends AbstractServiceHelper {
         }
 
         if (toBankAcc.getCurrency() != fromBankAcc.getCurrency()) {
+            //Konvertace meny
             actualCurrencyAmount = currencyConvertLogic(transaction.getAmount(), toBankAcc.getCurrency());
         }
         transferTransaction.setAmount(actualCurrencyAmount);
@@ -160,10 +191,12 @@ public class TransactionService extends AbstractServiceHelper {
 
         Transaction persistedTransaction = transactionDao.persist(transferTransaction);
         toBankAcc.getTransactions().add(transferTransaction);
+        // logika pro toBankAccount pri pridani transakci
         bankAccountLogic(toBankAcc, transferTransaction);
         bankAccountDao.update(toBankAcc);
 
-        removeTransactionFromBankAccount(transaction.getId(), fromAccId);
+        // Odstrani transakci z BankAccount
+        removeTransactionFromBankAccount(transaction.getId(), fromBankAccId);
         return persistedTransaction;
     }
 
@@ -176,7 +209,7 @@ public class TransactionService extends AbstractServiceHelper {
         return amount * 0.039;
     }
 
-    // todo API
+    // todo API - zatim neni implementovano, ale bude potreba v budoucnu
 //    public String currency() {
 //        String url = "https://api.ratesapi.io/api/2010-01-12?base=EUR";
 //        return this.restTemplate.getForObject(url, String.class);
@@ -187,30 +220,48 @@ public class TransactionService extends AbstractServiceHelper {
 //        }
 //    }
 
-    public Transaction updateBasic(int id, Transaction t) throws Exception {
-        Transaction transaction = getByIdTransaction(id);
+    /**
+     * update only amount, date, jottings
+     *
+     * @param transactionId
+     * @param updateTransaction
+     * @return
+     * @throws Exception
+     */
+    public Transaction updateBasic(int transactionId, Transaction updateTransaction) throws Exception {
+        Transaction transaction = getByIdTransaction(transactionId);
         BankAccount transBankAcc = transaction.getBankAccount();
 
-        if (t.getAmount() < 0) {
+        if (updateTransaction.getAmount() < 0) {
             throw new NotValidDataException("Transaction amount is < 0");
         }
 
-        updatedTransactionLogic(transaction, t, transBankAcc);
+        // logic for update Amount
+        updatedBasicTransactionLogic(transaction, updateTransaction, transBankAcc);
 
-        transaction.setAmount(t.getAmount());
-        transaction.setDate(t.getDate());
-        transaction.setJottings(t.getJottings());
+        transaction.setAmount(updateTransaction.getAmount());
+        transaction.setDate(updateTransaction.getDate());
+        transaction.setJottings(updateTransaction.getJottings());
         return transactionDao.update(transaction);
     }
 
-    public Transaction updateTransactionType(int id, TypeTransaction typeTransaction) throws Exception {
-        Transaction transaction = getByIdTransaction(id);
+    /**
+     * update type of Transaction
+     *
+     * @param transactionId
+     * @param typeTransaction
+     * @return
+     * @throws Exception
+     */
+    public Transaction updateTransactionType(int transactionId, TypeTransaction typeTransaction) throws Exception {
+        Transaction transaction = getByIdTransaction(transactionId);
         BankAccount transBankAcc = transaction.getBankAccount();
 
+        // logika editaci typu
         updateTransactionTypeLogic(transaction, typeTransaction, transBankAcc);
 
         transaction.setTypeTransaction(typeTransaction);
-
+        // budget logic pri update Type
         budgetLogicUpdateTypeTransaction(transaction);
         return transactionDao.update(transaction);
     }
@@ -235,12 +286,20 @@ public class TransactionService extends AbstractServiceHelper {
         categoryDao.update(category);
         Transaction updatedTransaction = transactionDao.update(transaction);
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            // budgetLogic pri update Category pro Expense Transaction
             budgetLogicTransactionUpdateCategory(oldCategory, transaction);
         }
         return updatedTransaction;
     }
 
-    public void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
+    /**
+     * Logika pri editaci Category u Transaction
+     *
+     * @param oldCategory
+     * @param transaction
+     * @throws Exception
+     */
+    private void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
         BankAccount bankAccount = transaction.getBankAccount();
         double transAmount = transaction.getAmount();
         Budget budgetForTransaction = budgetDao.getByCategory(oldCategory.getId(), bankAccount.getId());
@@ -266,7 +325,7 @@ public class TransactionService extends AbstractServiceHelper {
      * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
      * @throws Exception
      */
-    public void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
+    private void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
         if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
             NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
             if (notifyBudget != null) {
@@ -295,12 +354,12 @@ public class TransactionService extends AbstractServiceHelper {
             double transAmount = transaction.getAmount();
 
             Budget budgetForTransaction = budgetDao.getByCategory(transCategory.getId(), transaction.getBankAccount().getId());
+            // check if Budget for Transaction exists
             if (budgetForTransaction == null) {
                 return;
             }
 
             double sumAmount = budgetForTransaction.getSumAmount();
-
             budgetForTransaction.setSumAmount(sumAmount - transAmount);
             budgetDao.update(budgetForTransaction);
 
@@ -309,6 +368,13 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
+    /**
+     * Logika pri editaci Type of Transaction
+     *
+     * @param oldTransaction
+     * @param typeTransaction
+     * @param transBankAcc
+     */
     private void updateTransactionTypeLogic(Transaction oldTransaction, TypeTransaction typeTransaction, BankAccount transBankAcc) {
         Double balance = transBankAcc.getBalance();
         if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.EXPENSE) {
@@ -320,11 +386,21 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
-    private void updatedTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) throws Exception {
+    /**
+     * Logika pri editaci amount transakce
+     * pokud tranksakce typu Expense, tehdy se udela budget logic
+     *
+     * @param oldTransaction
+     * @param updatedTransaction
+     * @param transBankAcc
+     * @throws Exception
+     */
+    private void updatedBasicTransactionLogic(Transaction oldTransaction, Transaction updatedTransaction, BankAccount transBankAcc) throws Exception {
         Double balance = transBankAcc.getBalance();
         if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             transBankAcc.setBalance(balance + oldTransaction.getAmount() - updatedTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
+            // budget logic
             budgetLogicUpdateTransactionAmount(oldTransaction, updatedTransaction);
         } else if (oldTransaction.getAmount() != updatedTransaction.getAmount() && oldTransaction.getTypeTransaction() == TypeTransaction.INCOME) {
             transBankAcc.setBalance(balance - oldTransaction.getAmount() + updatedTransaction.getAmount());
@@ -332,6 +408,13 @@ public class TransactionService extends AbstractServiceHelper {
         }
     }
 
+    /**
+     * Logika Budget pri update amount Expense transakci
+     *
+     * @param oldTransaction
+     * @param updatedTransaction
+     * @throws Exception
+     */
     private void budgetLogicUpdateTransactionAmount(Transaction oldTransaction, Transaction updatedTransaction) throws Exception {
         BankAccount bankAccount = oldTransaction.getBankAccount();
         double oldTransAmount = oldTransaction.getAmount();
@@ -351,9 +434,16 @@ public class TransactionService extends AbstractServiceHelper {
         checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
     }
 
+    /**
+     * Delete Transaction
+     *
+     * @param id
+     * @throws Exception
+     */
     public void remove(int id) throws Exception {
         Transaction transaction = getByIdTransaction(id);
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            // budget logic pri delete Expense
             budgetLogicTransactionDelete(transaction);
         }
         transaction.setCategory(null);
@@ -361,13 +451,13 @@ public class TransactionService extends AbstractServiceHelper {
         transactionDao.remove(transaction);
     }
 
-    public void removeFromCategory(int transId) throws Exception {
-        Transaction t = getByIdTransaction(transId);
-        t.setCategory(null);
-        transactionDao.update(t);
-    }
-
-    public void budgetLogicTransactionDelete(Transaction transaction) throws Exception {
+    /**
+     * Budget logic pri delete Expense transaction
+     *
+     * @param transaction
+     * @throws Exception
+     */
+    private void budgetLogicTransactionDelete(Transaction transaction) throws Exception {
         BankAccount bankAccount = transaction.getBankAccount();
         double transAmount = transaction.getAmount();
         Category category = transaction.getCategory();

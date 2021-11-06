@@ -5,7 +5,6 @@ import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.NotifyBudget;
-import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
 import cz.cvut.fel.service.exceptions.NotifyBudgetNotFoundException;
 import org.springframework.stereotype.Service;

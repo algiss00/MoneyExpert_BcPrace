@@ -35,7 +35,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void findByEmail() throws Exception {
+    public void findByEmail() {
         User user = userDao.getByEmail("emailTest2@ads.cz");
         assertNotNull(user);
         assertEquals("ali123", user.getUsername());

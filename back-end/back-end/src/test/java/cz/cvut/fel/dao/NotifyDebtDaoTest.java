@@ -3,7 +3,6 @@ package cz.cvut.fel.dao;
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.Debt;
-import cz.cvut.fel.model.NotifyBudget;
 import cz.cvut.fel.model.NotifyDebt;
 import generator.Generator;
 import org.junit.jupiter.api.Test;
@@ -74,7 +73,7 @@ public class NotifyDebtDaoTest {
     }
 
     @Test
-    public void alreadyExistsBudget() throws Exception {
+    public void alreadyExistsBudget() {
         assertNotNull(notifyDebtDao.alreadyExistsDebt(22, TypeNotification.DEBT_NOTIFY));
         assertNull(notifyDebtDao.alreadyExistsDebt(26, TypeNotification.DEBT_NOTIFY));
     }

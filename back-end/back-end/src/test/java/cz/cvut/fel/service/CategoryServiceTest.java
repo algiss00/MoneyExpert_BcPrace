@@ -4,6 +4,7 @@ import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -133,17 +134,35 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void update_MockTest_success() throws Exception {
+    public void updateName_MockTest_success() throws Exception {
         Category category = Generator.generateDefaultCategory();
+        category.setId(1);
+        category.setName("name");
+        String name = "Test name";
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(categoryDao.find(anyInt())).thenReturn(category);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
+            when(categoryDao.getUsersCategoryByName(user.getId(), category.getName())).thenReturn(null);
+
+            categoryService.updateCategoryName(category.getId(), name);
+            verify(categoryDao, times(1)).update(category);
+            assertEquals("Test name", category.getName());
+        }
+    }
+
+    @Test
+    public void updateName_MockTest_throwNotValidData() throws Exception {
+        Category category = Generator.generateDefaultCategory();
+        category.setId(-1);
+        category.setName("name");
         String name = "Test name";
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(categoryDao.find(anyInt())).thenReturn(category);
             when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
 
-            categoryService.updateCategoryName(category.getId(), name);
-            verify(categoryDao, times(1)).update(category);
-            assertEquals("Test name", category.getName());
+            assertThrows(NotValidDataException.class, () -> categoryService.updateCategoryName(category.getId(), name));
         }
     }
 

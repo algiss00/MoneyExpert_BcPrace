@@ -20,10 +20,6 @@ public class BankAccountService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
-    public List<BankAccount> getAll() {
-        return bankAccountDao.findAll();
-    }
-
     public List<BankAccount> getByNameAvailableBankAcc(String name) throws Exception {
         return bankAccountDao.getByNameAvailableBankAcc(name, getAuthenticatedUser().getId());
     }
@@ -32,46 +28,55 @@ public class BankAccountService extends AbstractServiceHelper {
         return bankAccountDao.getByNameCreated(name, getAuthenticatedUser().getId());
     }
 
-    public List<Budget> getAllAccountsBudgets(int accId) throws Exception {
-        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+    public List<Budget> getAllAccountsBudgets(int bankAccId) throws Exception {
+        BankAccount byIdBankAccount = getByIdBankAccount(bankAccId);
         return byIdBankAccount.getBudgets();
     }
 
-    public List<Transaction> getAllTransactions(int accountId) throws Exception {
-        return transactionDao.getAllTransactionsFromBankAccSortedByDate(getByIdBankAccount(accountId).getId());
+    public List<Transaction> getAllTransactions(int bankAccId) throws Exception {
+        return transactionDao.getAllTransactionsFromBankAccSortedByDate(getByIdBankAccount(bankAccId).getId());
     }
 
-    public List<Transaction> getAllTransactionsByType(int accountId, TypeTransaction typeTransaction) throws Exception {
-        return transactionDao.getFromBankAccByTransactionType(getByIdBankAccount(accountId).getId(), typeTransaction);
+    public List<Transaction> getAllTransactionsByType(int bankAccId, TypeTransaction typeTransaction) throws Exception {
+        return transactionDao.getFromBankAccByTransactionType(getByIdBankAccount(bankAccId).getId(), typeTransaction);
     }
 
-    public List<Transaction> getAllTransactionsByCategory(int accountId, int categoryId) throws Exception {
-        return transactionDao.getAllTransactionsByCategory(getByIdBankAccount(accountId).getId(), getByIdCategory(categoryId).getId());
+    public List<Transaction> getAllTransactionsByCategory(int bankAccId, int categoryId) throws Exception {
+        return transactionDao.getAllTransactionsByCategory(getByIdBankAccount(bankAccId).getId(), getByIdCategory(categoryId).getId());
     }
 
-    public List<Transaction> getAllTransactionsByCategoryAndType(int accountId, int categoryId, TypeTransaction type) throws Exception {
-        return transactionDao.getAllTransactionsByCategoryAndType(getByIdBankAccount(accountId).getId(),
+    public List<Transaction> getAllTransactionsByCategoryAndType(int bankAccId, int categoryId, TypeTransaction type) throws Exception {
+        return transactionDao.getAllTransactionsByCategoryAndType(getByIdBankAccount(bankAccId).getId(),
                 getByIdCategory(categoryId).getId(), type);
     }
 
-    public List<Debt> getAllAccountsDebts(int accId) throws Exception {
-        return debtDao.getSortedByDeadlineFromBankAcc(getByIdBankAccount(accId).getId());
+    public List<Debt> getAllAccountsDebts(int bankAccId) throws Exception {
+        return debtDao.getSortedByDeadlineFromBankAcc(getByIdBankAccount(bankAccId).getId());
     }
 
-    public List<User> getAllOwners(int accId) throws Exception {
-        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+    public List<User> getAllOwners(int bankAccId) throws Exception {
+        BankAccount byIdBankAccount = getByIdBankAccount(bankAccId);
         return byIdBankAccount.getOwners();
     }
 
-    public User getCreator(int accId) throws Exception {
-        BankAccount byIdBankAccount = getByIdBankAccount(accId);
+    public User getCreator(int bankAccId) throws Exception {
+        BankAccount byIdBankAccount = getByIdBankAccount(bankAccId);
         return byIdBankAccount.getCreator();
     }
 
+    /**
+     * pokud Balance je < 0, tehdy not valid
+     * pokud Balance > 0, tehdy se vytvori startovni transakce s amount balance
+     * pokud Balance == 0, tehdy se nevytvori startovni transakce
+     *
+     * @param bankAccount
+     * @return
+     * @throws Exception
+     */
     public BankAccount persist(BankAccount bankAccount) throws Exception {
         Objects.requireNonNull(bankAccount);
         if (!validate(bankAccount))
-            throw new NotValidDataException("bankAccount");
+            throw new NotValidDataException("persist bankAccount");
         User u = getAuthenticatedUser();
         bankAccount.setCreator(u);
         BankAccount persistedEntity = bankAccountDao.persist(bankAccount);
@@ -166,9 +171,16 @@ public class BankAccountService extends AbstractServiceHelper {
         userDao.update(user);
     }
 
-    public void removeBudgetFromBankAcc(int budgetId, int accId) throws Exception {
+    /**
+     * Odstarni Budget z BankAccount potom samotny budget z Db
+     *
+     * @param budgetId
+     * @param bankAccId
+     * @throws Exception
+     */
+    public void removeBudgetFromBankAcc(int budgetId, int bankAccId) throws Exception {
         Budget budget = getByIdBudget(budgetId);
-        BankAccount bankAccount = getByIdBankAccount(accId);
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
         if (!isBudgetInBankAcc(budget, bankAccount)) {
             throw new NotAuthenticatedClient();
         }
@@ -185,9 +197,16 @@ public class BankAccountService extends AbstractServiceHelper {
         return debtDao.getByBankAccId(d.getId(), bankAccount.getId()) != null;
     }
 
-    public void removeDebt(int debtId, int accId) throws Exception {
+    /**
+     * Odstrani Debt z BankAccount potom samotny Debt z Db
+     *
+     * @param debtId
+     * @param bankAccId
+     * @throws Exception
+     */
+    public void removeDebt(int debtId, int bankAccId) throws Exception {
         Debt debt = getByIdDebt(debtId);
-        BankAccount bankAccount = getByIdBankAccount(accId);
+        BankAccount bankAccount = getByIdBankAccount(bankAccId);
         if (!isDebtInBankAcc(debt, bankAccount)) {
             throw new NotAuthenticatedClient();
         }
@@ -196,6 +215,13 @@ public class BankAccountService extends AbstractServiceHelper {
         removeDebt(debt.getId());
     }
 
+    /**
+     * Vytvareni Startovni transakce
+     *
+     * @param bankAccount
+     * @return
+     * @throws Exception
+     */
     private Transaction createStartTransaction(BankAccount bankAccount) throws Exception {
         Transaction startTransaction = new Transaction();
         Category category = getByIdCategory(-6);

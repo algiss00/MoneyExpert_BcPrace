@@ -30,7 +30,7 @@ public class CategoryController {
     }
 
     @GetMapping(value = "/default", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getDefaultCategories() throws Exception {
+    ResponseEntity<?> getDefaultCategories() {
         List<Category> defaultCategories = categoryService.getDefaultCategories();
         return new ResponseEntity<>(defaultCategories, HttpStatus.OK);
     }

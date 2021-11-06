@@ -248,8 +248,6 @@ TRANSACTION
 
 /transaction/{id} - delete transaction by id
 
-/transaction/category?transId={TransactionId} - remove Category from Transaction
-
 ------------------------------------------------------------------------------
 BUDGET
 

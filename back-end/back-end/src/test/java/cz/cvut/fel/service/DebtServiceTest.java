@@ -2,6 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
+import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.model.User;
@@ -81,7 +82,7 @@ public class DebtServiceTest {
     }
 
     @Test
-    public void update_mockTest_success() throws Exception {
+    public void updateDebtBasic_mockTest_success() throws Exception {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);
         Debt debt = Generator.generateDefaultDebt();
@@ -95,6 +96,58 @@ public class DebtServiceTest {
             Debt updated = debtService.updateDebtBasic(debt.getId(), debt);
             verify(debtDao, times(1)).update(debt);
             assertEquals(debt, updated);
+        }
+    }
+
+    @Test
+    public void updateDebtNotifyDate_mockTest_success() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date notify = formatter.parse("2021-10-05");
+        Date notify2 = formatter.parse("2021-11-10");
+        Date deadline = formatter.parse("2021-11-20");
+
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
+        Debt debt = Generator.generateDefaultDebt();
+        debt.setBankAccount(bankAccount);
+        debt.setName("mock test");
+        debt.setDeadline(deadline);
+        debt.setNotifyDate(notify);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.find(debt.getId())).thenReturn(debt);
+            when(debtDao.update(debt)).thenReturn(debt);
+            when(notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_NOTIFY)).thenReturn(null);
+
+            debtService.updateDebtNotifyDate(debt.getId(), "2021-11-10");
+            verify(debtDao, times(1)).update(debt);
+            assertEquals(debt.getNotifyDate(), notify2);
+        }
+    }
+
+    @Test
+    public void updateDebtDeadlineDate_mockTest_success() throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date notify = formatter.parse("2021-10-05");
+        Date deadline = formatter.parse("2021-11-20");
+        Date deadline2 = formatter.parse("2021-11-25");
+
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setCreator(user);
+        Debt debt = Generator.generateDefaultDebt();
+        debt.setBankAccount(bankAccount);
+        debt.setName("mock test");
+        debt.setDeadline(deadline);
+        debt.setNotifyDate(notify);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(debtDao.find(debt.getId())).thenReturn(debt);
+            when(debtDao.update(debt)).thenReturn(debt);
+            when(notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_DEADLINE)).thenReturn(null);
+
+            debtService.updateDebtDeadlineDate(debt.getId(), "2021-11-25");
+            verify(debtDao, times(1)).update(debt);
+            assertEquals(debt.getDeadline(), deadline2);
         }
     }
 

@@ -14,14 +14,14 @@ import java.util.logging.Logger;
  * Trida slouzi pro sdileni funkci mezi Service tridami
  */
 abstract class AbstractServiceHelper {
-    protected UserDao userDao;
-    protected BankAccountDao bankAccountDao;
-    protected TransactionDao transactionDao;
-    protected BudgetDao budgetDao;
-    protected DebtDao debtDao;
-    protected CategoryDao categoryDao;
-    protected NotifyBudgetDao notifyBudgetDao;
-    protected NotifyDebtDao notifyDebtDao;
+    protected final UserDao userDao;
+    protected final BankAccountDao bankAccountDao;
+    protected final TransactionDao transactionDao;
+    protected final BudgetDao budgetDao;
+    protected final DebtDao debtDao;
+    protected final CategoryDao categoryDao;
+    protected final NotifyBudgetDao notifyBudgetDao;
+    protected final NotifyDebtDao notifyDebtDao;
 
     private static final Logger log = Logger.getLogger(AbstractServiceHelper.class.getName());
 

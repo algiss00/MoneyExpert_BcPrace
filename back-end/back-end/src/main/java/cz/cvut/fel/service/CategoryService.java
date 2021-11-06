@@ -36,6 +36,14 @@ public class CategoryService extends AbstractServiceHelper {
         return getByIdCategory(catId).getTransactions();
     }
 
+    /**
+     * Pridani Category
+     * name of Category je unikatni
+     *
+     * @param category
+     * @return
+     * @throws Exception
+     */
     public Category persist(Category category) throws Exception {
         Objects.requireNonNull(category);
         User u = getAuthenticatedUser();
@@ -66,9 +74,29 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.getUsersCategoryByName(user.getId(), category.getName()) == null;
     }
 
+    /**
+     * update only name of Category
+     * cannot update default category
+     * cannot update name to existed name
+     *
+     * @param id
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public Category updateCategoryName(int id, String name) throws Exception {
-        Category c = getByIdCategory(id);
-        c.setName(name);
-        return categoryDao.update(c);
+        User user = getAuthenticatedUser();
+        Category category = getByIdCategory(id);
+        if (category.getName().trim().isEmpty()
+                || name.trim().equals(category.getName().trim())
+                || id < 0) {
+            throw new NotValidDataException("Update name of Category not valid");
+        }
+
+        if (categoryDao.getUsersCategoryByName(user.getId(), name) != null) {
+            throw new NotValidDataException("Update name is exists!");
+        }
+        category.setName(name);
+        return categoryDao.update(category);
     }
 }

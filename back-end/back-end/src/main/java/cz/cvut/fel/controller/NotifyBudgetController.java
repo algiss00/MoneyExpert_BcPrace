@@ -2,7 +2,6 @@ package cz.cvut.fel.controller;
 
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.NotifyBudget;
-import cz.cvut.fel.model.NotifyDebt;
 import cz.cvut.fel.service.NotifyBudgetService;
 import cz.cvut.fel.service.exceptions.*;
 import org.springframework.http.HttpStatus;

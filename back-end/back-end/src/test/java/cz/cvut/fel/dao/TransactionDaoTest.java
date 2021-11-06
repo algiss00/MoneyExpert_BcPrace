@@ -96,24 +96,24 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getExpenseSum() throws Exception {
+    public void getExpenseSum() {
         double sum = transactionDao.getExpenseSum(9, 2021, 18);
         assertEquals(300, sum);
     }
 
     @Test
-    public void getExpenseSumException() throws Exception {
+    public void getExpenseSumException() {
         assertEquals(0, transactionDao.getExpenseSum(9, 2020, 18));
     }
 
     @Test
-    public void getExpenseSumWithCategory() throws Exception {
+    public void getExpenseSumWithCategory() {
         double sum = transactionDao.getExpenseSumWithCategory(9, 2021, 18, -4);
         assertEquals(100, sum);
     }
 
     @Test
-    public void getExpenseSumExceptionException() throws Exception {
+    public void getExpenseSumExceptionException() {
         assertEquals(0 ,transactionDao.getExpenseSumWithCategory(9, 2020, 18, -4));
     }
 

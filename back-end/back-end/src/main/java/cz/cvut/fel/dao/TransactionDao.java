@@ -1,7 +1,6 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.dto.TypeTransaction;
-import cz.cvut.fel.model.BankAccount;
 import cz.cvut.fel.model.Transaction;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

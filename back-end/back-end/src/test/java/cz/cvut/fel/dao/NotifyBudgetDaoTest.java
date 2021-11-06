@@ -4,7 +4,6 @@ import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dto.TypeNotification;
 import cz.cvut.fel.model.Budget;
 import cz.cvut.fel.model.NotifyBudget;
-import cz.cvut.fel.model.NotifyDebt;
 import generator.Generator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +73,7 @@ public class NotifyBudgetDaoTest {
     }
 
     @Test
-    public void alreadyExistsBudget() throws Exception {
+    public void alreadyExistsBudget() {
         assertTrue(notifyBudgetDao.alreadyExistsBudget(19, TypeNotification.BUDGET_AMOUNT));
         assertFalse(notifyBudgetDao.alreadyExistsBudget(22, TypeNotification.BUDGET_PERCENT));
     }

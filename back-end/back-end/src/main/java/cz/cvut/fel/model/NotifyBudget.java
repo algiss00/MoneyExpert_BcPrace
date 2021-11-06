@@ -1,6 +1,5 @@
 package cz.cvut.fel.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import cz.cvut.fel.dto.TypeNotification;
 
 import javax.persistence.*;

@@ -3,7 +3,6 @@ package cz.cvut.fel.security.model;
 
 import cz.cvut.fel.model.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.*;
 

@@ -129,12 +129,6 @@ public class TransactionController {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/category")
-    ResponseEntity<Void> removeFromCategory(@RequestParam int transId) throws Exception {
-        transactionService.removeFromCategory(transId);
-        return new ResponseEntity<Void>(HttpStatus.OK);
-    }
-
     @ExceptionHandler({
             TransactionNotFoundException.class,
             BankAccountNotFoundException.class,

@@ -1,7 +1,6 @@
 package cz.cvut.fel.dao;
 
 import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Category;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
