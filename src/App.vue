@@ -4,9 +4,10 @@
                 color="deep-purple accent-4"
                 dark
         >
-          <v-btn icon>
-            <v-icon>mdi-account</v-icon>
-          </v-btn>
+<!--            TODO Az se prihlasi-->
+<!--          <v-btn icon>-->
+<!--            <v-icon>mdi-account</v-icon>-->
+<!--          </v-btn>-->
 
             <v-spacer></v-spacer>
             <v-toolbar-title>MoneyExpert</v-toolbar-title>

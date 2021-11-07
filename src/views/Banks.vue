@@ -39,12 +39,12 @@
 </template>
 <style>
     .m-left {
-        text-align: left;
+        text-align: center;
     }
 </style>
 
 <script>
-    import {getAllUsersBanks, login} from "../api";
+    import {getAllUsersBanks} from "../api";
 
     export default {
         name: "banks",
@@ -55,7 +55,6 @@
         },
 
         async mounted() {
-            await login("asd", "asd")
             let createdBanks = await getAllUsersBanks()
             this.banks = createdBanks
             console.log(this.banks)

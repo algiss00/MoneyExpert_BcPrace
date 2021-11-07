@@ -20,3 +20,14 @@ export async function login(username, password) {
     console.log(result)
     return result.data
 }
+
+export async function registration(jsonUser) {
+
+    const res = await axios.post("http://localhost:8080/user", jsonUser, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        withCredentials: true
+    });
+    console.log(res)
+}
