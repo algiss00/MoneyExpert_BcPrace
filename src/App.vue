@@ -1,8 +1,7 @@
 <template>
     <div id="app">
         <v-app-bar
-                color="deep-purple accent-4"
-                dark
+                color="#e7f6ff"
         >
 <!--            TODO Az se prihlasi-->
 <!--          <v-btn icon>-->

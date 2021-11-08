@@ -56,6 +56,7 @@
 
         async mounted() {
             let createdBanks = await getAllUsersBanks()
+            console.log("BANKS: " + createdBanks)
             this.banks = createdBanks
             console.log(this.banks)
         }

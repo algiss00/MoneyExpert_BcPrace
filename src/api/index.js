@@ -5,7 +5,14 @@ const url = "http://localhost:8080"
 export async function getAllUsersBanks() {
     let result = await axios.get(`${url}/user/created-accounts`, {
         withCredentials: true
-    })
+    }).catch(function (error) {
+        if (error.response) {
+            if (error.response.data.status === 400) {
+                // todo move to /
+                alert(error.response.data.message)
+            }
+        }
+    });
     return result.data
 }
 
@@ -17,17 +24,21 @@ export async function login(username, password) {
         },
         withCredentials: true
     })
-    console.log(result)
     return result.data
 }
 
 export async function registration(jsonUser) {
-
-    const res = await axios.post("http://localhost:8080/user", jsonUser, {
+    return await axios.post("http://localhost:8080/user", jsonUser, {
         "headers": {
             "content-type": "application/json",
         },
         withCredentials: true
-    });
-    console.log(res)
+    })
+        .catch(function (error) {
+            if (error.response) {
+                if (error.response.data.status === 400) {
+                    alert("Error! Maybe this username or email already exists!")
+                }
+            }
+        })
 }
