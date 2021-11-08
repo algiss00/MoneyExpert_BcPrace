@@ -81,7 +81,10 @@ public class UserService extends AbstractServiceHelper {
     public User persist(User userObj) throws Exception {
         Objects.requireNonNull(userObj);
         if (alreadyExists(userObj))
-            throw new NotValidDataException("user");
+            throw new NotValidDataException("user exists!");
+        if (!validate(userObj)) {
+            throw new NotValidDataException("Not valid data");
+        }
         User user = new User();
         user.setMyCategories(getDefaultCategories());
         user.setEmail(userObj.getEmail());
@@ -91,6 +94,18 @@ public class UserService extends AbstractServiceHelper {
         user.setPassword(passwordEncoder.encode(userObj.getPassword()));
 
         return userDao.persist(user);
+    }
+
+    /**
+     * Validate if columns are empty
+     *
+     * @param user
+     * @return
+     */
+    private boolean validate(User user) {
+        return !user.getUsername().trim().isEmpty() && !user.getPassword().trim().isEmpty() &&
+                !user.getName().trim().isEmpty() && !user.getEmail().trim().isEmpty() &&
+                !user.getLastname().trim().isEmpty();
     }
 
     /**
