@@ -51,7 +51,7 @@ public class BankAccountController {
     }
 
     @GetMapping(value = "/transactions/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getAllTransFromAcc(@PathVariable int accId) throws Exception {
+    ResponseEntity<?> getAllTransactionsFromBankAcc(@PathVariable int accId) throws Exception {
         List<Transaction> transactions = bankAccountService.getAllTransactions(accId);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }

@@ -182,7 +182,7 @@ public class TransactionService extends AbstractServiceHelper {
         }
 
         if (toBankAcc.getCurrency() != fromBankAcc.getCurrency()) {
-            //Konvertace meny
+            //Konverze meny
             actualCurrencyAmount = currencyConvertLogic(transaction.getAmount(), toBankAcc.getCurrency());
         }
         transferTransaction.setAmount(actualCurrencyAmount);
