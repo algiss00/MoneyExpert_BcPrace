@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const url = "http://localhost:8080"
+const url = "http://localhost:8080";
+export let bankAccId;
 
 export function markAsError(id, add_remove) {
     let element = document.getElementById(id);
@@ -12,6 +13,23 @@ export function markAsError(id, add_remove) {
     } else {
         element.classList.remove("error");
     }
+}
+
+export function setCurrentBankAccount(id) {
+    bankAccId = id
+}
+
+export async function getBankAccById() {
+    console.log("ID: " + bankAccId)
+    let result = await axios.get(`${url}/bank-account/${bankAccId}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.assign("/#banks");
+        }
+    });
+    return result.data
 }
 
 export async function getAllUsersBanks() {

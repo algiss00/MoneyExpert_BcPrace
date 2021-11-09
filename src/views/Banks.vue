@@ -54,8 +54,7 @@
 </style>
 
 <script>
-    import {getAllUsersBanks} from "../api";
-
+    import {getAllUsersBanks, setCurrentBankAccount} from "../api";
 
     export default {
         name: "banks",
@@ -65,18 +64,15 @@
             }
         },
         methods: {
-            // TODO!
             detailBankAcc(item) {
-                console.log(item.id)
+                setCurrentBankAccount(item.id)
+                this.$router.push('/detailBankAcc')
             }
         },
         async mounted() {
             // TODO - add profil ICON
-
             let createdBanks = await getAllUsersBanks()
-            console.log("BANKS: " + createdBanks)
             this.banks = createdBanks
-            console.log(this.banks)
         }
     }
 </script>
