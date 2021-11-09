@@ -10,33 +10,33 @@
                         <v-card-text>
                             <v-form>
                                 <v-text-field
-                                        id="username"
+                                        id="usernameRegistr"
                                         label="username"
                                         v-model="username"
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="password"
+                                        id="passwordRegistr"
                                         label="password"
                                         v-model="password"
                                         type=password
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="email"
+                                        id="emailRegistr"
                                         label="email"
                                         v-model="email"
                                         type=email
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="name"
+                                        id="nameRegistr"
                                         label="name"
                                         v-model="name"
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="lastname"
+                                        id="lastnameRegistr"
                                         label="lastname"
                                         v-model="lastname"
                                         hide-details="auto"
@@ -44,8 +44,11 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
+                            <v-btn color="#e7f6ff" to="/" class="m2-position">Zpět</v-btn>
+                        </v-card-actions>
+                        <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="registr($event)" color="#e7f6ff">Registrace</v-btn>
+                            <v-btn @click="registr($event)" color="#e7f6ff" class="m3-position">Registrace</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -55,55 +58,43 @@
 </template>
 
 <script>
-    import {registration} from "../api";
+    import {registration, markAsError} from "../api";
 
     function validate() {
-        let usernameEl = document.getElementById("username")
-        let passwordEl = document.getElementById("password")
-        let emailEl = document.getElementById("email")
-        let nameEl = document.getElementById("name")
-        let lasnameEl = document.getElementById("lastname")
+        let usernameEl = document.getElementById("usernameRegistr")
+        let passwordEl = document.getElementById("passwordRegistr")
+        let emailEl = document.getElementById("emailRegistr")
+        let nameEl = document.getElementById("nameRegistr")
+        let lasnameEl = document.getElementById("lastnameRegistr")
 
         if (usernameEl.value.trim().length === 0) {
-            markAsError("username", true);
+            markAsError("usernameRegistr", true);
         } else {
-            markAsError("username", false);
+            markAsError("usernameRegistr", false);
         }
         if (passwordEl.value.trim().length === 0) {
-            markAsError("password", true);
+            markAsError("passwordRegistr", true);
         } else {
-            markAsError("password", false);
+            markAsError("passwordRegistr", false);
         }
         if (emailEl.value.trim().length === 0 || !ValidateEmail(emailEl.value)) {
-            markAsError("email", true);
+            markAsError("emailRegistr", true);
         } else {
-            markAsError("email", false);
+            markAsError("emailRegistr", false);
         }
         if (nameEl.value.trim().length === 0) {
-            markAsError("name", true);
+            markAsError("nameRegistr", true);
         } else {
-            markAsError("name", false);
+            markAsError("nameRegistr", false);
         }
         if (lasnameEl.value.trim().length === 0) {
-            markAsError("lastname", true);
+            markAsError("lastnameRegistr", true);
         } else {
-            markAsError("lastname", false);
+            markAsError("lastnameRegistr", false);
         }
 
         return !(usernameEl.classList.value === "error" || passwordEl.classList.value === "error" || emailEl.classList.value === "error"
             || nameEl.classList.value === "error" || lasnameEl.classList.value === "error");
-    }
-
-    function markAsError(id, add_remove) {
-        let element = document.getElementById(id);
-        if (element == null) {
-            return;
-        }
-        if (add_remove) {
-            element.classList.add("error");
-        } else {
-            element.classList.remove("error");
-        }
     }
 
     /**

@@ -1,12 +1,17 @@
 <template>
     <v-container fluid>
-        <v-card>
+        <v-card color="#e7f6ff">
             <v-card-title class="mx-auto">
                 Přehled účtů
             </v-card-title>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn class="m4-position" to="/addBankAcc">Přidat účet</v-btn>
+            </v-card-actions>
             <div class="font-weight-medium grey--text m-left">
                 Created accounts
             </div>
+            <!--            TODO - change color of table!-->
             <v-simple-table dark>
                 <template v-slot:default>
                     <thead>
@@ -26,6 +31,7 @@
                     <tr
                             v-for="item in banks"
                             :key="item.id"
+                            @click="detailBankAcc(item)"
                     >
                         <td>{{ item.name }}</td>
                         <td>{{ item.balance }}</td>
@@ -41,10 +47,15 @@
     .m-left {
         text-align: center;
     }
+
+    .m4-position {
+        bottom: 50px;
+    }
 </style>
 
 <script>
     import {getAllUsersBanks} from "../api";
+
 
     export default {
         name: "banks",
@@ -53,8 +64,15 @@
                 banks: []
             }
         },
-
+        methods: {
+            // TODO!
+            detailBankAcc(item) {
+                console.log(item.id)
+            }
+        },
         async mounted() {
+            // TODO - add profil ICON
+
             let createdBanks = await getAllUsersBanks()
             console.log("BANKS: " + createdBanks)
             this.banks = createdBanks

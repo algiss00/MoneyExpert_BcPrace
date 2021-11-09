@@ -10,15 +10,15 @@
                         <v-card-text>
                             <v-form>
                                 <v-text-field
-                                        id="username"
+                                        id="usernameLogin"
                                         label="username"
-                                        v-model="username"
+                                        v-model="usernameLogin"
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="password"
+                                        id="passwordLogin"
                                         label="password"
-                                        v-model="password"
+                                        v-model="passwordLogin"
                                         type=password
                                         hide-details="auto"
                                 />
@@ -29,7 +29,7 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="login" color="#e7f6ff" class="m3-position">Login</v-btn>
+                            <v-btn @click="login($event)" color="#e7f6ff" class="m3-position">Login</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -39,26 +39,52 @@
 </template>
 
 <script>
-    import {login} from "../api";
+    import {login, markAsError} from "../api";
+
+
+    function validate() {
+        let usernameEl = document.getElementById("usernameLogin")
+        let passwordEl = document.getElementById("passwordLogin")
+
+        if (usernameEl.value.trim().length === 0) {
+            markAsError("usernameLogin", true);
+        } else {
+            markAsError("usernameLogin", false);
+        }
+        if (passwordEl.value.trim().length === 0) {
+            markAsError("passwordLogin", true);
+        } else {
+            markAsError("passwordLogin", false);
+        }
+
+        return !(usernameEl.classList.value === "error" || passwordEl.classList.value === "error")
+    }
 
     export default {
         name: 'login',
         data: () => ({
-            username: "",
-            password: ""
+            usernameLogin: "",
+            passwordLogin: ""
         }),
         methods: {
-            async login() {
-                let usernameEl = document.getElementById("username")
-                let passwordEl = document.getElementById("password")
+            async login(event) {
+                if (!validate()) {
+                    event.preventDefault()
+                    alert("Empty fields!")
+                    return
+                }
+                let usernameEl = document.getElementById("usernameLogin")
+                let passwordEl = document.getElementById("passwordLogin")
 
-                let result = await login(this.username, this.password)
-                console.log(result)
-                if (result.loggedIn === true && result.success === true && result.username === this.username) {
+                let result = await login(this.usernameLogin, this.passwordLogin)
+                if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     usernameEl.classList.remove("error");
                     passwordEl.classList.remove("error");
                     await this.$router.push('/banks')
                 } else {
+                    if (result.errorMessage) {
+                        alert(result.errorMessage)
+                    }
                     usernameEl.classList.add("error")
                     passwordEl.classList.add("error")
                 }
