@@ -69,7 +69,21 @@ export async function login(username, password) {
                 }
             }
         });
-    console.log(result.data)
+    return result.data
+}
+
+export async function logout() {
+    let result = await axios.post(`${url}/logout`, null, {
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                console.log(error.response)
+                if (error.response.data.errorMessage) {
+                    alert("Error!")
+                }
+            }
+        });
     return result.data
 }
 

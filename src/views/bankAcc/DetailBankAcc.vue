@@ -44,7 +44,7 @@
 </template>
 
 <script>
-    import {getBankAccById} from "../api";
+    import {getBankAccById} from "../../api";
 
     export default {
         name: 'DetailBankAcc',

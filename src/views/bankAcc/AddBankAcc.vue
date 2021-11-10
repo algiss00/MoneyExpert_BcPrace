@@ -44,7 +44,7 @@
 </template>
 
 <script>
-    import {addBankAccount, markAsError} from "../api";
+    import {addBankAccount, markAsError} from "../../api";
 
     function validate() {
         let nameEl = document.getElementById("nameBankAcc")
