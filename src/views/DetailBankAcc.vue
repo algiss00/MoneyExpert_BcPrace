@@ -56,7 +56,7 @@
         }),
         methods: {},
         async mounted() {
-            let result = await getBankAccById()
+            let result = await getBankAccById(this.$route.params.id)
             this.name = result.name
             this.currency = result.currency
             this.balance = result.balance

@@ -29,7 +29,39 @@
                     </thead>
                     <tbody>
                     <tr
-                            v-for="item in banks"
+                            v-for="item in createdBanks"
+                            :key="item.id"
+                            @click="detailBankAcc(item)"
+                    >
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.balance }}</td>
+                        <td>{{ item.currency }}</td>
+                    </tr>
+                    </tbody>
+                </template>
+            </v-simple-table>
+
+            <div class="font-weight-medium grey--text m-left">
+                Available accounts
+            </div>
+            <v-simple-table dark>
+                <template v-slot:default>
+                    <thead>
+                    <tr>
+                        <th class="text-left">
+                            Nazev
+                        </th>
+                        <th class="text-left">
+                            Zůstatek
+                        </th>
+                        <th class="text-left">
+                            Měna
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr
+                            v-for="item in availableBanks"
                             :key="item.id"
                             @click="detailBankAcc(item)"
                     >
@@ -45,7 +77,7 @@
 </template>
 <style>
     .m-left {
-        text-align: center;
+        text-align: left;
     }
 
     .m4-position {
@@ -54,25 +86,27 @@
 </style>
 
 <script>
-    import {getAllUsersBanks, setCurrentBankAccount} from "../api";
+    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks} from "../api";
 
     export default {
         name: "banks",
         data: () => {
             return {
-                banks: []
+                createdBanks: [],
+                availableBanks: []
             }
         },
         methods: {
             detailBankAcc(item) {
-                setCurrentBankAccount(item.id)
-                this.$router.push('/detailBankAcc')
+                this.$router.push('/detailBankAcc/' + item.id)
             }
         },
         async mounted() {
             // TODO - add profil ICON
-            let createdBanks = await getAllUsersBanks()
-            this.banks = createdBanks
+            let createdBanks = await getAllUsersCreatedBanks()
+            let availableBanks = await getAllUsersAvailableBanks()
+            this.createdBanks = createdBanks
+            this.availableBanks = availableBanks
         }
     }
 </script>

@@ -31,7 +31,7 @@ const routes = [
         component: AddBankAcc
     },
     {
-        path: '/detailBankAcc',
+        path: '/detailBankAcc/:id',
         name: 'DetailBankAcc',
         component: DetailBankAcc
     }
