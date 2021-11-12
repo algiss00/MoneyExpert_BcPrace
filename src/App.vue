@@ -36,21 +36,39 @@
 </template>
 
 <script>
+    // import {getCurrentUser} from "../src/api";
+
     export default {
         data() {
             return {
                 drawer: false,
-                menuItems: [
-                    // todo - maybe add some icons in future
-                    {icon: '', title: 'Profile', link: '/profile'},
-                    {icon: '', title: 'Dashboard', link: '/dashboard'},
-                    {icon: '', title: 'Účty', link: '/banks'},
-                    {icon: '', title: 'Transakce', link: '/transactions'},
-                    {icon: '', title: 'Statistiky', link: '/statistic'},
-                    {icon: '', title: 'Závazky', link: '/debts'},
-                    {icon: '', title: 'Rozpočty', link: '/budgets'},
-                    {icon: '', title: 'Kategorie', link: '/categories'}
-                ]
+            }
+        },
+        computed: {
+            menuItems() {
+                let menuItems = [
+                    {title: 'Profile', link: '/profile'},
+                    {title: 'Dashboard', link: '/dashboard'},
+                    {title: 'Účty', link: '/banks'},
+                    {title: 'Transakce', link: '/transactions'},
+                    {title: 'Statistiky', link: '/statistic'},
+                    {title: 'Závazky', link: '/debts'},
+                    {title: 'Rozpočty', link: '/budgets'},
+                    {title: 'Kategorie', link: '/categories'}
+                ];
+                // if (getCurrentUser() != null) {
+                //     menuItems = [
+                //         {title: 'Profile', link: '/profile'},
+                //         {title: 'Dashboard', link: '/dashboard'},
+                //         {title: 'Účty', link: '/banks'},
+                //         {title: 'Transakce', link: '/transactions'},
+                //         {title: 'Statistiky', link: '/statistic'},
+                //         {title: 'Závazky', link: '/debts'},
+                //         {title: 'Rozpočty', link: '/budgets'},
+                //         {title: 'Kategorie', link: '/categories'}
+                //     ]
+                // }
+                return menuItems
             }
         }
     }

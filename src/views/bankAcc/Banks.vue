@@ -10,7 +10,7 @@
                 </v-card-title>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn class="m4-position" to="/addBankAcc">Přidat účet</v-btn>
+                    <v-btn class="m4-position" to="/banks/addBankAcc">Přidat účet</v-btn>
                 </v-card-actions>
                 <div class="font-weight-medium grey--text m-left">
                     Created accounts
@@ -29,17 +29,33 @@
                             <th class="text-left">
                                 Měna
                             </th>
+                            <th class="text-left">
+                                Editace
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr
                                 v-for="item in createdBanks"
                                 :key="item.id"
-                                @click="detailBankAcc(item)"
+                                @click="toTransactions(item)"
                         >
                             <td>{{ item.name }}</td>
                             <td>{{ item.balance }}</td>
                             <td>{{ item.currency }}</td>
+                            <td>
+                                <v-btn
+                                        color="primary"
+                                        fab
+                                        small
+                                        dark
+                                        @click.stop="detailBankAcc(item)"
+                                >
+                                    <v-icon>
+                                        mdi-pencil
+                                    </v-icon>
+                                </v-btn>
+                            </td>
                         </tr>
                         </tbody>
                     </template>
@@ -67,7 +83,7 @@
                         <tr
                                 v-for="item in availableBanks"
                                 :key="item.id"
-                                @click="detailBankAcc(item)"
+                                @click="toTransactions(item)"
                         >
                             <td>{{ item.name }}</td>
                             <td>{{ item.balance }}</td>
@@ -91,7 +107,7 @@
 </style>
 
 <script>
-    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, logout} from "../../api";
+    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, logout, getCurrentUser} from "../../api";
 
     export default {
         name: "banks",
@@ -103,7 +119,10 @@
         },
         methods: {
             detailBankAcc(item) {
-                this.$router.push('/detailBankAcc/' + item.id)
+                this.$router.push('/banks/detailBankAcc/' + item.id)
+            },
+            toTransactions(item) {
+                this.$router.push('/transactions/' + item.id)
             },
             async logout() {
                 let result = await logout()
@@ -118,6 +137,7 @@
             let availableBanks = await getAllUsersAvailableBanks()
             this.createdBanks = createdBanks
             this.availableBanks = availableBanks
+            console.log(getCurrentUser())
         }
     }
 </script>

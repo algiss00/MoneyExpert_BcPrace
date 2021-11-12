@@ -13,7 +13,8 @@ import Debts from '../views/debt/Debts.vue'
 import Transactions from '../views/transaction/Transactions.vue'
 import Statistic from '../views/statistic/Statistic.vue'
 import Profile from '../views/user/Profile.vue'
-
+import DetailTransaction from '../views/transaction/DetailTransaction'
+import AddTransaction from '../views/transaction/AddTransaction.vue'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,16 @@ const routes = [
         path: '/banks',
         name: 'Banks',
         component: Banks
+    },
+    {
+        path: '/banks/addBankAcc',
+        name: 'AddBankAcc',
+        component: AddBankAcc
+    },
+    {
+        path: '/banks/detailBankAcc/:id',
+        name: 'DetailBankAcc',
+        component: DetailBankAcc
     },
     {
         path: '/',
@@ -34,40 +45,46 @@ const routes = [
         component: SignUp
     },
     {
-        path: '/addBankAcc',
-        name: 'AddBankAcc',
-        component: AddBankAcc
-    },
-    {
-        path: '/detailBankAcc/:bankAccId',
-        name: 'DetailBankAcc',
-        component: DetailBankAcc
-    },
-    {
         path: '/budgets/',
         name: 'Budgets',
         component: Budgets
-    },    {
+    },
+    {
         path: '/categories',
         name: 'Categories',
         component: Categories
-    },    {
+    },
+    {
         path: '/dashboard/',
         name: 'Dashboard',
         component: Dashboard
-    },    {
+    },
+    {
         path: '/debts/',
         name: 'Debts',
         component: Debts
-    },    {
+    },
+    {
         path: '/statistic/',
         name: 'Statistic',
         component: Statistic
-    },    {
-        path: '/transactions/',
+    },
+    {
+        path: '/transactions/:bankId',
         name: 'Transactions',
         component: Transactions
-    },    {
+    },
+    {
+        path: '/transactions/:bankId/detail/:transId',
+        name: 'DetailTransaction',
+        component: DetailTransaction
+    },
+    {
+        path: '/transactions/:bankId/addTransaction/',
+        name: 'AddTransaction',
+        component: AddTransaction
+    },
+    {
         path: '/profile',
         name: 'Profile',
         component: Profile

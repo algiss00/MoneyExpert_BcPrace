@@ -39,7 +39,7 @@
 </template>
 
 <script>
-    import {login, markAsError} from "../api";
+    import {login, markAsError, setCurrentUser, getUserByUsername} from "../api";
 
 
     function validate() {
@@ -80,6 +80,9 @@
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     usernameEl.classList.remove("error");
                     passwordEl.classList.remove("error");
+                    let user = await getUserByUsername(this.usernameLogin)
+
+                    setCurrentUser(user)
                     await this.$router.push('/banks')
                 } else {
                     if (result.errorMessage) {

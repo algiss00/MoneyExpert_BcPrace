@@ -1,6 +1,15 @@
 import axios from "axios";
 
 const url = "http://localhost:8080";
+let currentUser = null;
+
+export function setCurrentUser(jsonUser) {
+    currentUser = jsonUser;
+}
+
+export function getCurrentUser() {
+    return currentUser;
+}
 
 export function markAsError(id, add_remove) {
     let element = document.getElementById(id);
@@ -14,8 +23,61 @@ export function markAsError(id, add_remove) {
     }
 }
 
+export async function getCategoryByName(name) {
+    let result = await axios.get(`${url}/category/user-by-name`, {
+        params: {
+            name: name,
+        },
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+        }
+    });
+    return result.data
+}
+
 export async function getBankAccById(id) {
     let result = await axios.get(`${url}/bank-account/${id}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+        }
+    });
+    return result.data
+}
+
+export async function getTransactionById(id) {
+    let result = await axios.get(`${url}/transaction/${id}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+        }
+    });
+    return result.data
+}
+
+export async function getAllTransactions(bankAccId) {
+    let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            if (error.response.data.message === "Not authenticated client") {
+                alert(error.response.data.message);
+                window.location.replace("/");
+            }
+        }
+    });
+    return result.data
+}
+
+export async function getUserByUsername(username) {
+    let result = await axios.get(`${url}/user/username`, {
+        params: {
+            username: username,
+        },
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
@@ -41,6 +103,20 @@ export async function getAllUsersCreatedBanks() {
 
 export async function getAllUsersAvailableBanks() {
     let result = await axios.get(`${url}/user/available-accounts`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            if (error.response.data.message === "Not authenticated client") {
+                alert(error.response.data.message);
+                window.location.replace("/");
+            }
+        }
+    });
+    return result.data
+}
+
+export async function getAllUsersCategories() {
+    let result = await axios.get(`${url}/user/categories`, {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
@@ -84,6 +160,7 @@ export async function logout() {
                 }
             }
         });
+    setCurrentUser(null)
     return result.data
 }
 
@@ -107,6 +184,26 @@ export async function addBankAccount(jsonBankAcc) {
     return await axios.post(`${url}/bank-account`, jsonBankAcc, {
         "headers": {
             "content-type": "application/json",
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                if (error.response.data.status === 400) {
+                    alert("Not valid data!")
+                }
+            }
+        })
+}
+
+export async function addTransaction(jsonTransaction, accId, categoryId) {
+    return await axios.post(`${url}/transaction`, jsonTransaction, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            accId: accId,
+            categoryId: categoryId
         },
         withCredentials: true
     })
