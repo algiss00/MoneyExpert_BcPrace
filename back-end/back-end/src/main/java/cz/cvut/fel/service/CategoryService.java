@@ -28,6 +28,10 @@ public class CategoryService extends AbstractServiceHelper {
         return categoryDao.getUsersCreatedCategory(getAuthenticatedUser().getId());
     }
 
+    public Category getUsersCategoryByName(String name) throws Exception {
+        return categoryDao.getUsersCategoryByName(getAuthenticatedUser().getId(), name);
+    }
+
     public List<Budget> getAllBudgetsFromCategory(int catId) throws Exception {
         return getByIdCategory(catId).getBudget();
     }

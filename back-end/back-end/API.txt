@@ -96,6 +96,8 @@ CATEGORY
 
 /category/user-created - get user created Categories
 
+/category/user-by-name?name={categoryName} - get users Category by name
+
 /category/budget/{catId} - get budget from Category where categoryId = {catId}
 
 /category/transactions/{catId} - get all Transactions from Category where categoryId = {catId}

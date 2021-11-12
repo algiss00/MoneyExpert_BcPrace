@@ -41,6 +41,12 @@ public class CategoryController {
         return new ResponseEntity<>(usersCreatedCategories, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/user-by-name", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getUsersCreatedCategory(@RequestParam String name) throws Exception {
+        Category category = categoryService.getUsersCategoryByName(name);
+        return new ResponseEntity<>(category, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/budget/{catId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getAllBudgetsFromCategory(@PathVariable int catId) throws Exception {
         List<Budget> budget = categoryService.getAllBudgetsFromCategory(catId);
