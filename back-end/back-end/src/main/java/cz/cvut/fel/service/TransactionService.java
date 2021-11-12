@@ -84,7 +84,7 @@ public class TransactionService extends AbstractServiceHelper {
         Category category = getByIdCategory(categoryId);
         transaction.setBankAccount(b);
         transaction.setCategory(category);
-        transaction.setDate(new Date());
+        transaction.setDate(transaction.getDate());
         Transaction persistedTransaction = transactionDao.persist(transaction);
 
         b.getTransactions().add(transaction);
