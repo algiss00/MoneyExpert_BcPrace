@@ -378,10 +378,10 @@ public class TransactionService extends AbstractServiceHelper {
     private void updateTransactionTypeLogic(Transaction oldTransaction, TypeTransaction typeTransaction, BankAccount transBankAcc) {
         Double balance = transBankAcc.getBalance();
         if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.EXPENSE) {
-            transBankAcc.setBalance(balance - oldTransaction.getAmount());
+            transBankAcc.setBalance(balance - oldTransaction.getAmount() - oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         } else if (oldTransaction.getTypeTransaction() != typeTransaction && typeTransaction == TypeTransaction.INCOME) {
-            transBankAcc.setBalance(balance + oldTransaction.getAmount());
+            transBankAcc.setBalance(balance + oldTransaction.getAmount() + oldTransaction.getAmount());
             bankAccountDao.update(transBankAcc);
         }
     }
