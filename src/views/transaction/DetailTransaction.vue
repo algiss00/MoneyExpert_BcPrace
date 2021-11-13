@@ -6,52 +6,107 @@
                     <v-card class="elevation-12">
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail transakce</v-toolbar-title>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                    class="mx-2"
+                                    fab
+                                    dark
+                                    small
+                                    color="#e7f6ff"
+                                    @click="removeTransaction($event)"
+                            >
+                                <v-icon
+                                        color="red"
+                                >
+                                    mdi-delete
+                                </v-icon>
+                            </v-btn>
                         </v-toolbar>
                         <v-card-text>
                             <v-form>
-                                <v-text-field
-                                        id="date"
-                                        label="datum"
-                                        v-model="date"
-                                        hide-details="auto"
-                                        readonly
-                                />
+                                <v-menu
+                                        ref="menu"
+                                        v-model="menu"
+                                        :close-on-content-click="false"
+                                        :return-value.sync="date"
+                                        transition="scale-transition"
+                                        offset-y
+                                        min-width="auto"
+                                >
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field
+                                                v-model="date"
+                                                label="Picker in menu"
+                                                prepend-icon="mdi-calendar"
+                                                readonly
+                                                v-bind="attrs"
+                                                v-on="on"
+                                        />
+                                    </template>
+                                    <v-date-picker
+                                            v-model="date"
+                                            no-title
+                                            scrollable
+                                    >
+                                        <v-spacer/>
+                                        <v-btn
+                                                text
+                                                color="primary"
+                                                @click="menu = false"
+                                        >
+                                            Cancel
+                                        </v-btn>
+                                        <v-btn
+                                                text
+                                                color="primary"
+                                                @click="$refs.menu.save(date)"
+                                        >
+                                            OK
+                                        </v-btn>
+                                    </v-date-picker>
+                                </v-menu>
                                 <v-text-field
                                         id="amount"
                                         label="částka"
                                         v-model="amount"
                                         hide-details="auto"
-                                        readonly
                                 />
                                 <v-text-field
                                         id="jottings"
                                         label="poznámky"
                                         v-model="jottings"
                                         hide-details="auto"
-                                        readonly
                                 />
-                                <v-btn color="#e7f6ff" id="editBtn">Změnit datum, částku, poznámky</v-btn>
+                                <v-btn color="#e7f6ff" @click="editBasicInfo($event)" id="editBtn">Změnit datum, částku,
+                                    poznámky
+                                </v-btn>
                                 <v-select
                                         id="type"
                                         :items="types"
                                         v-model="type"
                                         label="typ"
-                                        readonly
                                 />
-                                <v-btn color="#e7f6ff" id="editBtnType">Změnit typ</v-btn>
-                                <v-text-field
+                                <v-btn color="#e7f6ff" @click="editTypeTransaction" id="editBtnType">Změnit typ</v-btn>
+                                <v-select
                                         id="category"
+                                        :items="categories"
                                         v-model="category"
-                                        label="kategorie"
-                                        readonly
+                                        label="Vyberte kategorii"
+                                        item-text="name"
+                                        item-value="id"
+                                        persistent-hint
+                                        return-object
+                                        single-line
                                 />
-                                <v-btn color="#e7f6ff" id="editBtnCategory">Změnit kategorii</v-btn>
+                                <v-btn color="#e7f6ff" @click="editCategoryTransaction" id="editBtnCategory">Změnit
+                                    kategorii
+                                </v-btn>
                                 <v-text-field
                                         id="bankAcc"
                                         label="účet"
                                         v-model="bankAcc"
                                         hide-details="auto"
-                                        readonly
+                                        disabled
                                 />
                             </v-form>
                         </v-card-text>
@@ -67,34 +122,120 @@
 </template>
 
 <script>
-    import {getTransactionById, getBankAccById} from "../../api";
+    import {
+        getTransactionById,
+        getBankAccById,
+        editBasicTransaction,
+        editTypeTransaction,
+        editCategoryTransaction,
+        markAsError,
+        getCategoryByName,
+        getAllUsersCategories,
+        removeTransactionFromBank
+    } from "../../api";
+
+
+    function validate() {
+        let amountEl = document.getElementById("amount")
+
+        if (amountEl.value.trim().length === 0 || amountEl.value.trim() <= 0) {
+            markAsError("amount", true);
+        } else {
+            markAsError("amount", false);
+        }
+        return !(amountEl.classList.value === "error");
+    }
+
+    function findCategoryByNameInArray(array, name) {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].name === name) {
+                return array[i]
+            }
+        }
+        return null
+    }
 
     export default {
         name: 'DetailTransaction',
         data: () => ({
             types: ['EXPENSE', 'INCOME'],
             date: "",
+            categories: [],
             category: "",
             type: "",
             amount: "",
             jottings: "",
-            bankAcc: ""
+            bankAcc: "",
+            menu: false
         }),
         methods: {
             toTransactions() {
                 this.$router.push('/transactions/' + this.$route.params.bankId)
             },
+            async editBasicInfo(event) {
+                if (!validate()) {
+                    event.preventDefault()
+                    return
+                }
+
+                const jsonTransaction = JSON.stringify({
+                    amount: this.amount,
+                    jottings: this.jottings,
+                    date: this.date
+                });
+
+                let result = await editBasicTransaction(jsonTransaction, this.$route.params.transId)
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.status === 201) {
+                    alert("Success!")
+                }
+            },
+            async editTypeTransaction() {
+                let result = await editTypeTransaction(this.$route.params.transId, this.type)
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.status === 201) {
+                    alert("Success!")
+                }
+            },
+            async editCategoryTransaction() {
+                let category = await getCategoryByName(this.category.name)
+
+                let result = await editCategoryTransaction(this.$route.params.transId, category.id)
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.status === 201) {
+                    alert("Success!")
+                }
+            },
+            async removeTransaction(event) {
+                if (!confirm("Opravdu checete smazat transakci?")) {
+                    event.preventDefault()
+                    return
+                }
+
+                let result = await removeTransactionFromBank(this.$route.params.transId, this.$route.params.bankId)
+                if (result == null || result.status !== 200) {
+                    return
+                } else if (result.status === 200) {
+                    alert("Success!")
+                    await this.$router.push('/transactions/' + this.$route.params.bankId)
+                }
+            }
         },
         async mounted() {
             let bankAcc = await getBankAccById(this.$route.params.bankId)
-            let result = await getTransactionById(this.$route.params.transId)
-            this.date = new Date(result.date).toDateString()
-            this.category = result.category.name
-            this.type = result.typeTransaction
-            this.amount = result.amount
-            this.jottings = result.jottings
+            let categories = await getAllUsersCategories()
+            this.categories = categories
+            let transactionById = await getTransactionById(this.$route.params.transId)
+            this.category = findCategoryByNameInArray(categories, transactionById.category.name)
+            this.date = new Date(transactionById.date).toISOString().substring(0, 19)
+            this.type = transactionById.typeTransaction
+            this.amount = transactionById.amount
+            this.jottings = transactionById.jottings
             this.bankAcc = bankAcc.name
-            console.log(result)
+            console.log(transactionById)
         }
     }
 </script>
@@ -102,7 +243,7 @@
 <style>
     #editBtn {
         margin: 15px;
-        right: 20px;
+        right: 25px;
     }
 
     #editBtnType {

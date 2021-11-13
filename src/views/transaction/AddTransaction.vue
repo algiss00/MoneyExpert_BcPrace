@@ -145,15 +145,13 @@
                     date: this.date
                 });
 
-                console.log(jsonTransaction)
-
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
-                console.log(result)
-                if (result.status === 201) {
+
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.status === 201) {
                     alert("Success!")
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
-                } else {
-                    alert("Not valid response!")
                 }
             },
             toTransactions() {

@@ -84,11 +84,11 @@
                 });
 
                 let result = await addBankAccount(jsonBankAcc)
-                if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
                     alert("Success!")
                     await this.$router.push('/banks')
-                } else {
-                    alert("Not valid response!")
                 }
             }
         }

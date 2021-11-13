@@ -64,10 +64,8 @@ export async function getAllTransactions(bankAccId) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            if (error.response.data.message === "Not authenticated client") {
-                alert(error.response.data.message);
-                window.location.replace("/");
-            }
+            alert(error.response.data.message);
+            window.location.replace("/");
         }
     });
     return result.data
@@ -92,10 +90,8 @@ export async function getAllUsersCreatedBanks() {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            if (error.response.data.message === "Not authenticated client") {
-                alert(error.response.data.message);
-                window.location.replace("/");
-            }
+            alert(error.response.data.message);
+            window.location.replace("/");
         }
     });
     return result.data
@@ -106,10 +102,32 @@ export async function getAllUsersAvailableBanks() {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            if (error.response.data.message === "Not authenticated client") {
-                alert(error.response.data.message);
-                window.location.replace("/");
-            }
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getCurrentUserBackEnd() {
+    let result = await axios.get(`${url}/user/current-user`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getAllOwnersOfBankAcc(bankId) {
+    let result = await axios.get(`${url}/bank-account/owners/${bankId}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
         }
     });
     return result.data
@@ -138,11 +156,9 @@ export async function login(username, password) {
         withCredentials: true
     })
         .catch(function (error) {
+            console.log(error)
             if (error.response) {
-                console.log(error.response)
-                if (error.response.data.errorMessage) {
-                    alert("Error! Maybe this username or email already exists!")
-                }
+                alert("Invalid data!")
             }
         });
     return result.data
@@ -154,7 +170,6 @@ export async function logout() {
     })
         .catch(function (error) {
             if (error.response) {
-                console.log(error.response)
                 if (error.response.data.errorMessage) {
                     alert("Error!")
                 }
@@ -173,9 +188,7 @@ export async function registration(jsonUser) {
     })
         .catch(function (error) {
             if (error.response) {
-                if (error.response.data.status === 400) {
-                    alert("Error! Maybe this username or email already exists!")
-                }
+                alert("Error! Maybe this username or email already exists!")
             }
         })
 }
@@ -189,9 +202,7 @@ export async function addBankAccount(jsonBankAcc) {
     })
         .catch(function (error) {
             if (error.response) {
-                if (error.response.data.status === 400) {
-                    alert("Not valid data!")
-                }
+                alert("Not valid data!")
             }
         })
 }
@@ -209,9 +220,137 @@ export async function addTransaction(jsonTransaction, accId, categoryId) {
     })
         .catch(function (error) {
             if (error.response) {
-                if (error.response.data.status === 400) {
-                    alert("Not valid data!")
-                }
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function shareBankAccount(username, bankId) {
+    return await axios.post(`${url}/bank-account/owner`, null, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            username: username,
+            accId: bankId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function editBankAcc(jsonBankAcc, bankId) {
+    return await axios.post(`${url}/bank-account/update`, jsonBankAcc, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            accId: bankId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function editBasicTransaction(jsonTransaction, transId) {
+    return await axios.post(`${url}/transaction/update-basic`, jsonTransaction, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            transId: transId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function editCategoryTransaction(transId, categoryId) {
+    return await axios.post(`${url}/transaction/update-category`, null, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            transId: transId,
+            catId: categoryId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function editTypeTransaction(transId, type) {
+    return await axios.post(`${url}/transaction/update-type`, null, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            transId: transId,
+            typeTransaction: type
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function removeTransactionFromBank(transId, bankAccountId) {
+    return await axios.delete(`${url}/bank-account/transaction`, {
+        params: {
+            transId: transId,
+            bankAccountId: bankAccountId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function removeBankAcc(bankAccountId) {
+    return await axios.delete(`${url}/bank-account/${bankAccountId}`, {
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+
+export async function removeOwnerFromBankAcc(userId, bankAccountId) {
+    return await axios.delete(`${url}/bank-account/owner`, {
+        params: {
+            userId: userId,
+            accId: bankAccountId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
             }
         })
 }

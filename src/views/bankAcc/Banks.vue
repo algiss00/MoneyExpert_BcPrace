@@ -30,7 +30,7 @@
                                 Měna
                             </th>
                             <th class="text-left">
-                                Editace
+                                Nastavení
                             </th>
                         </tr>
                         </thead>
