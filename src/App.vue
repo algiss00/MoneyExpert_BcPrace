@@ -48,8 +48,8 @@
             menuItems() {
                 let menuItems = [
                     {title: 'Profile', link: '/profile'},
-                    {title: 'Dashboard', link: '/dashboard'},
                     {title: 'Účty', link: '/banks'},
+                    {title: 'Dashboard', link: '/dashboard'},
                     {title: 'Transakce', link: '/transactions'},
                     {title: 'Statistiky', link: '/statistic'},
                     {title: 'Závazky', link: '/debts'},

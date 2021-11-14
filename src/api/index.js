@@ -71,6 +71,22 @@ export async function getAllTransactions(bankAccId) {
     return result.data
 }
 
+export async function getAllTransactionsByMonth(bankAccId, month, year) {
+    let result = await axios.get(`${url}/transaction/sorted-month-year/${bankAccId}`, {
+        params: {
+            month: month,
+            year: year
+        },
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
 export async function getUserByUsername(username) {
     let result = await axios.get(`${url}/user/username`, {
         params: {
@@ -104,6 +120,29 @@ export async function getAllUsersAvailableBanks() {
         if (error.response) {
             alert(error.response.data.message);
             window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getAllUsersBanks() {
+    let result = await axios.get(`${url}/user/all-accounts`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getCreatorOfBankAcc(bankAccId) {
+    let result = await axios.get(`${url}/bank-account/creator/${bankAccId}`, {
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message + " not creator of bankAcc");
         }
     });
     return result.data
@@ -215,6 +254,25 @@ export async function addTransaction(jsonTransaction, accId, categoryId) {
         params: {
             accId: accId,
             categoryId: categoryId
+        },
+        withCredentials: true
+    })
+        .catch(function (error) {
+            if (error.response) {
+                alert("Not valid data!")
+            }
+        })
+}
+
+export async function transferTransaction(fromAccId, toAccId, transId) {
+    return await axios.post(`${url}/transaction/transfer`, null, {
+        "headers": {
+            "content-type": "application/json",
+        },
+        params: {
+            fromAccId: fromAccId,
+            toAccId: toAccId,
+            transId: transId
         },
         withCredentials: true
     })

@@ -7,11 +7,7 @@
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail účtu</v-toolbar-title>
                             <v-btn
-                                    class="mx-2"
-                                    fab
-                                    dark
-                                    small
-                                    color="#e7f6ff"
+                                    icon
                                     @click="dialog = true"
                             >
                                 <v-icon
@@ -58,10 +54,7 @@
                             <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
-                                    fab
-                                    dark
-                                    small
-                                    color="#e7f6ff"
+                                    icon
                                     @click="removeBankAcc($event)"
                             >
                                 <v-icon

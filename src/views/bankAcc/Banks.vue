@@ -5,18 +5,26 @@
                 <v-card-actions>
                     <v-btn @click="logout">Logout</v-btn>
                 </v-card-actions>
-                <v-card-title class="mx-auto">
+                <v-card-title class="mx-auto text--black">
                     Přehled účtů
+                    <v-fab-transition>
+                        <v-btn
+                                class="m4-position"
+                                to="/banks/addBankAcc"
+                                dark
+                                small
+                                color="green"
+                                fab
+                        >
+                            <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </v-fab-transition>
                 </v-card-title>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn class="m4-position" to="/banks/addBankAcc">Přidat účet</v-btn>
-                </v-card-actions>
-                <div class="font-weight-medium grey--text m-left">
+                <div class="font-weight-medium black--text m-left">
                     Created accounts
                 </div>
                 <!--            TODO - change color of table!-->
-                <v-simple-table dark>
+                <v-simple-table dark id="createdTab">
                     <template v-slot:default>
                         <thead>
                         <tr>
@@ -45,14 +53,11 @@
                             <td>{{ item.currency }}</td>
                             <td>
                                 <v-btn
-                                        color="primary"
-                                        fab
-                                        small
-                                        dark
+                                        icon
                                         @click.stop="detailBankAcc(item)"
                                 >
                                     <v-icon>
-                                        mdi-pencil
+                                        mdi-wrench
                                     </v-icon>
                                 </v-btn>
                             </td>
@@ -61,10 +66,10 @@
                     </template>
                 </v-simple-table>
 
-                <div class="font-weight-medium grey--text m-left">
+                <div class="font-weight-medium black--text m-left">
                     Available accounts
                 </div>
-                <v-simple-table dark>
+                <v-simple-table dark id="availableTab">
                     <template v-slot:default>
                         <thead>
                         <tr>
@@ -77,6 +82,9 @@
                             <th class="text-left">
                                 Měna
                             </th>
+                            <th class="text-left">
+                                Detail
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -88,10 +96,69 @@
                             <td>{{ item.name }}</td>
                             <td>{{ item.balance }}</td>
                             <td>{{ item.currency }}</td>
+                            <td>
+                                <v-btn
+                                        icon
+                                        @click.stop="dialog = !dialog, detailAvailableBank(item)"
+                                >
+                                    <v-icon>mdi-wrench</v-icon>
+                                </v-btn>
+                            </td>
                         </tr>
                         </tbody>
                     </template>
                 </v-simple-table>
+
+                <v-dialog
+                        v-model="dialog"
+                        max-width="500px"
+                >
+                    <v-card>
+                        <v-card-title>
+                            <span>Detail účtu</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-text-field
+                                    id="name"
+                                    label="název"
+                                    v-model="name"
+                                    hide-details="auto"
+                                    readonly
+                            />
+                            <v-text-field
+                                    id="currency"
+                                    label="měna"
+                                    v-model="currency"
+                                    hide-details="auto"
+                                    readonly
+                            />
+                            <v-text-field
+                                    id="balance"
+                                    label="balance"
+                                    v-model="balance"
+                                    hide-details="auto"
+                                    readonly
+                            />
+                            <v-text-field
+                                    id="creator"
+                                    label="creator"
+                                    v-model="creator"
+                                    hide-details="auto"
+                                    readonly
+                            />
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn
+                                    color="primary"
+                                    text
+                                    @click="dialog = false"
+                            >
+                                Zavřit
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+
             </v-card>
         </v-container>
     </v-app>
@@ -99,22 +166,38 @@
 <style>
     .m-left {
         text-align: left;
+        margin-left: 20px;
+        font-size: 20px;
     }
 
     .m4-position {
-        bottom: 50px;
+        left: 20px;
+    }
+
+    #createdTab {
+        margin-bottom: 30px;
+    }
+
+    #availableTab {
+        margin-bottom: 10px;
     }
 </style>
 
 <script>
-    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, logout, getCurrentUser} from "../../api";
+    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, logout, getCreatorOfBankAcc} from "../../api";
 
     export default {
         name: "banks",
         data: () => {
             return {
                 createdBanks: [],
-                availableBanks: []
+                availableBanks: [],
+                show: false,
+                name: "",
+                currency: "",
+                balance: "",
+                creator: "",
+                dialog: false
             }
         },
         methods: {
@@ -129,6 +212,18 @@
                 if (result.success == true && result.loggedIn == false) {
                     await this.$router.push('/')
                 }
+            },
+            // async getCreator(item) {
+            //     let creator = await getCreatorOfBankAcc(item.id)
+            //     console.log(creator.username)
+            //     return creator.username
+            // },
+            async detailAvailableBank(item) {
+                let creator = await getCreatorOfBankAcc(item.id)
+                this.name = item.name
+                this.currency = item.currency
+                this.balance = item.balance
+                this.creator = creator.username
             }
         },
         async mounted() {
@@ -137,7 +232,6 @@
             let availableBanks = await getAllUsersAvailableBanks()
             this.createdBanks = createdBanks
             this.availableBanks = availableBanks
-            console.log(getCurrentUser())
         }
     }
 </script>

@@ -50,23 +50,6 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-select
-                                        id="category"
-                                        :items="categories"
-                                        v-model="category"
-                                        label="Vyberte kategorii"
-                                        item-text="name"
-                                        item-value="id"
-                                        persistent-hint
-                                        return-object
-                                        single-line
-                                />
-                                <v-select
-                                        id="type"
-                                        :items="types"
-                                        v-model="type"
-                                        label="typ"
-                                />
                                 <v-text-field
                                         id="amount"
                                         label="částka"
@@ -78,6 +61,22 @@
                                         label="poznámky"
                                         v-model="jottings"
                                         hide-details="auto"
+                                />
+                                <v-select
+                                        id="type"
+                                        :items="types"
+                                        v-model="type"
+                                        label="typ"
+                                />
+                                <v-select
+                                        id="category"
+                                        :items="categories"
+                                        v-model="category"
+                                        label="Kategorie"
+                                        item-text="name"
+                                        item-value="id"
+                                        persistent-hint
+                                        return-object
                                 />
                                 <v-text-field
                                         id="bankAcc"

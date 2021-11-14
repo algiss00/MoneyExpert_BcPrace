@@ -6,13 +6,60 @@
                     <v-card class="elevation-12">
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail transakce</v-toolbar-title>
+                            <v-btn
+                                    icon
+                                    @click="dialog = true"
+                            >
+                                <v-icon
+                                        color="blue"
+                                >
+                                    mdi-share
+                                </v-icon>
+                            </v-btn>
+                            <v-dialog
+                                    v-model="dialog"
+                                    max-width="500px"
+                            >
+                                <v-card>
+                                    <v-card-title>
+                                        <span>Převod transakci</span>
+                                    </v-card-title>
+                                    <v-card-text>
+                                        <v-select
+                                                id="bankAccounts"
+                                                :items="allBankAccounts"
+                                                v-model="bankAccount"
+                                                label="dostupné bankovní účty"
+                                                item-text="name"
+                                                item-value="id"
+                                                persistent-hint
+                                                return-object
+                                        />
+                                    </v-card-text>
+                                    <v-card-actions>
+                                        <v-btn
+                                                color="primary"
+                                                text
+                                                @click="dialog = false"
+                                        >
+                                            Zavřit
+                                        </v-btn>
+                                        <v-spacer/>
+                                        <v-btn
+                                                color="primary"
+                                                text
+                                                @click="transferTransaction($event)"
+                                        >
+                                            Transfer
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-dialog>
+
                             <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
-                                    fab
-                                    dark
-                                    small
-                                    color="#e7f6ff"
+                                    icon
                                     @click="removeTransaction($event)"
                             >
                                 <v-icon
@@ -91,12 +138,11 @@
                                         id="category"
                                         :items="categories"
                                         v-model="category"
-                                        label="Vyberte kategorii"
+                                        label="Kategorie"
                                         item-text="name"
                                         item-value="id"
                                         persistent-hint
                                         return-object
-                                        single-line
                                 />
                                 <v-btn color="#e7f6ff" @click="editCategoryTransaction" id="editBtnCategory">Změnit
                                     kategorii
@@ -131,7 +177,9 @@
         markAsError,
         getCategoryByName,
         getAllUsersCategories,
-        removeTransactionFromBank
+        removeTransactionFromBank,
+        getAllUsersBanks,
+        transferTransaction
     } from "../../api";
 
 
@@ -146,7 +194,7 @@
         return !(amountEl.classList.value === "error");
     }
 
-    function findCategoryByNameInArray(array, name) {
+    function findByNameInArray(array, name) {
         for (let i = 0; i < array.length; i++) {
             if (array[i].name === name) {
                 return array[i]
@@ -161,12 +209,15 @@
             types: ['EXPENSE', 'INCOME'],
             date: "",
             categories: [],
+            allBankAccounts: [],
+            bankAccount: "",
             category: "",
             type: "",
             amount: "",
             jottings: "",
             bankAcc: "",
-            menu: false
+            menu: false,
+            dialog: false
         }),
         methods: {
             toTransactions() {
@@ -222,14 +273,34 @@
                     alert("Success!")
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
                 }
+            },
+            async transferTransaction(event) {
+                if (this.bankAccount.name === this.bankAcc) {
+                    event.preventDefault()
+                    alert("Not valid Trasfer! You must transfer to another bank account!")
+                    return
+                }
+
+                let result = await transferTransaction(this.$route.params.bankId, this.bankAccount.id, this.$route.params.transId)
+                console.log(result)
+                if (result == null || result.status !== 201) {
+                    return
+                } else if (result.status === 201) {
+                    alert("Success!")
+                    await this.$router.push('/transactions/' + this.$route.params.bankId)
+                }
             }
         },
         async mounted() {
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             let categories = await getAllUsersCategories()
+            let allUsersBanks = await getAllUsersBanks()
+
+            this.allBankAccounts = allUsersBanks
+            this.bankAccount = findByNameInArray(allUsersBanks, bankAcc.name)
             this.categories = categories
             let transactionById = await getTransactionById(this.$route.params.transId)
-            this.category = findCategoryByNameInArray(categories, transactionById.category.name)
+            this.category = findByNameInArray(categories, transactionById.category.name)
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction
             this.amount = transactionById.amount
@@ -243,7 +314,7 @@
 <style>
     #editBtn {
         margin: 15px;
-        right: 25px;
+        right: 20px;
     }
 
     #editBtnType {
