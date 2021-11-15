@@ -215,7 +215,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("month", month)
                     .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
-                    .setParameter("type", type)
+                    .setParameter("type", type.toString())
                     .setParameter("categoryId", categoryId)
                     .getResultList();
         } catch (Exception ex) {
