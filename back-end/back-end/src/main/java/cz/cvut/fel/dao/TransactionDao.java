@@ -182,12 +182,12 @@ public class TransactionDao extends AbstractDao<Transaction> {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t " +
                             "where MONTH(t.date) = :month and YEAR(t.date) = :year " +
-                            "and t.bank_account_id = :bankAccId and t.type_transaction = :type order by t.date desc",
+                            "and t.bank_account_id = :bankAccId and t.type_transaction = :typeTrans order by t.date desc",
                     Transaction.class)
                     .setParameter("month", month)
                     .setParameter("year", year)
                     .setParameter("bankAccId", bankAccId)
-                    .setParameter("type", type)
+                    .setParameter("typeTrans", type.toString())
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();
