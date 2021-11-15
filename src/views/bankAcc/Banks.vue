@@ -208,16 +208,10 @@
                 this.$router.push('/transactions/' + item.id)
             },
             async logout() {
-                let result = await logout()
-                if (result.success == true && result.loggedIn == false) {
-                    await this.$router.push('/')
-                }
+                await logout()
+                this.$store.commit("setUser", null)
+                await this.$router.push('/')
             },
-            // async getCreator(item) {
-            //     let creator = await getCreatorOfBankAcc(item.id)
-            //     console.log(creator.username)
-            //     return creator.username
-            // },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
                 this.name = item.name
@@ -227,7 +221,10 @@
             }
         },
         async mounted() {
-            // TODO - add profil ICON
+            // todo Add to All
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
+            }
             let createdBanks = await getAllUsersCreatedBanks()
             let availableBanks = await getAllUsersAvailableBanks()
             this.createdBanks = createdBanks

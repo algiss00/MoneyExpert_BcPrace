@@ -8,38 +8,51 @@
                             <v-toolbar-title>Registrace</v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
                                 <v-text-field
                                         id="usernameRegistr"
                                         label="username"
                                         v-model="username"
+                                        :rules="nameRules"
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-text-field
                                         id="passwordRegistr"
                                         label="password"
                                         v-model="password"
+                                        :rules="passRules"
                                         type=password
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-text-field
                                         id="emailRegistr"
                                         label="email"
                                         v-model="email"
                                         type=email
+                                        :rules="emailRules"
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-text-field
                                         id="nameRegistr"
                                         label="name"
                                         v-model="name"
+                                        :rules="nameRules"
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-text-field
                                         id="lastnameRegistr"
                                         label="lastname"
                                         v-model="lastname"
+                                        :rules="nameRules"
                                         hide-details="auto"
+                                        required
                                 />
                             </v-form>
                         </v-card-text>
@@ -48,7 +61,9 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="registr($event)" color="#e7f6ff" class="m3-position">Registrace</v-btn>
+                            <v-btn @click="registr($event)" color="#e7f6ff" :disabled="!valid"
+                                   class="m3-position">Registrace
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -58,55 +73,7 @@
 </template>
 
 <script>
-    import {registration, markAsError} from "../api";
-
-    function validate() {
-        let usernameEl = document.getElementById("usernameRegistr")
-        let passwordEl = document.getElementById("passwordRegistr")
-        let emailEl = document.getElementById("emailRegistr")
-        let nameEl = document.getElementById("nameRegistr")
-        let lasnameEl = document.getElementById("lastnameRegistr")
-
-        if (usernameEl.value.trim().length === 0) {
-            markAsError("usernameRegistr", true);
-        } else {
-            markAsError("usernameRegistr", false);
-        }
-        if (passwordEl.value.trim().length === 0) {
-            markAsError("passwordRegistr", true);
-        } else {
-            markAsError("passwordRegistr", false);
-        }
-        if (emailEl.value.trim().length === 0 || !ValidateEmail(emailEl.value)) {
-            markAsError("emailRegistr", true);
-        } else {
-            markAsError("emailRegistr", false);
-        }
-        if (nameEl.value.trim().length === 0) {
-            markAsError("nameRegistr", true);
-        } else {
-            markAsError("nameRegistr", false);
-        }
-        if (lasnameEl.value.trim().length === 0) {
-            markAsError("lastnameRegistr", true);
-        } else {
-            markAsError("lastnameRegistr", false);
-        }
-
-        return !(usernameEl.classList.value === "error" || passwordEl.classList.value === "error" || emailEl.classList.value === "error"
-            || nameEl.classList.value === "error" || lasnameEl.classList.value === "error");
-    }
-
-    /**
-     * @return {boolean}
-     */
-    function ValidateEmail(mail) {
-        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)) {
-            return true
-        }
-        alert("You have entered an invalid email address!")
-        return false
-    }
+    import {registration} from "../api";
 
     export default {
         name: 'SignUp',
@@ -115,11 +82,22 @@
             password: "",
             email: "",
             name: "",
-            lastname: ""
+            lastname: "",
+            nameRules: [
+                v => !!v.trim() || 'Name is required'
+            ],
+            passRules: [
+                v => !!v || 'Name is required'
+            ],
+            emailRules: [
+                v => !!v.trim() || 'E-mail is required',
+                v => /.+@.+/.test(v) || 'E-mail must be valid',
+            ],
+            valid: true,
         }),
         methods: {
             async registr(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
@@ -141,9 +119,3 @@
         }
     }
 </script>
-
-<style>
-    .error {
-        border: 3px solid red !important;
-    }
-</style>

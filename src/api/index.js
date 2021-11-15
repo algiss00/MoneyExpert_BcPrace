@@ -1,15 +1,6 @@
 import axios from "axios";
 
 const url = "http://localhost:8080";
-let currentUser = null;
-
-export function setCurrentUser(jsonUser) {
-    currentUser = jsonUser;
-}
-
-export function getCurrentUser() {
-    return currentUser;
-}
 
 export function markAsError(id, add_remove) {
     let element = document.getElementById(id);
@@ -31,7 +22,7 @@ export async function getCategoryByName(name) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -42,7 +33,7 @@ export async function getBankAccById(id) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -53,7 +44,7 @@ export async function getTransactionById(id) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -64,8 +55,7 @@ export async function getAllTransactions(bankAccId) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -80,8 +70,7 @@ export async function getAllTransactionsByMonth(bankAccId, month, year) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -97,8 +86,7 @@ export async function getAllTransactionsByType(bankAccId, month, year, type) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -114,8 +102,7 @@ export async function getAllTransactionsByCategory(bankAccId, month, year, categ
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -132,8 +119,7 @@ export async function getAllTransactionsByCategoryAndType(bankAccId, month, year
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -148,22 +134,25 @@ export async function getUserByUsername(username) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
+            console.log(error.response.data.message);
         }
     });
     return result.data
 }
 
 export async function getAllUsersCreatedBanks() {
-    let result = await axios.get(`${url}/user/created-accounts`, {
-        withCredentials: true
-    }).catch(function (error) {
+// TODO - takovy FORMAT!!! try catch
+    try {
+        let result = await axios.get(`${url}/user/created-accounts`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllUsersAvailableBanks() {
@@ -171,8 +160,7 @@ export async function getAllUsersAvailableBanks() {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -183,8 +171,7 @@ export async function getAllUsersBanks() {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -195,22 +182,21 @@ export async function getCreatorOfBankAcc(bankAccId) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message + " not creator of bankAcc");
+            console.log(error.response.data.message + " not creator of bankAcc");
         }
     });
     return result.data
 }
 
 export async function getCurrentUserBackEnd() {
-    let result = await axios.get(`${url}/user/current-user`, {
+    return await axios.get(`${url}/user/current-user`, {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    })
 }
 
 export async function getAllOwnersOfBankAcc(bankId) {
@@ -218,8 +204,7 @@ export async function getAllOwnersOfBankAcc(bankId) {
         withCredentials: true
     }).catch(function (error) {
         if (error.response) {
-            alert(error.response.data.message);
-            window.location.replace("/");
+            console.log(error.response.data.message);
         }
     });
     return result.data
@@ -231,8 +216,7 @@ export async function getAllUsersCategories() {
     }).catch(function (error) {
         if (error.response) {
             if (error.response.data.message === "Not authenticated client") {
-                alert(error.response.data.message);
-                window.location.replace("/");
+                console.log(error.response.data.message);
             }
         }
     });
@@ -250,25 +234,23 @@ export async function login(username, password) {
         .catch(function (error) {
             console.log(error)
             if (error.response) {
-                alert("Invalid data!")
+                console.log("Invalid data!")
             }
         });
     return result.data
 }
 
 export async function logout() {
-    let result = await axios.post(`${url}/logout`, null, {
+    return await axios.post(`${url}/logout`, null, {
         withCredentials: true
     })
         .catch(function (error) {
             if (error.response) {
                 if (error.response.data.errorMessage) {
-                    alert("Error!")
+                    console.log("Error logout!")
                 }
             }
         });
-    setCurrentUser(null)
-    return result.data
 }
 
 export async function registration(jsonUser) {
@@ -280,7 +262,7 @@ export async function registration(jsonUser) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Error! Maybe this username or email already exists!")
+                console.log("Error! Maybe this username or email already exists!")
             }
         })
 }
@@ -294,7 +276,7 @@ export async function addBankAccount(jsonBankAcc) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -312,7 +294,7 @@ export async function addTransaction(jsonTransaction, accId, categoryId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -331,7 +313,7 @@ export async function transferTransaction(fromAccId, toAccId, transId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -349,7 +331,7 @@ export async function shareBankAccount(username, bankId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -366,7 +348,7 @@ export async function editBankAcc(jsonBankAcc, bankId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -383,7 +365,7 @@ export async function editBasicTransaction(jsonTransaction, transId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -401,7 +383,7 @@ export async function editCategoryTransaction(transId, categoryId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -419,7 +401,7 @@ export async function editTypeTransaction(transId, type) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -434,7 +416,7 @@ export async function removeTransactionFromBank(transId, bankAccountId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -445,7 +427,7 @@ export async function removeBankAcc(bankAccountId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }
@@ -461,7 +443,7 @@ export async function removeOwnerFromBankAcc(userId, bankAccountId) {
     })
         .catch(function (error) {
             if (error.response) {
-                alert("Not valid data!")
+                console.log("Not valid data!")
             }
         })
 }

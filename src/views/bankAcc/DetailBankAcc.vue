@@ -291,7 +291,7 @@
             // TODO - set Creator! nejak mit nastevneho current usera
             let result = await getBankAccById(this.$route.params.id)
             let currentUser = await getCurrentUserBackEnd()
-            this.creator = currentUser.username
+            this.creator = currentUser.data.username
             this.name = result.name
             this.currency = result.currency
             this.balance = result.balance

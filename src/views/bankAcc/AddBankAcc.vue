@@ -8,23 +8,29 @@
                             <v-toolbar-title>Přidat bankovní účet</v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validations>
                                 <v-text-field
                                         id="nameBankAcc"
                                         label="název"
                                         v-model="name"
+                                        :rules="nameRules"
                                         hide-details="auto"
                                 />
                                 <v-select
                                         id="currencyBankAcc"
                                         :items="items"
                                         v-model="currency"
+                                        :rules="[v => !!v.trim() || 'Item is required']"
                                         label="měna"
                                 />
                                 <v-text-field
                                         id="balanceBankAcc"
                                         label="balance"
                                         v-model="balance"
+                                        :rules="nameRules"
                                         hide-details="auto"
                                 />
                             </v-form>
@@ -44,24 +50,7 @@
 </template>
 
 <script>
-    import {addBankAccount, markAsError} from "../../api";
-
-    function validate() {
-        let nameEl = document.getElementById("nameBankAcc")
-        let balanceEl = document.getElementById("balanceBankAcc")
-
-        if (nameEl.value.trim().length === 0) {
-            markAsError("nameBankAcc", true);
-        } else {
-            markAsError("nameBankAcc", false);
-        }
-        if (balanceEl.value.trim().length === 0) {
-            markAsError("balanceBankAcc", true);
-        } else {
-            markAsError("balanceBankAcc", false);
-        }
-        return !(nameEl.classList.value === "error" || balanceEl.classList.value === "error");
-    }
+    import {addBankAccount} from "../../api";
 
     export default {
         name: 'AddBankAcc',
@@ -69,11 +58,15 @@
             name: "",
             currency: "CZK",
             balance: "",
-            items: ['CZK', 'EUR']
+            items: ['CZK', 'EUR'],
+            nameRules: [
+                v => !!v.trim() || 'Name is required'
+            ],
+            valid: true,
         }),
         methods: {
             async addBankAcc(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }

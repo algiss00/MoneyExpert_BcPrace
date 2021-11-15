@@ -8,18 +8,25 @@
                             <v-toolbar-title>Přihlášení</v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
                                 <v-text-field
                                         id="usernameLogin"
                                         label="username"
                                         v-model="usernameLogin"
+                                        :rules="usernameRules"
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-text-field
                                         id="passwordLogin"
                                         label="password"
                                         v-model="passwordLogin"
                                         type=password
+                                        :rules="passRules"
+                                        required
                                         hide-details="auto"
                                 />
                             </v-form>
@@ -29,7 +36,8 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="login($event)" color="#e7f6ff" class="m3-position">Login</v-btn>
+                            <v-btn @click="login($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">Login
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -39,68 +47,51 @@
 </template>
 
 <script>
-    import {login, markAsError, setCurrentUser, getUserByUsername} from "../api";
-
-
-    function validate() {
-        let usernameEl = document.getElementById("usernameLogin")
-        let passwordEl = document.getElementById("passwordLogin")
-
-        if (usernameEl.value.trim().length === 0) {
-            markAsError("usernameLogin", true);
-        } else {
-            markAsError("usernameLogin", false);
-        }
-        if (passwordEl.value.trim().length === 0) {
-            markAsError("passwordLogin", true);
-        } else {
-            markAsError("passwordLogin", false);
-        }
-
-        return !(usernameEl.classList.value === "error" || passwordEl.classList.value === "error")
-    }
+    import {login, getUserByUsername} from "../api";
 
     export default {
         name: 'login',
         data: () => ({
             usernameLogin: "",
-            passwordLogin: ""
+            passwordLogin: "",
+            usernameRules: [
+                v => !!v.trim() || 'username is required',
+                v => /^\w{0,20}$/.test(v) || 'invalid username'// todo only english letters, cisla a underscore
+            ],
+            passRules: [
+                v => !!v || 'password is required'
+            ],
+            valid: true,
         }),
         methods: {
             async login(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
-                    alert("Empty fields!")
                     return
                 }
-                let usernameEl = document.getElementById("usernameLogin")
-                let passwordEl = document.getElementById("passwordLogin")
 
                 let result = await login(this.usernameLogin, this.passwordLogin)
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
-                    usernameEl.classList.remove("error");
-                    passwordEl.classList.remove("error");
                     let user = await getUserByUsername(this.usernameLogin)
-
-                    setCurrentUser(user)
+                    this.$store.commit("setUser", user)
                     await this.$router.push('/banks')
                 } else {
                     if (result.errorMessage) {
                         alert(result.errorMessage)
                     }
-                    usernameEl.classList.add("error")
-                    passwordEl.classList.add("error")
                 }
+            }
+        },
+        beforeMount() {
+            // todo!!! to ALL
+            if (this.$store.state.user) {
+                this.$router.push('/banks')
             }
         }
     };
 </script>
 
 <style>
-    .error {
-        border: 3px solid red !important;
-    }
-
     .m2-position {
         position: relative;
         left: 10px;
