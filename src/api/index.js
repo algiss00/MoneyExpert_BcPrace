@@ -87,6 +87,59 @@ export async function getAllTransactionsByMonth(bankAccId, month, year) {
     return result.data
 }
 
+export async function getAllTransactionsByType(bankAccId, month, year, type) {
+    let result = await axios.get(`${url}/transaction/sorted-type/${bankAccId}`, {
+        params: {
+            type: type,
+            month: month,
+            year: year
+        },
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getAllTransactionsByCategory(bankAccId, month, year, categoryId) {
+    let result = await axios.get(`${url}/transaction/sorted-category/${bankAccId}`, {
+        params: {
+            catId: categoryId,
+            month: month,
+            year: year
+        },
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+export async function getAllTransactionsByCategoryAndType(bankAccId, month, year, type, categoryId) {
+    let result = await axios.get(`${url}/transaction/sorted-type-category/${bankAccId}`, {
+        params: {
+            type: type,
+            catId: categoryId,
+            month: month,
+            year: year
+        },
+        withCredentials: true
+    }).catch(function (error) {
+        if (error.response) {
+            alert(error.response.data.message);
+            window.location.replace("/");
+        }
+    });
+    return result.data
+}
+
+
 export async function getUserByUsername(username) {
     let result = await axios.get(`${url}/user/username`, {
         params: {

@@ -69,6 +69,7 @@
                                 label="Typ"
                                 class="float-left"
                                 style="width:150px; margin-right: 50px;"
+                                v-on:change="getAllTransactionsByTypeAndCategoryMethod"
                         />
                         <v-select
                                 id="category"
@@ -78,6 +79,7 @@
                                 item-text="name"
                                 item-value="id"
                                 style="width:200px;"
+                                v-on:change="getAllTransactionsByTypeAndCategoryMethod"
                                 persistent-hint
                                 return-object
                         />
@@ -122,7 +124,16 @@
 </template>
 
 <script>
-    import {getAllTransactionsByMonth, getAllUsersCategories} from "../../api";
+    import {
+        getAllTransactionsByCategory, getAllTransactionsByCategoryAndType,
+        getAllTransactionsByMonth,
+        getAllTransactionsByType,
+        getAllUsersCategories
+    } from "../../api";
+
+    async function getAllTransactionsByTypeAndCategoryMethod(bankId, month, year, type, categoryId) {
+        return await getAllTransactionsByCategoryAndType(bankId, month, year, type, categoryId)
+    }
 
     export default {
         name: "Transactions",
@@ -131,10 +142,13 @@
                 transactions: [],
                 date: new Date().toISOString().substr(0, 7),
                 menu: false,
-                types: ['EXPENSE', 'INCOME'],
-                type: "",
+                types: ['All', 'EXPENSE', 'INCOME'],
+                type: "All",
                 categories: [],
-                category: "",
+                category: {
+                    id: -1000,
+                    name: "All"
+                },
             }
         },
         methods: {
@@ -147,11 +161,35 @@
             async getTransactionsByMonth() {
                 let month = this.date.substr(5, 8)
                 let year = this.date.substr(0, 4)
+                this.type = "All"
+                this.category = {
+                    id: -1000,
+                    name: "All"
+                }
                 this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
-            }
+            },
+            async getAllTransactionsByTypeAndCategoryMethod() {
+                let month = this.date.substr(5, 8)
+                let year = this.date.substr(0, 4)
+                if (this.type === "All" && this.category.name === "All") {
+                    this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+                } else if (this.type !== "All" && this.category.name !== "All") {
+                    this.transactions = await getAllTransactionsByTypeAndCategoryMethod(this.$route.params.bankId, month,
+                        year, this.type, this.category.id)
+                } else if (this.type !== "All" && this.category.name === "All") {
+                    this.transactions = await getAllTransactionsByType(this.$route.params.bankId, month, year, this.type)
+                } else if (this.type === "All" && this.category.name !== "All") {
+                    this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, month, year, this.category.id)
+                }
+            },
         },
         async mounted() {
             let categories = await getAllUsersCategories()
+            let defaultCategory = {
+                id: -1000,
+                name: "All"
+            }
+            categories.push(defaultCategory)
             this.categories = categories
             let month = this.date.substr(5, 8)
             let year = this.date.substr(0, 4)
