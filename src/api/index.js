@@ -2,146 +2,159 @@ import axios from "axios";
 
 const url = "http://localhost:8080";
 
-export function markAsError(id, add_remove) {
-    let element = document.getElementById(id);
-    if (element == null) {
-        return;
-    }
-    if (add_remove) {
-        element.classList.add("error");
-    } else {
-        element.classList.remove("error");
-    }
-}
-
 export async function getCategoryByName(name) {
-    let result = await axios.get(`${url}/category/user-by-name`, {
-        params: {
-            name: name,
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/category/user-by-name`, {
+            params: {
+                name: name,
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getBankAccById(id) {
-    let result = await axios.get(`${url}/bank-account/${id}`, {
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/bank-account/${id}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getTransactionById(id) {
-    let result = await axios.get(`${url}/transaction/${id}`, {
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/transaction/${id}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllTransactions(bankAccId) {
-    let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllTransactionsByMonth(bankAccId, month, year) {
-    let result = await axios.get(`${url}/transaction/sorted-month-year/${bankAccId}`, {
-        params: {
-            month: month,
-            year: year
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/transaction/sorted-month-year/${bankAccId}`, {
+            params: {
+                month: month,
+                year: year
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllTransactionsByType(bankAccId, month, year, type) {
-    let result = await axios.get(`${url}/transaction/sorted-type/${bankAccId}`, {
-        params: {
-            type: type,
-            month: month,
-            year: year
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/transaction/sorted-type/${bankAccId}`, {
+            params: {
+                type: type,
+                month: month,
+                year: year
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllTransactionsByCategory(bankAccId, month, year, categoryId) {
-    let result = await axios.get(`${url}/transaction/sorted-category/${bankAccId}`, {
-        params: {
-            catId: categoryId,
-            month: month,
-            year: year
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/transaction/sorted-category/${bankAccId}`, {
+            params: {
+                catId: categoryId,
+                month: month,
+                year: year
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllTransactionsByCategoryAndType(bankAccId, month, year, type, categoryId) {
-    let result = await axios.get(`${url}/transaction/sorted-type-category/${bankAccId}`, {
-        params: {
-            type: type,
-            catId: categoryId,
-            month: month,
-            year: year
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/transaction/sorted-type-category/${bankAccId}`, {
+            params: {
+                type: type,
+                catId: categoryId,
+                month: month,
+                year: year
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
-
 export async function getUserByUsername(username) {
-    let result = await axios.get(`${url}/user/username`, {
-        params: {
-            username: username,
-        },
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/user/username`, {
+            params: {
+                username: username,
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function getAllUsersCreatedBanks() {
-// TODO - takovy FORMAT!!! try catch
     try {
         let result = await axios.get(`${url}/user/created-accounts`, {
             withCredentials: true
@@ -156,294 +169,421 @@ export async function getAllUsersCreatedBanks() {
 }
 
 export async function getAllUsersAvailableBanks() {
-    let result = await axios.get(`${url}/user/available-accounts`, {
-        withCredentials: true
-    }).catch(function (error) {
-        if (error.response) {
-            console.log(error.response.data.message);
-        }
-    });
-    return result.data
-}
-
-export async function getAllUsersBanks() {
-    let result = await axios.get(`${url}/user/all-accounts`, {
-        withCredentials: true
-    }).catch(function (error) {
-        if (error.response) {
-            console.log(error.response.data.message);
-        }
-    });
-    return result.data
-}
-
-export async function getCreatorOfBankAcc(bankAccId) {
-    let result = await axios.get(`${url}/bank-account/creator/${bankAccId}`, {
-        withCredentials: true
-    }).catch(function (error) {
-        if (error.response) {
-            console.log(error.response.data.message + " not creator of bankAcc");
-        }
-    });
-    return result.data
-}
-
-export async function getCurrentUserBackEnd() {
-    return await axios.get(`${url}/user/current-user`, {
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/user/available-accounts`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
         return null
-    })
+    }
 }
 
-export async function getAllOwnersOfBankAcc(bankId) {
-    let result = await axios.get(`${url}/bank-account/owners/${bankId}`, {
-        withCredentials: true
-    }).catch(function (error) {
+export async function getAllUsersBanks() {
+    try {
+        let result = await axios.get(`${url}/user/all-accounts`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
             console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
+}
+
+export async function getCreatorOfBankAcc(bankAccId) {
+    try {
+        let result = await axios.get(`${url}/bank-account/creator/${bankAccId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message + " not creator of bankAcc");
+        }
+        return null
+    }
+}
+
+export async function getCurrentUserBackEnd() {
+    try {
+        return await axios.get(`${url}/user/current-user`, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllOwnersOfBankAcc(bankId) {
+    try {
+        let result = await axios.get(`${url}/bank-account/owners/${bankId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
 }
 
 export async function getAllUsersCategories() {
-    let result = await axios.get(`${url}/user/categories`, {
-        withCredentials: true
-    }).catch(function (error) {
+    try {
+        let result = await axios.get(`${url}/user/categories`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
         if (error.response) {
-            if (error.response.data.message === "Not authenticated client") {
-                console.log(error.response.data.message);
-            }
+            console.log(error.response.data.message);
         }
-    });
-    return result.data
+        return null
+    }
 }
 
 export async function login(username, password) {
-    let result = await axios.post(`${url}/login`, null, {
-        params: {
-            username: username,
-            password: password
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            console.log(error)
-            if (error.response) {
-                console.log("Invalid data!")
-            }
-        });
-    return result.data
+    try {
+        let result = await axios.post(`${url}/login`, null, {
+            params: {
+                username: username,
+                password: password
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log("Invalid data!")
+        }
+        return null
+    }
 }
 
 export async function logout() {
-    return await axios.post(`${url}/logout`, null, {
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                if (error.response.data.errorMessage) {
-                    console.log("Error logout!")
-                }
-            }
-        });
+    try {
+        return await axios.post(`${url}/logout`, null, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Error logout!")
+        }
+        return null
+    }
 }
 
 export async function registration(jsonUser) {
-    return await axios.post(`${url}/user`, jsonUser, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Error! Maybe this username or email already exists!")
-            }
+    try {
+        return await axios.post(`${url}/user`, jsonUser, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Error! Maybe this username or email already exists!")
+        }
+        return null
+    }
 }
 
 export async function addBankAccount(jsonBankAcc) {
-    return await axios.post(`${url}/bank-account`, jsonBankAcc, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/bank-account`, jsonBankAcc, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function addTransaction(jsonTransaction, accId, categoryId) {
-    return await axios.post(`${url}/transaction`, jsonTransaction, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            accId: accId,
-            categoryId: categoryId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/transaction`, jsonTransaction, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                accId: accId,
+                categoryId: categoryId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function transferTransaction(fromAccId, toAccId, transId) {
-    return await axios.post(`${url}/transaction/transfer`, null, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            fromAccId: fromAccId,
-            toAccId: toAccId,
-            transId: transId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/transaction/transfer`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                fromAccId: fromAccId,
+                toAccId: toAccId,
+                transId: transId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function shareBankAccount(username, bankId) {
-    return await axios.post(`${url}/bank-account/owner`, null, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            username: username,
-            accId: bankId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/bank-account/owner`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                username: username,
+                accId: bankId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function editBankAcc(jsonBankAcc, bankId) {
-    return await axios.post(`${url}/bank-account/update`, jsonBankAcc, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            accId: bankId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/bank-account/update`, jsonBankAcc, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                accId: bankId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function editBasicTransaction(jsonTransaction, transId) {
-    return await axios.post(`${url}/transaction/update-basic`, jsonTransaction, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            transId: transId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/transaction/update-basic`, jsonTransaction, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                transId: transId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function editCategoryTransaction(transId, categoryId) {
-    return await axios.post(`${url}/transaction/update-category`, null, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            transId: transId,
-            catId: categoryId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/transaction/update-category`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                transId: transId,
+                catId: categoryId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function editTypeTransaction(transId, type) {
-    return await axios.post(`${url}/transaction/update-type`, null, {
-        "headers": {
-            "content-type": "application/json",
-        },
-        params: {
-            transId: transId,
-            typeTransaction: type
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.post(`${url}/transaction/update-type`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                transId: transId,
+                typeTransaction: type
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editNameLastname(userJson) {
+    try {
+        return await axios.post(`${url}/user/basic-info`, userJson, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editEmail(email) {
+    try {
+        return await axios.post(`${url}/user/email`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                email: email,
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editUsername(username) {
+    try {
+        return await axios.post(`${url}/user/username`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                username: username,
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editPassword(oldPassword, newPassword) {
+    try {
+        return await axios.post(`${url}/user/password`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function removeTransactionFromBank(transId, bankAccountId) {
-    return await axios.delete(`${url}/bank-account/transaction`, {
-        params: {
-            transId: transId,
-            bankAccountId: bankAccountId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.delete(`${url}/bank-account/transaction`, {
+            params: {
+                transId: transId,
+                bankAccountId: bankAccountId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 export async function removeBankAcc(bankAccountId) {
-    return await axios.delete(`${url}/bank-account/${bankAccountId}`, {
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.delete(`${url}/bank-account/${bankAccountId}`, {
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }
 
 
 export async function removeOwnerFromBankAcc(userId, bankAccountId) {
-    return await axios.delete(`${url}/bank-account/owner`, {
-        params: {
-            userId: userId,
-            accId: bankAccountId
-        },
-        withCredentials: true
-    })
-        .catch(function (error) {
-            if (error.response) {
-                console.log("Not valid data!")
-            }
+    try {
+        return await axios.delete(`${url}/bank-account/owner`, {
+            params: {
+                userId: userId,
+                accId: bankAccountId
+            },
+            withCredentials: true
         })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function removeUserProfile() {
+    try {
+        return await axios.delete(`${url}/user/delete-account`, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
 }

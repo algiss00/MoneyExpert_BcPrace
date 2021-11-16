@@ -83,7 +83,6 @@
             }
         },
         beforeMount() {
-            // todo!!! to ALL
             if (this.$store.state.user) {
                 this.$router.push('/banks')
             }

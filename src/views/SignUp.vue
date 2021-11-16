@@ -16,7 +16,7 @@
                                         id="usernameRegistr"
                                         label="username"
                                         v-model="username"
-                                        :rules="nameRules"
+                                        :rules="usernameRules"
                                         hide-details="auto"
                                         required
                                 />
@@ -84,14 +84,18 @@
             name: "",
             lastname: "",
             nameRules: [
-                v => !!v.trim() || 'Name is required'
+                v => !!v || 'required',
             ],
             passRules: [
                 v => !!v || 'Name is required'
             ],
             emailRules: [
                 v => !!v.trim() || 'E-mail is required',
-                v => /.+@.+/.test(v) || 'E-mail must be valid',
+                v => /.+@.+/.test(v) || 'E-mail must be valid'
+            ],
+            usernameRules: [
+                v => !!v || 'required',
+                v => /^\w{0,20}$/.test(v) || 'invalid data'
             ],
             valid: true,
         }),
@@ -110,8 +114,9 @@
                 });
 
                 let result = await registration(jsonUser)
-
-                if (result.data.username === this.username && result.data.email === this.email) {
+                if (result == null || result.status !== 201) {
+                    alert("Invalid data!")
+                } else if (result.data.username === this.username && result.data.email === this.email) {
                     alert("Success!")
                     await this.$router.push('/')
                 }

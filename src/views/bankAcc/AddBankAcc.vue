@@ -23,7 +23,7 @@
                                         id="currencyBankAcc"
                                         :items="items"
                                         v-model="currency"
-                                        :rules="[v => !!v.trim() || 'Item is required']"
+                                        :rules="[v => !!v || 'Item is required']"
                                         label="měna"
                                 />
                                 <v-text-field
@@ -40,7 +40,7 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addBankAcc($event)" color="#e7f6ff" class="m3-position">Přidat</v-btn>
+                            <v-btn @click="addBankAcc($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">Přidat</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -60,7 +60,7 @@
             balance: "",
             items: ['CZK', 'EUR'],
             nameRules: [
-                v => !!v.trim() || 'Name is required'
+                v => !!v || 'required'
             ],
             valid: true,
         }),
@@ -78,11 +78,16 @@
 
                 let result = await addBankAccount(jsonBankAcc)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
                     alert("Success!")
                     await this.$router.push('/banks')
                 }
+            }
+        },
+        async mounted() {
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
             }
         }
     }

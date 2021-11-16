@@ -132,7 +132,12 @@
     } from "../../api";
 
     async function getAllTransactionsByTypeAndCategoryMethod(bankId, month, year, type, categoryId) {
-        return await getAllTransactionsByCategoryAndType(bankId, month, year, type, categoryId)
+        let result = await getAllTransactionsByCategoryAndType(bankId, month, year, type, categoryId)
+        if (result == null) {
+            alert("Invalid bankAcc id")
+            return
+        }
+        return result
     }
 
     export default {
@@ -167,24 +172,47 @@
                     name: "All"
                 }
                 this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+                if (this.transactions == null) {
+                    alert("Invalid bankAcc id")
+                    return
+                }
             },
             async getAllTransactionsByTypeAndCategoryMethod() {
                 let month = this.date.substr(5, 8)
                 let year = this.date.substr(0, 4)
                 if (this.type === "All" && this.category.name === "All") {
                     this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+                    if (this.transactions == null) {
+                        alert("Invalid bankAcc id")
+                        return
+                    }
                 } else if (this.type !== "All" && this.category.name !== "All") {
                     this.transactions = await getAllTransactionsByTypeAndCategoryMethod(this.$route.params.bankId, month,
                         year, this.type, this.category.id)
                 } else if (this.type !== "All" && this.category.name === "All") {
                     this.transactions = await getAllTransactionsByType(this.$route.params.bankId, month, year, this.type)
+                    if (this.transactions == null) {
+                        alert("Invalid bankAcc id")
+                        return
+                    }
                 } else if (this.type === "All" && this.category.name !== "All") {
                     this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, month, year, this.category.id)
+                    if (this.transactions == null) {
+                        alert("Invalid bankAcc id")
+                        return
+                    }
                 }
             },
         },
         async mounted() {
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
+            }
             let categories = await getAllUsersCategories()
+            if (categories == null) {
+                alert("Invalid data")
+                return
+            }
             let defaultCategory = {
                 id: -1000,
                 name: "All"
@@ -194,6 +222,10 @@
             let month = this.date.substr(5, 8)
             let year = this.date.substr(0, 4)
             this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+            if (this.transactions == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
         }
     }
 </script>

@@ -2,9 +2,6 @@
     <v-app id="inspire">
         <v-container fluid>
             <v-card color="#e7f6ff">
-                <v-card-actions>
-                    <v-btn @click="logout">Logout</v-btn>
-                </v-card-actions>
                 <v-card-title class="mx-auto text--black">
                     Přehled účtů
                     <v-fab-transition>
@@ -23,7 +20,6 @@
                 <div class="font-weight-medium black--text m-left">
                     Created accounts
                 </div>
-                <!--            TODO - change color of table!-->
                 <v-simple-table dark id="createdTab">
                     <template v-slot:default>
                         <thead>
@@ -184,7 +180,7 @@
 </style>
 
 <script>
-    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, logout, getCreatorOfBankAcc} from "../../api";
+    import {getAllUsersCreatedBanks, getAllUsersAvailableBanks, getCreatorOfBankAcc} from "../../api";
 
     export default {
         name: "banks",
@@ -207,13 +203,12 @@
             toTransactions(item) {
                 this.$router.push('/transactions/' + item.id)
             },
-            async logout() {
-                await logout()
-                this.$store.commit("setUser", null)
-                await this.$router.push('/')
-            },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
+                if (creator == null) {
+                    alert("Invalid bankAcc id")
+                    return
+                }
                 this.name = item.name
                 this.currency = item.currency
                 this.balance = item.balance
@@ -221,12 +216,19 @@
             }
         },
         async mounted() {
-            // todo Add to All
             if (!this.$store.state.user) {
                 return await this.$router.push("/")
             }
             let createdBanks = await getAllUsersCreatedBanks()
+            if (createdBanks == null) {
+                alert("Invalid data")
+                return
+            }
             let availableBanks = await getAllUsersAvailableBanks()
+            if (availableBanks == null) {
+                alert("Invalid username")
+                return
+            }
             this.createdBanks = createdBanks
             this.availableBanks = availableBanks
         }

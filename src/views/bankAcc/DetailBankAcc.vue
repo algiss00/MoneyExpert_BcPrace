@@ -28,6 +28,7 @@
                                         <v-text-field
                                                 id="username"
                                                 label="username"
+                                                :rules="rules"
                                                 v-model="username"
                                                 hide-details="auto"
                                         />
@@ -65,16 +66,22 @@
                             </v-btn>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
                                 <v-text-field
                                         id="nameBankAcc"
                                         label="název"
                                         v-model="name"
+                                        :rules="rules"
                                         hide-details="auto"
+                                        required
                                 />
                                 <v-select
                                         id="currencyBankAcc"
                                         :items="items"
+                                        :rules="[v => !!v || 'Item is required']"
                                         v-model="currency"
                                         label="měna"
                                 />
@@ -82,9 +89,12 @@
                                         id="balanceBankAcc"
                                         label="balance"
                                         v-model="balance"
+                                        :rules="rules"
                                         hide-details="auto"
+                                        required
                                 />
-                                <v-btn color="#e7f6ff" @click="editBankAcc($event)" id="editBtnBank">Změnit název, měnu,
+                                <v-btn color="#e7f6ff" @click="editBankAcc($event)" :disabled="!valid" id="editBtnBank">
+                                    Změnit název, měnu,
                                     balance
                                 </v-btn>
                                 <v-spacer>
@@ -163,41 +173,12 @@
     import {
         getBankAccById,
         editBankAcc,
-        markAsError,
         removeBankAcc,
         getUserByUsername,
         shareBankAccount,
-        getCurrentUserBackEnd, getAllOwnersOfBankAcc, removeOwnerFromBankAcc
+        getAllOwnersOfBankAcc, removeOwnerFromBankAcc,
+        getCreatorOfBankAcc
     } from "../../api";
-
-    function validateUsername() {
-        let username = document.getElementById("username")
-
-        if (username.value.trim().length === 0) {
-            markAsError("username", true);
-        } else {
-            markAsError("username", false);
-        }
-
-        return !(username.classList.value === "error");
-    }
-
-    function validate() {
-        let nameEl = document.getElementById("nameBankAcc")
-        let balanceEl = document.getElementById("balanceBankAcc")
-
-        if (nameEl.value.trim().length === 0) {
-            markAsError("nameBankAcc", true);
-        } else {
-            markAsError("nameBankAcc", false);
-        }
-        if (balanceEl.value.trim().length === 0) {
-            markAsError("balanceBankAcc", true);
-        } else {
-            markAsError("balanceBankAcc", false);
-        }
-        return !(nameEl.classList.value === "error" || balanceEl.classList.value === "error");
-    }
 
     export default {
         name: 'DetailBankAcc',
@@ -210,11 +191,15 @@
             username: "",
             creator: "",
             ownersDialog: false,
-            owners: []
+            owners: [],
+            rules: [
+                v => !!v || 'required'
+            ],
+            valid: true,
         }),
         methods: {
             async editBankAcc(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
@@ -227,7 +212,7 @@
 
                 let result = await editBankAcc(jsonBank, this.$route.params.id)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                 }
@@ -240,24 +225,31 @@
 
                 let result = await removeBankAcc(this.$route.params.id)
                 if (result == null || result.status !== 200) {
-                    return
+                    alert("Invalid delete!")
                 } else if (result.status === 200) {
                     alert("Success!")
                     await this.$router.push('/banks/')
                 }
             },
             async shareBankAcc(event) {
-                if (!validateUsername()) {
+                let usernameEl = document.getElementById("username")
+                if (usernameEl.value.trim().length === 0) {
                     event.preventDefault()
+                    alert("empty field!")
                     return
                 }
 
                 let user = await getUserByUsername(this.username)
+                if (user == null) {
+                    alert("Invalid username")
+                    this.username = ''
+                    return
+                }
                 let result = await shareBankAccount(user.username, this.$route.params.id)
                 if (result == null || result.status !== 201) {
                     this.username = ""
                     this.dialog = false
-                    return
+                    alert("Invalid data!")
                 } else {
                     alert("Success!")
                     this.username = ""
@@ -266,9 +258,13 @@
             },
             async getOwnersOfBank() {
                 let owners = await getAllOwnersOfBankAcc(this.$route.params.id)
+                if (owners == null) {
+                    alert("Invalid bankAcc id")
+                    return
+                }
                 this.owners = owners
                 if (this.owners.isEmpty) {
-                    //todo
+                    //todo - napsat do textu Empty list!
                 }
             },
             async removeOwnerFromBankAcc(event, user) {
@@ -280,7 +276,7 @@
 
                 let result = await removeOwnerFromBankAcc(user.id, this.$route.params.id)
                 if (result == null || result.status !== 200) {
-                    return
+                    alert("Invalid delete!")
                 } else if (result.status === 200) {
                     alert("Success!")
                     this.ownersDialog = false
@@ -288,10 +284,20 @@
             }
         },
         async mounted() {
-            // TODO - set Creator! nejak mit nastevneho current usera
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
+            }
             let result = await getBankAccById(this.$route.params.id)
-            let currentUser = await getCurrentUserBackEnd()
-            this.creator = currentUser.data.username
+            if (result == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
+            let creator = await getCreatorOfBankAcc(this.$route.params.id)
+            if (creator == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
+            this.creator = creator.username
             this.name = result.name
             this.currency = result.currency
             this.balance = result.balance

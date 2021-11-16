@@ -2,9 +2,10 @@
     <v-app>
         <v-app-bar color="#e7f6ff">
             <v-app-bar-nav-icon @click="drawer = true"
-                                class="hidden-sm-and-up"/>
+                                class="hidden-sm-and-up"
+                                v-if="$store.state.user && $route.name !== 'Banks'"/>
 
-            <v-btn icon elevation="2" color="black" v-if="$store.state.user">
+            <v-btn icon elevation="2" color="black" v-if="$store.state.user" @click.stop="toProfile">
                 <v-icon>
                     mdi-account
                 </v-icon>
@@ -14,7 +15,8 @@
                 MoneyExpert
             </v-toolbar-title>
             <v-spacer/>
-            <v-toolbar-items v-if="$store.state.user && $route.name !== 'Banks'" class=" hidden-xs-only">
+            <v-toolbar-items v-if="$store.state.user && $route.name !== 'Banks' && $route.name !== 'AddBankAcc'
+            && $route.name !== 'DetailBankAcc' && $route.name !== 'Profile'" class=" hidden-xs-only">
                 <v-btn v-for="item in menuItems"
                        :key="item.title"
                        router
@@ -59,10 +61,17 @@
                 ],
             }
         },
+        methods: {
+            toProfile() {
+                this.$router.push("/profile")
+            }
+        },
         async beforeMount() {
             let user = await getCurrentUserBackEnd()
             if (user) {
                 this.$store.commit("setUser", user)
+                // todo - chci aby se vracel na ten path kde byl ale ne v login
+                //console.log(this.$route.path)
                 await this.$router.push("/banks")
             }
         }

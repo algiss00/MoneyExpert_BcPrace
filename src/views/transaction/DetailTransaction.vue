@@ -70,7 +70,10 @@
                             </v-btn>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
                                 <v-menu
                                         ref="menu"
                                         v-model="menu"
@@ -116,6 +119,7 @@
                                         id="amount"
                                         label="částka"
                                         v-model="amount"
+                                        :rules="rules"
                                         hide-details="auto"
                                 />
                                 <v-text-field
@@ -124,12 +128,14 @@
                                         v-model="jottings"
                                         hide-details="auto"
                                 />
-                                <v-btn color="#e7f6ff" @click="editBasicInfo($event)" id="editBtn">Změnit datum, částku,
+                                <v-btn color="#e7f6ff" @click="editBasicInfo($event)" :disabled="!valid" id="editBtn">
+                                    Změnit datum, částku,
                                     poznámky
                                 </v-btn>
                                 <v-select
                                         id="type"
                                         :items="types"
+                                        :rules="[v => !!v || 'Item is required']"
                                         v-model="type"
                                         label="typ"
                                 />
@@ -140,6 +146,7 @@
                                         v-model="category"
                                         label="Kategorie"
                                         item-text="name"
+                                        :rules="[v => !!v || 'Item is required']"
                                         item-value="id"
                                         persistent-hint
                                         return-object
@@ -174,25 +181,12 @@
         editBasicTransaction,
         editTypeTransaction,
         editCategoryTransaction,
-        markAsError,
         getCategoryByName,
         getAllUsersCategories,
         removeTransactionFromBank,
         getAllUsersBanks,
         transferTransaction
     } from "../../api";
-
-
-    function validate() {
-        let amountEl = document.getElementById("amount")
-
-        if (amountEl.value.trim().length === 0 || amountEl.value.trim() <= 0) {
-            markAsError("amount", true);
-        } else {
-            markAsError("amount", false);
-        }
-        return !(amountEl.classList.value === "error");
-    }
 
     function findByNameInArray(array, name) {
         for (let i = 0; i < array.length; i++) {
@@ -217,14 +211,18 @@
             jottings: "",
             bankAcc: "",
             menu: false,
-            dialog: false
+            dialog: false,
+            rules: [
+                v => !!v || 'required',
+            ],
+            valid: true,
         }),
         methods: {
             toTransactions() {
                 this.$router.push('/transactions/' + this.$route.params.bankId)
             },
             async editBasicInfo(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
@@ -237,7 +235,7 @@
 
                 let result = await editBasicTransaction(jsonTransaction, this.$route.params.transId)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                 }
@@ -245,17 +243,21 @@
             async editTypeTransaction() {
                 let result = await editTypeTransaction(this.$route.params.transId, this.type)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                 }
             },
             async editCategoryTransaction() {
                 let category = await getCategoryByName(this.category.name)
+                if (category == null) {
+                    alert("Invalid category")
+                    return
+                }
 
                 let result = await editCategoryTransaction(this.$route.params.transId, category.id)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                 }
@@ -268,7 +270,7 @@
 
                 let result = await removeTransactionFromBank(this.$route.params.transId, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
-                    return
+                    alert("Invalid delete!")
                 } else if (result.status === 200) {
                     alert("Success!")
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
@@ -282,9 +284,8 @@
                 }
 
                 let result = await transferTransaction(this.$route.params.bankId, this.bankAccount.id, this.$route.params.transId)
-                console.log(result)
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
@@ -292,21 +293,39 @@
             }
         },
         async mounted() {
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
+            }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
             let categories = await getAllUsersCategories()
+            if (categories == null) {
+                alert("Invalid data")
+                return
+            }
             let allUsersBanks = await getAllUsersBanks()
+            if (allUsersBanks == null) {
+                alert("Invalid data")
+                return
+            }
 
             this.allBankAccounts = allUsersBanks
             this.bankAccount = findByNameInArray(allUsersBanks, bankAcc.name)
             this.categories = categories
             let transactionById = await getTransactionById(this.$route.params.transId)
+            if (transactionById == null) {
+                alert("Invalid transaction id")
+                return
+            }
             this.category = findByNameInArray(categories, transactionById.category.name)
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction
             this.amount = transactionById.amount
             this.jottings = transactionById.jottings
             this.bankAcc = bankAcc.name
-            console.log(transactionById)
         }
     }
 </script>

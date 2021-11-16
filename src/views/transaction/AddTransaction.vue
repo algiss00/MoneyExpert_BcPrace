@@ -8,7 +8,10 @@
                             <v-toolbar-title>Přidat transakci</v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
-                            <v-form>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
                                 <v-menu
                                         ref="menu"
                                         v-model="menu"
@@ -54,6 +57,7 @@
                                         id="amount"
                                         label="částka"
                                         v-model="amount"
+                                        :rules="rules"
                                         hide-details="auto"
                                 />
                                 <v-text-field
@@ -66,6 +70,7 @@
                                         id="type"
                                         :items="types"
                                         v-model="type"
+                                        :rules="[v => !!v || 'Item is required']"
                                         label="typ"
                                 />
                                 <v-select
@@ -74,6 +79,7 @@
                                         v-model="category"
                                         label="Kategorie"
                                         item-text="name"
+                                        :rules="[v => !!v|| 'Item is required']"
                                         item-value="id"
                                         persistent-hint
                                         return-object
@@ -92,7 +98,9 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addTransaction($event)" color="#e7f6ff" class="m3-position">Přidat</v-btn>
+                            <v-btn @click="addTransaction($event)" color="#e7f6ff" :disabled="!valid"
+                                   class="m3-position">Přidat
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -102,18 +110,7 @@
 </template>
 
 <script>
-    import {markAsError, getBankAccById, getCategoryByName, addTransaction, getAllUsersCategories} from "../../api";
-
-    function validate() {
-        let amountEl = document.getElementById("amount")
-
-        if (amountEl.value.trim().length === 0) {
-            markAsError("amount", true);
-        } else {
-            markAsError("amount", false);
-        }
-        return !(amountEl.classList.value === "error");
-    }
+    import {getBankAccById, getCategoryByName, addTransaction, getAllUsersCategories} from "../../api";
 
     export default {
         name: 'AddTransaction',
@@ -126,16 +123,24 @@
             jottings: "",
             bankAcc: "",
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19),
-            menu: false
+            menu: false,
+            rules: [
+                v => !!v || 'required'
+            ],
+            valid: true,
         }),
         methods: {
             async addTransaction(event) {
-                if (!validate()) {
+                if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
 
                 let category = await getCategoryByName(this.category.name)
+                if (category == null) {
+                    alert("Invalid category")
+                    return
+                }
 
                 const jsonTransaction = JSON.stringify({
                     amount: this.amount,
@@ -147,7 +152,7 @@
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
-                    return
+                    alert("Invalid data!")
                 } else if (result.status === 201) {
                     alert("Success!")
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
@@ -158,8 +163,19 @@
             }
         },
         async mounted() {
+            if (!this.$store.state.user) {
+                return await this.$router.push("/")
+            }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
             let categories = await getAllUsersCategories()
+            if (categories == null) {
+                alert("Invalid data")
+                return
+            }
             this.bankAcc = bankAcc.name
             this.categories = categories
             this.category = categories[0]
