@@ -12,7 +12,6 @@ import Dashboard from '../views/dashboard/Dashboard.vue'
 import Debts from '../views/debt/Debts.vue'
 import Transactions from '../views/transaction/Transactions.vue'
 import Statistic from '../views/statistic/Statistic.vue'
-import Profile from '../views/user/Profile.vue'
 import DetailTransaction from '../views/transaction/DetailTransaction'
 import AddTransaction from '../views/transaction/AddTransaction.vue'
 
@@ -30,7 +29,7 @@ const routes = [
         component: AddBankAcc
     },
     {
-        path: '/banks/detailBankAcc/:id',
+        path: '/banks/detailBankAcc/:bankId',
         name: 'DetailBankAcc',
         component: DetailBankAcc
     },
@@ -45,27 +44,27 @@ const routes = [
         component: SignUp
     },
     {
-        path: '/budgets/',
+        path: '/budgets/:bankId',
         name: 'Budgets',
         component: Budgets
     },
     {
-        path: '/categories',
+        path: '/categories/:bankId',
         name: 'Categories',
         component: Categories
     },
     {
-        path: '/dashboard/',
+        path: '/dashboard/:bankId',
         name: 'Dashboard',
         component: Dashboard
     },
     {
-        path: '/debts/',
+        path: '/debts/:bankId',
         name: 'Debts',
         component: Debts
     },
     {
-        path: '/statistic/',
+        path: '/statistic/:bankId',
         name: 'Statistic',
         component: Statistic
     },
@@ -83,11 +82,6 @@ const routes = [
         path: '/transactions/:bankId/addTransaction/',
         name: 'AddTransaction',
         component: AddTransaction
-    },
-    {
-        path: '/profile',
-        name: 'Profile',
-        component: Profile
     },
 ]
 

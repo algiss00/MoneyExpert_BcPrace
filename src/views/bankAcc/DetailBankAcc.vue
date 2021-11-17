@@ -89,11 +89,12 @@
                                         id="balanceBankAcc"
                                         label="balance"
                                         v-model="balance"
-                                        :rules="rules"
+                                        :rules="balanceRules"
                                         hide-details="auto"
                                         required
                                 />
-                                <v-btn color="#e7f6ff" @click="editBankAcc($event)" :disabled="!valid" id="editBtnBank">
+                                <v-btn color="primary" text @click="editBankAcc($event)" :disabled="!valid"
+                                       id="editBtnBank">
                                     Změnit název, měnu,
                                     balance
                                 </v-btn>
@@ -193,7 +194,11 @@
             ownersDialog: false,
             owners: [],
             rules: [
-                v => !!v || 'required'
+                v => String(v).trim().length > 0 || 'required'
+            ],
+            balanceRules: [
+                v => !Number.isNaN(Number(v)) || 'must be number',
+                v => String(v).trim().length > 0 || 'required'
             ],
             valid: true,
         }),
@@ -210,7 +215,7 @@
                     balance: this.balance
                 });
 
-                let result = await editBankAcc(jsonBank, this.$route.params.id)
+                let result = await editBankAcc(jsonBank, this.$route.params.bankId)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
@@ -223,7 +228,7 @@
                     return
                 }
 
-                let result = await removeBankAcc(this.$route.params.id)
+                let result = await removeBankAcc(this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
@@ -245,7 +250,7 @@
                     this.username = ''
                     return
                 }
-                let result = await shareBankAccount(user.username, this.$route.params.id)
+                let result = await shareBankAccount(user.username, this.$route.params.bankId)
                 if (result == null || result.status !== 201) {
                     this.username = ""
                     this.dialog = false
@@ -257,7 +262,7 @@
                 }
             },
             async getOwnersOfBank() {
-                let owners = await getAllOwnersOfBankAcc(this.$route.params.id)
+                let owners = await getAllOwnersOfBankAcc(this.$route.params.bankId)
                 if (owners == null) {
                     alert("Invalid bankAcc id")
                     return
@@ -274,7 +279,7 @@
                 }
                 console.log(user)
 
-                let result = await removeOwnerFromBankAcc(user.id, this.$route.params.id)
+                let result = await removeOwnerFromBankAcc(user.id, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
@@ -287,12 +292,12 @@
             if (!this.$store.state.user) {
                 return await this.$router.push("/")
             }
-            let result = await getBankAccById(this.$route.params.id)
+            let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {
                 alert("Invalid bankAcc id")
                 return
             }
-            let creator = await getCreatorOfBankAcc(this.$route.params.id)
+            let creator = await getCreatorOfBankAcc(this.$route.params.bankId)
             if (creator == null) {
                 alert("Invalid bankAcc id")
                 return

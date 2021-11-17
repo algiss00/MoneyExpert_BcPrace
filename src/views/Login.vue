@@ -55,7 +55,7 @@
             usernameLogin: "",
             passwordLogin: "",
             usernameRules: [
-                v => !!v.trim() || 'username is required',
+                v => String(v).trim().length > 0 || 'username is required',
                 v => /^\w{0,20}$/.test(v) || 'invalid username'// todo only english letters, cisla a underscore
             ],
             passRules: [

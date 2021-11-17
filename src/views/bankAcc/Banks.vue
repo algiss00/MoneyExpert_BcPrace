@@ -42,7 +42,7 @@
                         <tr
                                 v-for="item in createdBanks"
                                 :key="item.id"
-                                @click="toTransactions(item)"
+                                @click="toDashboard(item)"
                         >
                             <td>{{ item.name }}</td>
                             <td>{{ item.balance }}</td>
@@ -97,7 +97,7 @@
                                         icon
                                         @click.stop="dialog = !dialog, detailAvailableBank(item)"
                                 >
-                                    <v-icon>mdi-wrench</v-icon>
+                                    <v-icon>mdi-dots-horizontal</v-icon>
                                 </v-btn>
                             </td>
                         </tr>
@@ -200,9 +200,12 @@
             detailBankAcc(item) {
                 this.$router.push('/banks/detailBankAcc/' + item.id)
             },
-            toTransactions(item) {
-                this.$router.push('/transactions/' + item.id)
+            toDashboard(item) {
+                this.$router.push('/dashboard/' + item.id)
             },
+            // toTransactions(item) {
+            //     this.$router.push('/transactions/' + item.id)
+            // },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
                 if (creator == null) {

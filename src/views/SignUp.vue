@@ -84,17 +84,17 @@
             name: "",
             lastname: "",
             nameRules: [
-                v => !!v || 'required',
+                v => String(v).trim().length > 0 || 'required',
             ],
             passRules: [
                 v => !!v || 'Name is required'
             ],
             emailRules: [
-                v => !!v.trim() || 'E-mail is required',
+                v => String(v).trim().length > 0 || 'E-mail is required',
                 v => /.+@.+/.test(v) || 'E-mail must be valid'
             ],
             usernameRules: [
-                v => !!v || 'required',
+                v => String(v).trim().length > 0 || 'required',
                 v => /^\w{0,20}$/.test(v) || 'invalid data'
             ],
             valid: true,

@@ -119,7 +119,7 @@
                                         id="amount"
                                         label="částka"
                                         v-model="amount"
-                                        :rules="rules"
+                                        :rules="balanceRules"
                                         hide-details="auto"
                                 />
                                 <v-text-field
@@ -128,7 +128,8 @@
                                         v-model="jottings"
                                         hide-details="auto"
                                 />
-                                <v-btn color="#e7f6ff" @click="editBasicInfo($event)" :disabled="!valid" id="editBtn">
+                                <v-btn color="primary" text @click="editBasicInfo($event)" :disabled="!valid"
+                                       id="editBtn">
                                     Změnit datum, částku,
                                     poznámky
                                 </v-btn>
@@ -139,7 +140,8 @@
                                         v-model="type"
                                         label="typ"
                                 />
-                                <v-btn color="#e7f6ff" @click="editTypeTransaction" id="editBtnType">Změnit typ</v-btn>
+                                <v-btn color="primary" text @click="editTypeTransaction" id="editBtnType">Změnit typ
+                                </v-btn>
                                 <v-select
                                         id="category"
                                         :items="categories"
@@ -151,7 +153,7 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="#e7f6ff" @click="editCategoryTransaction" id="editBtnCategory">Změnit
+                                <v-btn color="primary" text @click="editCategoryTransaction" id="editBtnCategory">Změnit
                                     kategorii
                                 </v-btn>
                                 <v-text-field
@@ -213,7 +215,11 @@
             menu: false,
             dialog: false,
             rules: [
-                v => !!v || 'required',
+                v => String(v).trim().length > 0 || 'required',
+            ],
+            balanceRules: [
+                v => !Number.isNaN(Number(v)) || 'must be number',
+                v => String(v).trim().length > 0 || 'required'
             ],
             valid: true,
         }),

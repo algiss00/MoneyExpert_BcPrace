@@ -30,7 +30,7 @@
                                         id="balanceBankAcc"
                                         label="balance"
                                         v-model="balance"
-                                        :rules="nameRules"
+                                        :rules="balanceRules"
                                         hide-details="auto"
                                 />
                             </v-form>
@@ -40,7 +40,9 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addBankAcc($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">Přidat</v-btn>
+                            <v-btn @click="addBankAcc($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                                Přidat
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -60,7 +62,11 @@
             balance: "",
             items: ['CZK', 'EUR'],
             nameRules: [
-                v => !!v || 'required'
+                v => String(v).trim().length > 0 || 'required'
+            ],
+            balanceRules: [
+                v => !Number.isNaN(Number(v)) || 'must be number',
+                v => String(v).trim().length > 0 || 'required'
             ],
             valid: true,
         }),

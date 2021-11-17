@@ -57,7 +57,7 @@
                                         id="amount"
                                         label="částka"
                                         v-model="amount"
-                                        :rules="rules"
+                                        :rules="balanceRules"
                                         hide-details="auto"
                                 />
                                 <v-text-field
@@ -125,7 +125,11 @@
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19),
             menu: false,
             rules: [
-                v => !!v || 'required'
+                v => String(v).trim().length > 0 || 'required'
+            ],
+            balanceRules: [
+                v => !Number.isNaN(Number(v)) || 'must be number',
+                v => String(v).trim().length > 0 || 'required'
             ],
             valid: true,
         }),
