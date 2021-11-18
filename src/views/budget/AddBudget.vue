@@ -5,54 +5,13 @@
                 <v-flex xs12 sm8 md4>
                     <v-card class="elevation-12">
                         <v-toolbar color="#e7f6ff">
-                            <v-toolbar-title>Přidat transakci</v-toolbar-title>
+                            <v-toolbar-title>Přidat rozpočet</v-toolbar-title>
                         </v-toolbar>
                         <v-card-text>
                             <v-form
                                     ref="form"
                                     v-model="valid"
-                                    lazy-validation>
-                                <v-menu
-                                        ref="menu"
-                                        v-model="menu"
-                                        :close-on-content-click="false"
-                                        :return-value.sync="date"
-                                        transition="scale-transition"
-                                        offset-y
-                                        min-width="auto"
-                                >
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field
-                                                v-model="date"
-                                                label="Picker in menu"
-                                                prepend-icon="mdi-calendar"
-                                                readonly
-                                                v-bind="attrs"
-                                                v-on="on"
-                                        />
-                                    </template>
-                                    <v-date-picker
-                                            v-model="date"
-                                            no-title
-                                            scrollable
-                                    >
-                                        <v-spacer/>
-                                        <v-btn
-                                                text
-                                                color="primary"
-                                                @click="menu = false"
-                                        >
-                                            Cancel
-                                        </v-btn>
-                                        <v-btn
-                                                text
-                                                color="primary"
-                                                @click="$refs.menu.save(date)"
-                                        >
-                                            OK
-                                        </v-btn>
-                                    </v-date-picker>
-                                </v-menu>
+                                    lazy-validations>
                                 <v-text-field
                                         id="amount"
                                         label="částka"
@@ -61,17 +20,18 @@
                                         hide-details="auto"
                                 />
                                 <v-text-field
-                                        id="jottings"
-                                        label="poznámky"
-                                        v-model="jottings"
+                                        id="name"
+                                        label="název"
+                                        v-model="name"
+                                        :rules="nameRules"
                                         hide-details="auto"
                                 />
-                                <v-select
-                                        id="type"
-                                        :items="types"
-                                        v-model="type"
-                                        :rules="[v => !!v || 'Item is required']"
-                                        label="typ"
+                                <v-text-field
+                                        id="percentNotify"
+                                        label="procento upozornění"
+                                        v-model="percentNotify"
+                                        :rules="percentRules"
+                                        hide-details="auto"
                                 />
                                 <v-select
                                         id="category"
@@ -94,12 +54,12 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="#e7f6ff" @click="toTransactions" class="m2-position">Zpět</v-btn>
+                            <v-btn color="#e7f6ff" @click="toBudgets" class="m2-position">Zpět</v-btn>
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addTransaction($event)" color="#e7f6ff" :disabled="!valid"
-                                   class="m3-position">Přidat
+                            <v-btn @click="addBudget($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                                Přidat
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -110,21 +70,18 @@
 </template>
 
 <script>
-    import {getBankAccById, getCategoryByName, addTransaction, getAllUsersCategories} from "../../api";
+    import {addBudget, getAllUsersCategories, getBankAccById, getCategoryByName} from "../../api";
 
     export default {
-        name: 'AddTransaction',
+        name: 'AddBudget',
         data: () => ({
-            types: ['EXPENSE', 'INCOME'],
             categories: [],
             category: "",
-            type: "EXPENSE",
-            amount: "",
-            jottings: "",
             bankAcc: "",
-            date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19),
-            menu: false,
-            rules: [
+            name: "",
+            percentNotify: "",
+            amount: "",
+            nameRules: [
                 v => String(v).trim().length > 0 || 'required'
             ],
             balanceRules: [
@@ -132,10 +89,16 @@
                 v => String(v).trim().length > 0 || 'required',
                 v => Number(v) > 0 || 'must be > 0'
             ],
+            percentRules: [
+                v => Number.isInteger(Number(v)) || 'must be integer',
+                v => String(v).trim().length > 0 || 'required',
+                v => Number(v) > 0 || 'must be > 0',
+                v => Number(v) <= 100 || 'must be <= 100'
+            ],
             valid: true,
         }),
         methods: {
-            async addTransaction(event) {
+            async addBudget(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
@@ -147,24 +110,23 @@
                     return
                 }
 
-                const jsonTransaction = JSON.stringify({
+                const jsonBudget = JSON.stringify({
                     amount: this.amount,
-                    jottings: this.jottings,
-                    typeTransaction: this.type,
-                    date: this.date
+                    name: this.name,
+                    percentNotify: this.percentNotify
                 });
 
-                let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
+                let result = await addBudget(jsonBudget, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
                     alert("Success!")
-                    await this.$router.push('/transactions/' + this.$route.params.bankId)
+                    await this.$router.push('/budgets/' + this.$route.params.bankId)
                 }
             },
-            toTransactions() {
-                this.$router.push('/transactions/' + this.$route.params.bankId)
+            toBudgets() {
+                this.$router.push('/budgets/' + this.$route.params.bankId)
             }
         },
         async mounted() {

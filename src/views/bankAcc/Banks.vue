@@ -198,7 +198,7 @@
         },
         methods: {
             detailBankAcc(item) {
-                this.$router.push('/banks/detailBankAcc/' + item.id)
+                this.$router.push('/banks/detail/' + item.id)
             },
             toDashboard(item) {
                 this.$router.push('/dashboard/' + item.id)

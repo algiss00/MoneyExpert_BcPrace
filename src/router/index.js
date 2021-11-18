@@ -14,6 +14,8 @@ import Transactions from '../views/transaction/Transactions.vue'
 import Statistic from '../views/statistic/Statistic.vue'
 import DetailTransaction from '../views/transaction/DetailTransaction'
 import AddTransaction from '../views/transaction/AddTransaction.vue'
+import AddBudget from '../views/budget/AddBudget.vue'
+import DetailBudget from '../views/budget/DetailBudget.vue'
 
 Vue.use(VueRouter)
 
@@ -29,7 +31,7 @@ const routes = [
         component: AddBankAcc
     },
     {
-        path: '/banks/detailBankAcc/:bankId',
+        path: '/banks/detail/:bankId',
         name: 'DetailBankAcc',
         component: DetailBankAcc
     },
@@ -47,6 +49,16 @@ const routes = [
         path: '/budgets/:bankId',
         name: 'Budgets',
         component: Budgets
+    },
+    {
+        path: '/budgets/:bankId/addBudget',
+        name: 'AddBudget',
+        component: AddBudget
+    },
+    {
+        path: '/budgets/:bankId/detail/:budgetId',
+        name: 'DetailBudget',
+        component: DetailBudget
     },
     {
         path: '/categories/:bankId',

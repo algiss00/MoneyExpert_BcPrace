@@ -47,6 +47,20 @@ export async function getTransactionById(id) {
     }
 }
 
+export async function getBudgetById(id) {
+    try {
+        let result = await axios.get(`${url}/budget/${id}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function getAllTransactions(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
@@ -171,6 +185,20 @@ export async function getAllUsersCreatedBanks() {
 export async function getAllUsersAvailableBanks() {
     try {
         let result = await axios.get(`${url}/user/available-accounts`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllBudgetsFromBankAcc(bankId) {
+    try {
+        let result = await axios.get(`${url}/bank-account/budgets/${bankId}`, {
             withCredentials: true
         })
         return result.data
@@ -317,6 +345,26 @@ export async function addBankAccount(jsonBankAcc) {
 export async function addTransaction(jsonTransaction, accId, categoryId) {
     try {
         return await axios.post(`${url}/transaction`, jsonTransaction, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                accId: accId,
+                categoryId: categoryId
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function addBudget(jsonBudget, accId, categoryId) {
+    try {
+        return await axios.post(`${url}/budget`, jsonBudget, {
             "headers": {
                 "content-type": "application/json",
             },
@@ -527,6 +575,86 @@ export async function editPassword(oldPassword, newPassword) {
     }
 }
 
+export async function editCategoryBudget(budgetId, categoryId) {
+    try {
+        return await axios.post(`${url}/budget/update-category`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                budId: budgetId,
+                categoryId: categoryId
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editNameBudget(budgetId, name) {
+    try {
+        return await axios.post(`${url}/budget/update-name`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                budId: budgetId,
+                name: name
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editAmountBudget(budgetId, amount) {
+    try {
+        return await axios.post(`${url}/budget/update-amount`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                budId: budgetId,
+                amount: amount
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editPercentBudget(budgetId, percent) {
+    try {
+        return await axios.post(`${url}/budget/update-percent`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                budId: budgetId,
+                percent: percent
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
 export async function removeTransactionFromBank(transId, bankAccountId) {
     try {
         return await axios.delete(`${url}/bank-account/transaction`, {
@@ -557,6 +685,18 @@ export async function removeBankAcc(bankAccountId) {
     }
 }
 
+export async function removeBudget(budgetId) {
+    try {
+        return await axios.delete(`${url}/budget/${budgetId}`, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
 
 export async function removeOwnerFromBankAcc(userId, bankAccountId) {
     try {

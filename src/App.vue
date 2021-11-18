@@ -68,7 +68,7 @@
                             lazy-validation>
                         <v-text-field
                                 class="mt-5"
-                                id="name"
+                                id="nameProfile"
                                 label="jméno"
                                 v-model="name"
                                 :rules="nameRules"
@@ -76,7 +76,7 @@
                                 required
                         />
                         <v-text-field
-                                id="lastname"
+                                id="lastnameProfile"
                                 label="přijmení"
                                 :rules="nameRules"
                                 v-model="lastname"
@@ -88,7 +88,7 @@
                             Změnit jméno a přijmení
                         </v-btn>
                         <v-text-field
-                                id="email"
+                                id="emailProfile"
                                 label="email"
                                 v-model="email"
                                 :rules="emailRules"
@@ -101,7 +101,7 @@
                             Změnit email
                         </v-btn>
                         <v-text-field
-                                id="username"
+                                id="usernameProfile"
                                 label="username"
                                 v-model="username"
                                 :rules="usernameRules"
@@ -113,7 +113,7 @@
                             Změnit username
                         </v-btn>
                         <v-text-field
-                                id="passwordOld"
+                                id="passwordOldProfile"
                                 label="původní heslo"
                                 v-model="passwordOld"
                                 type=password
@@ -121,7 +121,7 @@
                                 required
                         />
                         <v-text-field
-                                id="passwordNew"
+                                id="passwordNewProfile"
                                 label="nové heslo"
                                 v-model="passwordNew"
                                 type=password
@@ -263,8 +263,8 @@
                 }
             },
             async editPassword(event) {
-                let oldPasswordEl = document.getElementById("passwordOld")
-                let newPasswordEl = document.getElementById("passwordNew")
+                let oldPasswordEl = document.getElementById("passwordOldProfile")
+                let newPasswordEl = document.getElementById("passwordNewProfile")
                 if (oldPasswordEl.value.trim().length === 0 || newPasswordEl.value.trim().length === 0) {
                     event.preventDefault()
                     alert("empty fields!")

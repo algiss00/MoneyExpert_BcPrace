@@ -277,7 +277,6 @@
                     event.preventDefault()
                     return
                 }
-                console.log(user)
 
                 let result = await removeOwnerFromBankAcc(user.id, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
@@ -306,7 +305,6 @@
             this.name = result.name
             this.currency = result.currency
             this.balance = result.balance
-            console.log(result)
         }
     }
 </script>

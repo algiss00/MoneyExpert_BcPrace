@@ -219,7 +219,8 @@
             ],
             balanceRules: [
                 v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'required',
+                v => Number(v) > 0 || 'must be > 0'
             ],
             valid: true,
         }),
