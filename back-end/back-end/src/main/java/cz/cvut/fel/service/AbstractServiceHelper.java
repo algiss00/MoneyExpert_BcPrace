@@ -213,18 +213,32 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Odstraneni Transaction z BankAccount - odstrani se z DB taky
+     * Odstraneni Transaction z BankAccount
      *
      * @param transactionId
-     * @param bankAccId
      * @throws Exception
      */
-    public void removeTransactionFromBankAccount(int transactionId, int bankAccId) throws Exception {
-        BankAccount bankAccount = getByIdBankAccount(bankAccId);
-        Transaction transaction = getByIdTransaction(transactionId);
-        if (!isTransactionInBankAcc(bankAccount.getId(), transaction.getId())) {
-            throw new NotAuthenticatedClient();
+    public void removeTransactionFromBankAccount(int transactionId) throws Exception {
+        removeTransaction(transactionId);
+    }
+
+    /**
+     * Delete Transaction
+     * Odstrani z budgetu
+     * Zmeni bankAccount balance
+     *
+     * @param id
+     * @throws Exception
+     */
+    public void removeTransaction(int id) throws Exception {
+        Transaction transaction = getByIdTransaction(id);
+        BankAccount bankAccount = getByIdBankAccount(transaction.getBankAccount().getId());
+
+        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
+            // budget logic pri delete Expense
+            budgetLogicTransactionDelete(transaction);
         }
+
         bankAccount.getTransactions().remove(transaction);
         Double actualBalance = bankAccount.getBalance();
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
@@ -232,10 +246,56 @@ abstract class AbstractServiceHelper {
         } else {
             bankAccount.setBalance(actualBalance - transaction.getAmount());
         }
-        transaction.setBankAccount(null);
         bankAccountDao.update(bankAccount);
-        transactionDao.update(transaction);
+
+        transaction.setCategory(null);
+        transaction.setBankAccount(null);
         transactionDao.remove(transaction);
+    }
+
+    /**
+     * Budget logic pri delete Expense transaction
+     *
+     * @param transaction
+     * @throws Exception
+     */
+    private void budgetLogicTransactionDelete(Transaction transaction) throws Exception {
+        BankAccount bankAccount = transaction.getBankAccount();
+        double transAmount = transaction.getAmount();
+        Category category = transaction.getCategory();
+        Budget budgetForTransaction = budgetDao.getByCategory(category.getId(), bankAccount.getId());
+        if (budgetForTransaction == null) {
+            return;
+        }
+
+        double sumAmount = budgetForTransaction.getSumAmount();
+        budgetForTransaction.setSumAmount(sumAmount - transAmount);
+        budgetDao.update(budgetForTransaction);
+        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
+        // check if exists budgetNotify
+        checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
+    }
+
+    /**
+     * kontroluju pokud se zmenil stav budgetu, pokud se zmenil tak odstranim notifyBudget
+     *
+     * @param actualBudget
+     * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
+     * @throws Exception
+     */
+    public void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
+        if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
+            if (notifyBudget != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            }
+        }
+        if (percentOfSumAmount < actualBudget.getPercentNotify()) {
+            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
+            if (notifyBudget != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            }
+        }
     }
 
     /**

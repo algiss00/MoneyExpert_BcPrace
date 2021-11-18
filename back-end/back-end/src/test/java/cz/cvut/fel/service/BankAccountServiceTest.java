@@ -331,10 +331,13 @@ public class BankAccountServiceTest {
 
     @Test
     public void removeTransaction_MockTest_success() throws Exception {
+        Category category = Generator.generateDefaultCategory();
+        category.setName("test category");
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);
         Transaction transaction = Generator.generateDefaultTransaction();
         transaction.setBankAccount(bankAccount);
+        transaction.setCategory(category);
         bankAccount.getTransactions().add(transaction);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
@@ -342,10 +345,10 @@ public class BankAccountServiceTest {
             when(bankAccountDao.getUsersAvailableBankAccountById(anyInt(), anyInt())).thenReturn(bankAccount);
             when(transactionDao.find(anyInt())).thenReturn(transaction);
             when(transactionDao.getFromBankAcc(anyInt(), anyInt())).thenReturn(transaction);
+            when(budgetDao.getByCategory(anyInt(), anyInt())).thenReturn(null);
 
-            bankAccountService.removeTransactionFromBankAccount(transaction.getId(), bankAccount.getId());
+            bankAccountService.removeTransactionFromBankAccount(transaction.getId());
             verify(bankAccountDao, times(1)).update(bankAccount);
-            verify(transactionDao, times(1)).update(transaction);
             verify(transactionDao, times(1)).remove(transaction);
             assertTrue(bankAccount.getTransactions().isEmpty());
         }

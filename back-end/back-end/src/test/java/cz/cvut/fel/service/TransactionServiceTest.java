@@ -73,10 +73,11 @@ public class TransactionServiceTest {
         transaction.setCategory(Generator.generateDefaultCategory());
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
+            when(bankAccountDao.find(bankAccount.getId())).thenReturn(bankAccount);
             when(transactionDao.find(transaction.getId())).thenReturn(transaction);
             when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
             when(budgetDao.getByCategory(anyInt(), anyInt())).thenReturn(Generator.generateDefaultBudget());
-            transactionService.remove(transaction.getId());
+            transactionService.removeTransaction(transaction.getId());
             verify(transactionDao, times(1)).remove(transaction);
         }
     }

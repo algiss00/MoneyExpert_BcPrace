@@ -196,7 +196,7 @@ public class TransactionService extends AbstractServiceHelper {
         bankAccountDao.update(toBankAcc);
 
         // Odstrani transakci z BankAccount
-        removeTransactionFromBankAccount(transaction.getId(), fromBankAccId);
+        removeTransactionFromBankAccount(transaction.getId());
         return persistedTransaction;
     }
 
@@ -302,6 +302,10 @@ public class TransactionService extends AbstractServiceHelper {
     private void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
         BankAccount bankAccount = transaction.getBankAccount();
         double transAmount = transaction.getAmount();
+        // budget logic for new category
+        budgetLogic(bankAccount, transaction);
+
+        // get budget for old category
         Budget budgetForTransaction = budgetDao.getByCategory(oldCategory.getId(), bankAccount.getId());
         if (budgetForTransaction == null) {
             return;
@@ -314,30 +318,6 @@ public class TransactionService extends AbstractServiceHelper {
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
 
         checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
-
-        budgetLogic(bankAccount, transaction);
-    }
-
-    /**
-     * kontroluju pokud se zmenil stav budgetu, pokud se zmenil tak odstranim notifyBudget
-     *
-     * @param actualBudget
-     * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
-     * @throws Exception
-     */
-    private void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
-        if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
-            }
-        }
-        if (percentOfSumAmount < actualBudget.getPercentNotify()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
-            }
-        }
     }
 
     /**
@@ -428,46 +408,6 @@ public class TransactionService extends AbstractServiceHelper {
 
         double sumAmount = budgetForTransaction.getSumAmount();
         budgetForTransaction.setSumAmount(sumAmount - oldTransAmount + updatedTransaAmount);
-        budgetDao.update(budgetForTransaction);
-        double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
-        // check if exists budgetNotify
-        checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
-    }
-
-    /**
-     * Delete Transaction
-     *
-     * @param id
-     * @throws Exception
-     */
-    public void remove(int id) throws Exception {
-        Transaction transaction = getByIdTransaction(id);
-        if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
-            // budget logic pri delete Expense
-            budgetLogicTransactionDelete(transaction);
-        }
-        transaction.setCategory(null);
-        transaction.setBankAccount(null);
-        transactionDao.remove(transaction);
-    }
-
-    /**
-     * Budget logic pri delete Expense transaction
-     *
-     * @param transaction
-     * @throws Exception
-     */
-    private void budgetLogicTransactionDelete(Transaction transaction) throws Exception {
-        BankAccount bankAccount = transaction.getBankAccount();
-        double transAmount = transaction.getAmount();
-        Category category = transaction.getCategory();
-        Budget budgetForTransaction = budgetDao.getByCategory(category.getId(), bankAccount.getId());
-        if (budgetForTransaction == null) {
-            return;
-        }
-
-        double sumAmount = budgetForTransaction.getSumAmount();
-        budgetForTransaction.setSumAmount(sumAmount - transAmount);
         budgetDao.update(budgetForTransaction);
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
         // check if exists budgetNotify

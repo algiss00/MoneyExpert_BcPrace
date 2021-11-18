@@ -125,7 +125,7 @@ public class TransactionController {
 
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
-        transactionService.remove(id);
+        transactionService.removeTransaction(id);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
