@@ -67,6 +67,11 @@ public class BudgetController {
         return new ResponseEntity<>(budgetService.updateBudgetPercent(budId, percent), HttpStatus.CREATED);
     }
 
+    @PostMapping(value = "/update-category", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Budget> updateBudgetCategory(@RequestParam int budId, @RequestParam int categoryId) throws Exception {
+        return new ResponseEntity<>(budgetService.updateBudgetCategory(budId, categoryId), HttpStatus.CREATED);
+    }
+
     @DeleteMapping(value = "/{id}")
     ResponseEntity<Void> remove(@PathVariable int id) throws Exception {
         budgetService.removeBudget(id);

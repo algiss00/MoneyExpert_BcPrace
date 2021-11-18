@@ -193,6 +193,8 @@ BUDGET
 
 /budget/update-percent?budId={budgetId}&percent={percent} - update percentNotify of budget
 
+/budget/update-category?budId={budgetId}&categoryId={categoryId} - update category of budget
+
 ------------------------------------------------------------------------------
 CATEGORY
 

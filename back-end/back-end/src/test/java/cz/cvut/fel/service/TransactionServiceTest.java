@@ -130,32 +130,6 @@ public class TransactionServiceTest {
         }
     }
 
-//    @Test
-//    public void updateCategoryCorrectBudgetLogic_mockTest_success() throws Exception {
-//        Category category1 = Generator.generateDefaultCategory();
-//        Category category2 = Generator.generateDefaultCategory();
-//        Transaction transaction = Generator.generateDefaultTransaction();
-//        Transaction updatedTransaction = Generator.generateDefaultTransaction();
-//        BankAccount bankAccount = Generator.generateDefaultBankAccount();
-//        transaction.setBankAccount(bankAccount);
-//        transaction.setCategory(category1);
-//
-//        updatedTransaction.setCategory(category2);
-//        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
-//            HelperFunctions.authUser(utilities, userDao, user);
-//            when(transactionDao.update(transaction)).thenReturn(updatedTransaction);
-//            when(transactionDao.find(transaction.getId())).thenReturn(transaction);
-//            when(bankAccountDao.getUsersAvailableBankAccountById(user.getId(), bankAccount.getId())).thenReturn(bankAccount);
-//            when(categoryDao.find(category2.getId())).thenReturn(category2);
-//            when(categoryDao.getUsersCategoryById(user.getId(), category2.getId())).thenReturn(category2);
-//
-//            Transaction updated = transactionService.updateCategoryTransaction(transaction.getId(), category2.getId());
-//            verify(transactionDao, times(1)).update(transaction);
-//            verify(categoryDao, times(1)).update(category2);
-//            assertEquals(updatedTransaction, updated);
-//        }
-//    }
-
     @Test
     public void updateTransactionType_mockTest_success() throws Exception {
         Transaction transaction = Generator.generateDefaultTransaction();
@@ -176,7 +150,8 @@ public class TransactionServiceTest {
             verify(bankAccountDao, times(1)).update(bankAccount);
             assertEquals(updatedTransaction, updated);
             // predpokladame ze start balance bankAcc byl 2000 potom pribyl transaction expense 1000, ale ted mame update na income
-            assertEquals(2000, bankAccount.getBalance());
+            // proto 1000 expense se stava 1000 income
+            assertEquals(3000, bankAccount.getBalance());
         }
     }
 

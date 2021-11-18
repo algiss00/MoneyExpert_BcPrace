@@ -147,6 +147,37 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
+     * Update category in Budget
+     * V bankAcc nesmi byt budget na stejnou kategorii
+     * Take pri zmene category odstrani se vse notifyBudget pro ten Budget
+     *
+     * @param budgetId
+     * @param categoryId
+     * @return
+     * @throws Exception
+     */
+    public Budget updateBudgetCategory(int budgetId, int categoryId) throws Exception {
+        Budget budget = getByIdBudget(budgetId);
+        Category category = getByIdCategory(categoryId);
+        if (budget.getCategory().get(0).getId() == categoryId) {
+            throw new NotValidDataException("Category must be different!");
+        }
+
+        if (getBudgetByCategoryInBankAcc(categoryId, budget.getBankAccount().getId()) != null) {
+            throw new NotValidDataException("Budget for this category already exists!");
+        }
+
+        if (!notifyBudgetDao.getNotifyBudgetByBudgetId(budget.getId()).isEmpty()) {
+            notifyBudgetDao.deleteNotifyBudgetByBudgetId(budget.getId());
+        }
+        budget.getCategory().remove(0);
+        budget.getCategory().add(category);
+        budget.setSumAmount(0);
+
+        return budgetDao.update(budget);
+    }
+
+    /**
      * Logika pri update Amount
      * Kontrolujou se tady NotifyBudget entity
      *

@@ -8,7 +8,9 @@ import cz.cvut.fel.model.Category;
 import cz.cvut.fel.model.User;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
+import cz.cvut.fel.service.exceptions.NotValidDataException;
 import generator.Generator;
+import org.apache.catalina.startup.Catalina;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -136,6 +138,83 @@ public class BudgetServiceTest {
             budgetService.updateBudgetPercent(budget.getId(), 75);
             verify(budgetDao, times(1)).update(budget);
             assertEquals(75, budget.getPercentNotify());
+        }
+    }
+
+    @Test
+    public void updateBudgetCategory_mockTest_success() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setId(1);
+        bankAccount.setCreator(user);
+
+        Category category = Generator.generateDefaultCategory();
+        category.setId(3);
+        category.getCreators().add(user);
+        category.setName("Test Category");
+
+        Category category2 = Generator.generateDefaultCategory();
+        category2.setId(-2);
+        category2.getCreators().add(user);
+        category2.setName("Test Category -2");
+
+        Budget budget = Generator.generateDefaultBudget();
+        budget.setId(2);
+        budget.setAmount(1000);
+        budget.setPercentNotify(50);
+        budget.setBankAccount(bankAccount);
+        budget.getCategory().add(category);
+        bankAccount.getBudgets().add(budget);
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(budgetDao.find(anyInt())).thenReturn(budget);
+            when(categoryDao.find(-2)).thenReturn(category2);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category2);
+            when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
+
+            budgetService.updateBudgetCategory(budget.getId(), -2);
+            verify(budgetDao, times(1)).update(budget);
+            assertEquals(-2, budget.getCategory().get(0).getId());
+        }
+    }
+
+    @Test
+    public void updateBudgetCategory_mockTest_throwNotValidDataException() throws Exception {
+        BankAccount bankAccount = Generator.generateDefaultBankAccount();
+        bankAccount.setId(1);
+        bankAccount.setCreator(user);
+
+        Category category2 = Generator.generateDefaultCategory();
+        category2.setId(-2);
+        category2.getCreators().add(user);
+        category2.setName("Test Category -2");
+
+        Budget budget2 = Generator.generateDefaultBudget();
+        budget2.setId(4);
+        budget2.getCategory().add(category2);
+        bankAccount.getBudgets().add(budget2);
+
+        Category category = Generator.generateDefaultCategory();
+        category.setId(3);
+        category.getCreators().add(user);
+        category.setName("Test Category");
+
+        Budget budget = Generator.generateDefaultBudget();
+        budget.setId(2);
+        budget.setAmount(1000);
+        budget.setPercentNotify(50);
+        budget.setBankAccount(bankAccount);
+        budget.getCategory().add(category);
+        bankAccount.getBudgets().add(budget);
+
+        try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
+            HelperFunctions.authUser(utilities, userDao, user);
+            when(budgetDao.find(budget.getId())).thenReturn(budget);
+            when(budgetDao.getByCategory(category2.getId(), bankAccount.getId())).thenReturn(budget2);
+            when(categoryDao.find(-2)).thenReturn(category2);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category2);
+            when(bankAccountDao.find(anyInt())).thenReturn(bankAccount);
+
+            assertThrows(NotValidDataException.class, () -> budgetService.updateBudgetCategory(budget.getId(), -2));
         }
     }
 
