@@ -133,7 +133,7 @@ public class BankAccountController {
     }
 
     @DeleteMapping(value = "/transaction")
-    ResponseEntity<Void> removeFromAccount(@RequestParam int transId, @RequestParam int bankAccountId) throws Exception {
+    ResponseEntity<Void> removeFromAccount(@RequestParam int transId) throws Exception {
         bankAccountService.removeTransactionFromBankAccount(transId);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }

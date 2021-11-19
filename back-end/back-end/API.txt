@@ -245,7 +245,7 @@ BANK_ACCOUNT
 
 /bankAccount/owner?userId={userId}&accId={accId} - remove owner from bankAccount, not allowed to remove creator of bankAcc
 
-/bankAccount/transaction?transId={transId}&bankAccountId={bankAccountId} - remove Transaction from BankAcc
+/bankAccount/transaction?transId={transId} - remove Transaction from BankAcc
 
 /bankAccount/debt?debtId={userId}&accId={accId} - remove debt from BankAcc
 
