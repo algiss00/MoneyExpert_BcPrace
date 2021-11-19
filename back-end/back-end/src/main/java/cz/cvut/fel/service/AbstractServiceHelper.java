@@ -7,6 +7,7 @@ import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -260,20 +261,23 @@ abstract class AbstractServiceHelper {
      * @throws Exception
      */
     private void budgetLogicTransactionDelete(Transaction transaction) throws Exception {
-        BankAccount bankAccount = transaction.getBankAccount();
         double transAmount = transaction.getAmount();
-        Category category = transaction.getCategory();
-        Budget budgetForTransaction = budgetDao.getByCategory(category.getId(), bankAccount.getId());
+
+        Budget budgetForTransaction = transaction.getBudget();
         if (budgetForTransaction == null) {
             return;
         }
 
         double sumAmount = budgetForTransaction.getSumAmount();
         budgetForTransaction.setSumAmount(sumAmount - transAmount);
+        budgetForTransaction.getTransactions().remove(transaction);
         budgetDao.update(budgetForTransaction);
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
         // check if exists budgetNotify
         checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
+
+        transaction.setBudget(null);
+        transactionDao.update(transaction);
     }
 
     /**
@@ -317,6 +321,14 @@ abstract class AbstractServiceHelper {
      */
     public void removeBudget(int budgetId) throws Exception {
         Budget budget = getByIdBudget(budgetId);
+
+        budget.getTransactions().forEach(transaction -> {
+            transaction.setBudget(null);
+            transactionDao.update(transaction);
+        });
+        budget.setTransactions(Collections.emptyList());
+        budgetDao.update(budget);
+
         removeNotifyBudgetByBudgetId(budget.getId());
         budgetDao.deleteAllBudgetRelationWithCategoryById(budget.getId());
         budgetDao.remove(budget);

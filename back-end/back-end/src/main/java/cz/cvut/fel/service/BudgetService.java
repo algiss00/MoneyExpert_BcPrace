@@ -24,6 +24,10 @@ public class BudgetService extends AbstractServiceHelper {
         return budgetDao.getByName(getByIdBankAccount(bankAccId).getId(), name);
     }
 
+    public List<Transaction> getTransactionsFromBudget(int budgetId) throws Exception {
+        return getByIdBudget(budgetId).getTransactions();
+    }
+
     public Category getCategoryOfBudget(int budgetId) throws Exception {
         return getByIdBudget(budgetId).getCategory().stream().findFirst().orElse(null);
     }

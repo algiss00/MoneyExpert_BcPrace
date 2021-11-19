@@ -48,6 +48,21 @@ public class Budget extends AbstractEntity {
     @JsonIgnore
     private List<NotifyBudget> notifyBudgets;
 
+    @OneToMany(mappedBy = "budget")
+    @JsonIgnore
+    private List<Transaction> transactions;
+
+    public List<Transaction> getTransactions() {
+        if (transactions == null) {
+            setTransactions(new ArrayList<>());
+        }
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
     public List<NotifyBudget> getNotifyBudgets() {
         if (notifyBudgets == null) {
             setNotifyBudgets(new ArrayList<>());

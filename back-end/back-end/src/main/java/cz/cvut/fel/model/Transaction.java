@@ -44,10 +44,23 @@ public class Transaction extends AbstractEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne
+    @JoinColumn(name = "budget_id")
+    @JsonIgnore
+    private Budget budget;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
     private BankAccount bankAccount;
+
+    public Budget getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Budget budget) {
+        this.budget = budget;
+    }
 
     public String getJottings() {
         return jottings;

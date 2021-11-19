@@ -32,6 +32,11 @@ public class BudgetController {
         return new ResponseEntity<>(budgetService.getCategoryOfBudget(budgetId), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/budget-transactions/{budgetId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionFromBudget(@PathVariable int budgetId) throws Exception {
+        return new ResponseEntity<>(budgetService.getTransactionsFromBudget(budgetId), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/name/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getBudgetByName(@RequestParam String name, @PathVariable int accId) throws Exception {
         return new ResponseEntity<>(budgetService.getByName(accId, name), HttpStatus.OK);

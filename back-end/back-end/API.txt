@@ -82,6 +82,8 @@ BUDGET
 
 /budget-category/{budgetId} - get Category of Budget
 
+/budget-transactions/{budgetId} - get transactions from Budget
+
 /budget/name/{accId}?name={bankAccountName}. - get budget by name from bankAccount where name = bankAccount.name
 
 /budget/category/{accId}?categoryId={categoryId} - get budget by category from bankAccount where accId = bankAccId and categoryId={categoryId}

@@ -85,11 +85,12 @@ public class TransactionService extends AbstractServiceHelper {
         transaction.setBankAccount(b);
         transaction.setCategory(category);
         transaction.setDate(transaction.getDate());
+        transaction.setBudget(null);
         Transaction persistedTransaction = transactionDao.persist(transaction);
 
-        b.getTransactions().add(transaction);
+        b.getTransactions().add(persistedTransaction);
         // bankAccount logic
-        bankAccountLogic(b, transaction);
+        bankAccountLogic(b, persistedTransaction);
         bankAccountDao.update(b);
         return persistedTransaction;
     }
@@ -133,6 +134,10 @@ public class TransactionService extends AbstractServiceHelper {
         if (budgetForTransaction == null) {
             return;
         }
+
+        budgetForTransaction.getTransactions().add(transaction);
+        transaction.setBudget(budgetForTransaction);
+        transactionDao.update(transaction);
 
         double sumAmount = budgetForTransaction.getSumAmount();
 
@@ -188,6 +193,7 @@ public class TransactionService extends AbstractServiceHelper {
         transferTransaction.setAmount(actualCurrencyAmount);
         transferTransaction.setDate(new Date());
         transferTransaction.setTypeTransaction(transaction.getTypeTransaction());
+        transferTransaction.setBudget(null);
 
         Transaction persistedTransaction = transactionDao.persist(transferTransaction);
         toBankAcc.getTransactions().add(transferTransaction);
@@ -276,7 +282,6 @@ public class TransactionService extends AbstractServiceHelper {
      */
     public Transaction updateCategoryTransaction(int transactionId, int categoryId) throws Exception {
         Transaction transaction = getByIdTransaction(transactionId);
-        Category oldCategory = transaction.getCategory();
         Category category = getByIdCategory(categoryId);
         if (transaction.getCategory() == category) {
             return null;
@@ -286,8 +291,13 @@ public class TransactionService extends AbstractServiceHelper {
         categoryDao.update(category);
         Transaction updatedTransaction = transactionDao.update(transaction);
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
-            // budgetLogic pri update Category pro Expense Transaction
-            budgetLogicTransactionUpdateCategory(oldCategory, transaction);
+            if (transaction.getBudget() != null) {
+                // budgetLogic pro old Budget pri update Category pro Expense Transaction
+                budgetLogicTransactionUpdateCategory(transaction);
+            } else {
+                // budget logic for new budget
+                budgetLogic(transaction.getBankAccount(), transaction);
+            }
         }
         return updatedTransaction;
     }
@@ -295,21 +305,15 @@ public class TransactionService extends AbstractServiceHelper {
     /**
      * Logika pri editaci Category u Transaction
      *
-     * @param oldCategory
      * @param transaction
      * @throws Exception
      */
-    private void budgetLogicTransactionUpdateCategory(Category oldCategory, Transaction transaction) throws Exception {
+    private void budgetLogicTransactionUpdateCategory(Transaction transaction) throws Exception {
         BankAccount bankAccount = transaction.getBankAccount();
         double transAmount = transaction.getAmount();
-        // budget logic for new category
-        budgetLogic(bankAccount, transaction);
 
-        // get budget for old category
-        Budget budgetForTransaction = budgetDao.getByCategory(oldCategory.getId(), bankAccount.getId());
-        if (budgetForTransaction == null) {
-            return;
-        }
+        // get old budget
+        Budget budgetForTransaction = transaction.getBudget();
 
         double sumAmount = budgetForTransaction.getSumAmount();
         budgetForTransaction.setSumAmount(sumAmount - transAmount);
@@ -318,6 +322,13 @@ public class TransactionService extends AbstractServiceHelper {
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
 
         checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
+
+        budgetForTransaction.getTransactions().remove(transaction);
+        budgetDao.update(budgetForTransaction);
+        transaction.setBudget(null);
+        transactionDao.update(transaction);
+        // budget logic for new category
+        budgetLogic(bankAccount, transaction);
     }
 
     /**
@@ -330,10 +341,9 @@ public class TransactionService extends AbstractServiceHelper {
         if (transaction.getTypeTransaction() == TypeTransaction.EXPENSE) {
             budgetLogic(transaction.getBankAccount(), transaction);
         } else {
-            Category transCategory = transaction.getCategory();
             double transAmount = transaction.getAmount();
 
-            Budget budgetForTransaction = budgetDao.getByCategory(transCategory.getId(), transaction.getBankAccount().getId());
+            Budget budgetForTransaction = transaction.getBudget();
             // check if Budget for Transaction exists
             if (budgetForTransaction == null) {
                 return;
@@ -341,10 +351,14 @@ public class TransactionService extends AbstractServiceHelper {
 
             double sumAmount = budgetForTransaction.getSumAmount();
             budgetForTransaction.setSumAmount(sumAmount - transAmount);
+            budgetForTransaction.getTransactions().remove(transaction);
             budgetDao.update(budgetForTransaction);
 
             double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
             checkNotifiesBudget(budgetForTransaction, percentOfSumAmount);
+
+            transaction.setBudget(null);
+            transactionDao.update(transaction);
         }
     }
 
@@ -396,18 +410,16 @@ public class TransactionService extends AbstractServiceHelper {
      * @throws Exception
      */
     private void budgetLogicUpdateTransactionAmount(Transaction oldTransaction, Transaction updatedTransaction) throws Exception {
-        BankAccount bankAccount = oldTransaction.getBankAccount();
         double oldTransAmount = oldTransaction.getAmount();
-        double updatedTransaAmount = updatedTransaction.getAmount();
+        double updatedTransAmount = updatedTransaction.getAmount();
 
-        Category category = oldTransaction.getCategory();
-        Budget budgetForTransaction = budgetDao.getByCategory(category.getId(), bankAccount.getId());
+        Budget budgetForTransaction = oldTransaction.getBudget();
         if (budgetForTransaction == null) {
             return;
         }
 
         double sumAmount = budgetForTransaction.getSumAmount();
-        budgetForTransaction.setSumAmount(sumAmount - oldTransAmount + updatedTransaAmount);
+        budgetForTransaction.setSumAmount(sumAmount - oldTransAmount + updatedTransAmount);
         budgetDao.update(budgetForTransaction);
         double percentOfSumAmount = budgetForTransaction.getSumAmount() * 100 / budgetForTransaction.getAmount();
         // check if exists budgetNotify

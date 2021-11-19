@@ -72,14 +72,14 @@ INSERT INTO notify_debt_table VALUES (30,'DEBT_NOTIFY',24);
 INSERT INTO notify_debt_table VALUES (31,'DEBT_DEADLINE',26);
 
 -- Transaction table
-INSERT INTO transaction_table VALUES (30,100,'2021-10-01','jottings test 1','EXPENSE',15,-4);
-INSERT INTO transaction_table VALUES (31,150,'2021-10-02','jottings test 2','INCOME',16,-10);
-INSERT INTO transaction_table VALUES (32,200,'2021-10-03','jottings test 3','EXPENSE',17,-1);
+INSERT INTO transaction_table VALUES (30,100,'2021-10-01','jottings test 1','EXPENSE',15,null,-4);
+INSERT INTO transaction_table VALUES (31,150,'2021-10-02','jottings test 2','INCOME',16,null,-10);
+INSERT INTO transaction_table VALUES (32,200,'2021-10-03','jottings test 3','EXPENSE',17,null,-1);
 
-INSERT INTO transaction_table VALUES (33,100,'2021-09-01','jottings test 4','EXPENSE',18,-4);
-INSERT INTO transaction_table VALUES (34,150,'2021-09-21','jottings test 5','INCOME',18,-10);
-INSERT INTO transaction_table VALUES (35,200,'2021-09-30','jottings test 6','EXPENSE',18,-1);
-INSERT INTO transaction_table VALUES (36,100,'2021-10-01','jottings test 4','EXPENSE',18,-4);
-INSERT INTO transaction_table VALUES (37,150,'2021-10-02','jottings test 5','INCOME',18,-10);
-INSERT INTO transaction_table VALUES (38,200,'2021-10-05','jottings test 6','EXPENSE',18,-1);
-INSERT INTO transaction_table VALUES (39,200,'2021-10-06','jottings test 6','EXPENSE',18,-1);
+INSERT INTO transaction_table VALUES (33,100,'2021-09-01','jottings test 4','EXPENSE',18,null,-4);
+INSERT INTO transaction_table VALUES (34,150,'2021-09-21','jottings test 5','INCOME',18,null,-10);
+INSERT INTO transaction_table VALUES (35,200,'2021-09-30','jottings test 6','EXPENSE',18,null,-1);
+INSERT INTO transaction_table VALUES (36,100,'2021-10-01','jottings test 4','EXPENSE',18,null,-4);
+INSERT INTO transaction_table VALUES (37,150,'2021-10-02','jottings test 5','INCOME',18,null,-10);
+INSERT INTO transaction_table VALUES (38,200,'2021-10-05','jottings test 6','EXPENSE',18,null,-1);
+INSERT INTO transaction_table VALUES (39,200,'2021-10-06','jottings test 6','EXPENSE',18,null,-1);
