@@ -86,7 +86,8 @@
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-text-field
                                                 v-model="date"
-                                                label="Picker in menu"
+                                                label="Date"
+                                                :rules="rules"
                                                 prepend-icon="mdi-calendar"
                                                 readonly
                                                 v-bind="attrs"
@@ -275,7 +276,7 @@
                     return
                 }
 
-                let result = await removeTransactionFromBank(this.$route.params.transId, this.$route.params.bankId)
+                let result = await removeTransactionFromBank(this.$route.params.transId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {

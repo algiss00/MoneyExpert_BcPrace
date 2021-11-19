@@ -61,6 +61,20 @@ export async function getBudgetById(id) {
     }
 }
 
+export async function getDebtById(id) {
+    try {
+        let result = await axios.get(`${url}/debt/${id}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function getAllTransactions(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
@@ -199,6 +213,20 @@ export async function getAllUsersAvailableBanks() {
 export async function getAllBudgetsFromBankAcc(bankId) {
     try {
         let result = await axios.get(`${url}/bank-account/budgets/${bankId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllDebtsFromBankAcc(bankId) {
+    try {
+        let result = await axios.get(`${url}/bank-account/debts/${bankId}`, {
             withCredentials: true
         })
         return result.data
@@ -371,6 +399,25 @@ export async function addBudget(jsonBudget, accId, categoryId) {
             params: {
                 accId: accId,
                 categoryId: categoryId
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function addDebt(jsonDebt, accId) {
+    try {
+        return await axios.post(`${url}/debt`, jsonDebt, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                accId: accId
             },
             withCredentials: true
         })
@@ -655,12 +702,70 @@ export async function editPercentBudget(budgetId, percent) {
     }
 }
 
-export async function removeTransactionFromBank(transId, bankAccountId) {
+export async function editBasicDebt(debtId, jsonDebt) {
+    try {
+        return await axios.post(`${url}/debt/update-basic`, jsonDebt, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                debtId: debtId,
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editNotifyDate(debtId, notifyDate) {
+    try {
+        return await axios.post(`${url}/debt/update-notify-date`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                debtId: debtId,
+                notifyDate: notifyDate
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function editDeadline(debtId, deadline) {
+    try {
+        return await axios.post(`${url}/debt/update-deadline-date`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                debtId: debtId,
+                deadline: deadline
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function removeTransactionFromBank(transId) {
     try {
         return await axios.delete(`${url}/bank-account/transaction`, {
             params: {
-                transId: transId,
-                bankAccountId: bankAccountId
+                transId: transId
             },
             withCredentials: true
         })
@@ -688,6 +793,19 @@ export async function removeBankAcc(bankAccountId) {
 export async function removeBudget(budgetId) {
     try {
         return await axios.delete(`${url}/budget/${budgetId}`, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function removeDebt(debtId) {
+    try {
+        return await axios.delete(`${url}/debt/${debtId}`, {
             withCredentials: true
         })
     } catch (error) {

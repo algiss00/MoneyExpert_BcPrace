@@ -16,6 +16,8 @@ import DetailTransaction from '../views/transaction/DetailTransaction'
 import AddTransaction from '../views/transaction/AddTransaction.vue'
 import AddBudget from '../views/budget/AddBudget.vue'
 import DetailBudget from '../views/budget/DetailBudget.vue'
+import AddDebt from '../views/debt/AddDebt.vue'
+import DetailDebt from '../views/debt/DetailDebt.vue'
 
 Vue.use(VueRouter)
 
@@ -74,6 +76,16 @@ const routes = [
         path: '/debts/:bankId',
         name: 'Debts',
         component: Debts
+    },
+    {
+        path: '/debts/:bankId/addDebt',
+        name: 'AddDebt',
+        component: AddDebt
+    },
+    {
+        path: '/debts/:bankId/detail/:debtId',
+        name: 'DetailDebt',
+        component: DetailDebt
     },
     {
         path: '/statistic/:bankId',

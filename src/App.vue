@@ -136,6 +136,7 @@
 
                 </v-card-text>
                 <v-card-actions>
+                    <v-spacer></v-spacer>
                     <v-btn color="#e7f6ff" @click="profileDrawer = false">Zavřit</v-btn>
                 </v-card-actions>
             </v-card>
@@ -305,6 +306,8 @@
                 // todo - chci aby se vracel na ten path kde byl ale ne v login
                 //console.log(this.$route.path)
                 await this.$router.push("/banks")
+            } else{
+                this.$store.commit("setUser", null)
             }
         }
     }

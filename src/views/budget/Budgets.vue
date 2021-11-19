@@ -75,7 +75,10 @@
             }
             let budgets = await getAllBudgetsFromBankAcc(this.$route.params.bankId)
             this.budgets = budgets
-
+            if (this.budgets == null) {
+                alert("Invalid bankAcc id")
+                return
+            }
             for (let budget of budgets) {
                 let percentOfSumAmount = getPercentOfSumAmount(budget)
                 this.$set(budget, 'percentOfSumAmount', percentOfSumAmount)

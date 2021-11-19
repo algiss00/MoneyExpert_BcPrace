@@ -229,7 +229,7 @@
             }
             let availableBanks = await getAllUsersAvailableBanks()
             if (availableBanks == null) {
-                alert("Invalid username")
+                alert("Invalid data")
                 return
             }
             this.createdBanks = createdBanks
