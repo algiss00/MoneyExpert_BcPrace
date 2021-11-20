@@ -71,7 +71,7 @@ public class DebtService extends AbstractServiceHelper {
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_NOTIFY);
 
             notifyDebtDao.persist(notifyDebtEntity);
-            log.info("DEBT added to NotifyDebt with notify type" + notifyDebtEntity.getDebt().getName());
+            log.info("DEBT added to NotifyDebt with notify type " + notifyDebtEntity.getDebt().getName());
         }
     }
 
@@ -101,7 +101,7 @@ public class DebtService extends AbstractServiceHelper {
             notifyDebtEntity.setTypeNotification(TypeNotification.DEBT_DEADLINE);
 
             notifyDebtDao.persist(notifyDebtEntity);
-            log.info("DEBT added to NotifyDebt with deadline type" + notifyDebtEntity.getDebt().getName());
+            log.info("DEBT added to NotifyDebt with deadline type " + notifyDebtEntity.getDebt().getName());
         }
     }
 
