@@ -31,7 +31,7 @@ public class User extends AbstractEntity {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<BankAccount> createdBankAccounts;
 

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -184,24 +185,20 @@ public class UserService extends AbstractServiceHelper {
      */
     public void remove() throws Exception {
         User user = getAuthenticatedUser();
-        List<BankAccount> createdBankAccounts = user.getCreatedBankAccounts();
+        List<BankAccount> availableBankAccounts = user.getAvailableBankAccounts();
         List<Category> createdCategories = categoryDao.getUsersCreatedCategory(user.getId());
-
 
         for (Category category : createdCategories) {
             // delete created categories
             removeCategory(category.getId());
         }
 
-        for (Category myCategory : user.getMyCategories()) {
-            // delete all relations with categories
-            categoryDao.deleteUsersRelationCategoryById(user.getId(), myCategory.getId());
+        // delete all relations with available BankAccounts
+        for (BankAccount available : availableBankAccounts) {
+            bankAccountDao.deleteRelationBankAcc(user.getId(), available.getId());
         }
 
-        // delete all created by User BankAccounts
-        for (BankAccount createdBankAcc : createdBankAccounts) {
-            removeBankAcc(createdBankAcc.getId());
-        }
+        user.setAvailableBankAccounts(Collections.emptyList());
 
         userDao.remove(user);
     }

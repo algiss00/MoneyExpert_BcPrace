@@ -322,11 +322,12 @@ abstract class AbstractServiceHelper {
     public void removeBudget(int budgetId) throws Exception {
         Budget budget = getByIdBudget(budgetId);
 
-        budget.getTransactions().forEach(transaction -> {
+        for (Transaction transaction : budget.getTransactions()) {
             transaction.setBudget(null);
-            transactionDao.update(transaction);
-        });
+        }
+
         budget.setTransactions(Collections.emptyList());
+        budget.setBankAccount(null);
         budgetDao.update(budget);
 
         removeNotifyBudgetByBudgetId(budget.getId());
@@ -389,14 +390,6 @@ abstract class AbstractServiceHelper {
             throw new NotAuthenticatedClient();
         }
 
-        for (Debt debt : bankAccount.getDebts()) {
-            removeDebt(debt.getId());
-        }
-
-        for (Budget budget : bankAccount.getBudgets()) {
-            removeBudget(budget.getId());
-        }
-
         for (User owner : bankAccount.getOwners()) {
             bankAccountDao.deleteRelationBankAcc(owner.getId(), bankAccount.getId());
         }
@@ -426,7 +419,6 @@ abstract class AbstractServiceHelper {
         for (Transaction transaction : category.getTransactions()) {
             // "No category" entity
             transaction.setCategory(noCategory);
-            transactionDao.update(transaction);
         }
 
         // odstraneni Budgets z DB

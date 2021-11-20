@@ -17,7 +17,7 @@ public class Category extends AbstractEntity {
     @Column
     private String name;
 
-    @ManyToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "category")
     @JsonIgnore
     private List<Budget> budget;
 

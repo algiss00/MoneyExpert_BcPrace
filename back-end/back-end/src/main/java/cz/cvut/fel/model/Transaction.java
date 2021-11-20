@@ -49,7 +49,7 @@ public class Transaction extends AbstractEntity {
     @JsonIgnore
     private Budget budget;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "bankAccount_id")
     @JsonIgnore
     private BankAccount bankAccount;

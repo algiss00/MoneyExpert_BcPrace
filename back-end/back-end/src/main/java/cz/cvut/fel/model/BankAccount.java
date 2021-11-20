@@ -33,15 +33,15 @@ public class BankAccount extends AbstractEntity {
     @JsonIgnore
     private List<User> owners;
 
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Budget> budgets;
 
-    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "bankAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Debt> debts;
 

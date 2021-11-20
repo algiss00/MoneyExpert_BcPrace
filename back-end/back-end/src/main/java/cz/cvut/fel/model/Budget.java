@@ -44,7 +44,7 @@ public class Budget extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> category;
 
-    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<NotifyBudget> notifyBudgets;
 

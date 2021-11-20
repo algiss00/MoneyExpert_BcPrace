@@ -39,7 +39,7 @@ public class Debt extends AbstractEntity {
     @JsonIgnore
     private BankAccount bankAccount;
 
-    @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "debt", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<NotifyDebt> notifyDebt;
 
