@@ -263,8 +263,8 @@
             this.name = debt.name
             this.amount = debt.amount
             this.description = debt.description
-            this.notifyDate = new Date(debt.notifyDate).toISOString().substring(0, 19)
-            this.deadline = new Date(debt.deadline).toISOString().substring(0, 19)
+            this.notifyDate = new Date(debt.notifyDate).toISOString().substring(0, 10)
+            this.deadline = new Date(debt.deadline).toISOString().substring(0, 10)
         }
     }
 </script>

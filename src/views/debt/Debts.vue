@@ -17,7 +17,11 @@
                         </v-btn>
                     </v-fab-transition>
                 </v-card-title>
-                <v-simple-table dark>
+                <div class="font-weight-medium black--text m-left"
+                     v-if="debts.length === 0">
+                    Empty list :)
+                </div>
+                <v-simple-table dark v-if="debts.length !== 0">
                     <template v-slot:default>
                         <thead>
                         <tr>

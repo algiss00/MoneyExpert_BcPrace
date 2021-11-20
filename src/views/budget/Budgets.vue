@@ -20,7 +20,10 @@
                     </v-fab-transition>
                 </v-card-title>
                 <v-card-text>
-                    <v-list>
+                    <div class="font-weight-medium black--text m-left" v-if="budgets.length === 0">
+                        Empty list :)
+                    </div>
+                    <v-list v-if="budgets.length !== 0">
                         <v-list-item
                                 v-for="item in budgets"
                                 :key="item.id"

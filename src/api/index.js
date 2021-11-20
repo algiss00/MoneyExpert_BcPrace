@@ -307,6 +307,34 @@ export async function getAllUsersCategories() {
     }
 }
 
+export async function getAllUsersCreatedCategories() {
+    try {
+        let result = await axios.get(`${url}/category/user-created`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllDefaultCategories() {
+    try {
+        let result = await axios.get(`${url}/category/default`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function login(username, password) {
     try {
         let result = await axios.post(`${url}/login`, null, {
@@ -418,6 +446,22 @@ export async function addDebt(jsonDebt, accId) {
             },
             params: {
                 accId: accId
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function addCategory(jsonCategory) {
+    try {
+        return await axios.post(`${url}/category`, jsonCategory, {
+            "headers": {
+                "content-type": "application/json",
             },
             withCredentials: true
         })
@@ -761,6 +805,26 @@ export async function editDeadline(debtId, deadline) {
     }
 }
 
+export async function editCategory(categoryId, name) {
+    try {
+        return await axios.post(`${url}/category/update-name`, null, {
+            "headers": {
+                "content-type": "application/json",
+            },
+            params: {
+                catId: categoryId,
+                name: name
+            },
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
 export async function removeTransactionFromBank(transId) {
     try {
         return await axios.delete(`${url}/bank-account/transaction`, {
@@ -806,6 +870,19 @@ export async function removeBudget(budgetId) {
 export async function removeDebt(debtId) {
     try {
         return await axios.delete(`${url}/debt/${debtId}`, {
+            withCredentials: true
+        })
+    } catch (error) {
+        if (error.response) {
+            console.log("Not valid data!")
+        }
+        return null
+    }
+}
+
+export async function removeCategory(categoryId) {
+    try {
+        return await axios.delete(`${url}/category/${categoryId}`, {
             withCredentials: true
         })
     } catch (error) {

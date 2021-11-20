@@ -145,7 +145,6 @@
             }
             this.bankAcc = bankAcc.name
             this.categories = categories
-            this.category = categories[0]
         }
     }
 </script>

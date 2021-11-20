@@ -107,6 +107,10 @@ const routes = [
         name: 'AddTransaction',
         component: AddTransaction
     },
+    {
+        path: '*',
+        redirect: '/'
+    }
 ]
 
 

@@ -119,7 +119,7 @@
             types: ['EXPENSE', 'INCOME'],
             categories: [],
             category: "",
-            type: "EXPENSE",
+            type: "",
             amount: "",
             jottings: "",
             bankAcc: "",
@@ -184,7 +184,6 @@
             }
             this.bankAcc = bankAcc.name
             this.categories = categories
-            this.category = categories[0]
         }
     }
 </script>

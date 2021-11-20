@@ -306,7 +306,7 @@
                 // todo - chci aby se vracel na ten path kde byl ale ne v login
                 //console.log(this.$route.path)
                 await this.$router.push("/banks")
-            } else{
+            } else {
                 this.$store.commit("setUser", null)
             }
         }

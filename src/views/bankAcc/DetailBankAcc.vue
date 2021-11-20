@@ -112,7 +112,11 @@
                                             <span>Seznam vlastniků</span>
                                         </v-card-title>
                                         <v-card-text>
-                                            <v-list>
+                                            <div class="font-weight-medium black--text m-left"
+                                                 v-if="owners.length === 0">
+                                                Empty list :)
+                                            </div>
+                                            <v-list v-if="owners.length !== 0">
                                                 <v-list-item
                                                         v-for="item in owners"
                                                         :key="item.id"
@@ -123,10 +127,7 @@
                                                     </v-list-item-content>
                                                     <v-btn
                                                             class="mx-2"
-                                                            fab
-                                                            dark
-                                                            small
-                                                            color="white"
+                                                            icon
                                                             @click="removeOwnerFromBankAcc($event, item)"
                                                     >
                                                         <v-icon
@@ -135,7 +136,6 @@
                                                             mdi-delete
                                                         </v-icon>
                                                     </v-btn>
-
                                                 </v-list-item>
                                             </v-list>
                                         </v-card-text>
@@ -322,6 +322,6 @@
 
     #ownersList {
         margin: 5px;
-        border: 2px solid black
+        border-bottom: 2px solid black
     }
 </style>

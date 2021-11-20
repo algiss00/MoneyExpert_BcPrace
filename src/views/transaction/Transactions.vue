@@ -84,9 +84,12 @@
                                 return-object
                         />
                     </div>
-
                 </v-card-text>
-                <v-simple-table dark>
+                <div class="font-weight-medium black--text m-left"
+                     v-if="transactions.length === 0">
+                    Empty list :)
+                </div>
+                <v-simple-table dark v-if="transactions.length !== 0">
                     <template v-slot:default>
                         <thead>
                         <tr>

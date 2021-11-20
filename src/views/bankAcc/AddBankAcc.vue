@@ -58,7 +58,7 @@
         name: 'AddBankAcc',
         data: () => ({
             name: "",
-            currency: "CZK",
+            currency: "",
             balance: "",
             items: ['CZK', 'EUR'],
             nameRules: [

@@ -17,10 +17,17 @@
                         </v-btn>
                     </v-fab-transition>
                 </v-card-title>
-                <div class="font-weight-medium black--text m-left">
+
+                <div class="font-weight-medium black--text m-left"
+                     v-if="createdBanks.length === 0 && availableBanks.length === 0">
+                    Empty list :)
+                </div>
+
+                <div class="font-weight-medium black--text m-left" v-if="createdBanks.length !== 0">
                     Created accounts
                 </div>
-                <v-simple-table dark id="createdTab">
+
+                <v-simple-table dark id="createdTab" v-if="createdBanks.length !== 0">
                     <template v-slot:default>
                         <thead>
                         <tr>
@@ -62,10 +69,11 @@
                     </template>
                 </v-simple-table>
 
-                <div class="font-weight-medium black--text m-left">
+                <div class="font-weight-medium black--text m-left" v-if="availableBanks.length !== 0">
                     Available accounts
                 </div>
-                <v-simple-table dark id="availableTab">
+
+                <v-simple-table dark id="availableTab" v-if="availableBanks.length !== 0">
                     <template v-slot:default>
                         <thead>
                         <tr>
@@ -87,7 +95,7 @@
                         <tr
                                 v-for="item in availableBanks"
                                 :key="item.id"
-                                @click="toTransactions(item)"
+                                @click="toDashboard(item)"
                         >
                             <td>{{ item.name }}</td>
                             <td>{{ item.balance }}</td>
@@ -203,9 +211,6 @@
             toDashboard(item) {
                 this.$router.push('/dashboard/' + item.id)
             },
-            // toTransactions(item) {
-            //     this.$router.push('/transactions/' + item.id)
-            // },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
                 if (creator == null) {
