@@ -242,7 +242,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return 0;
         }
     }
@@ -265,7 +264,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return 0;
         }
     }
@@ -291,7 +289,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("categoryId", categoryId)
                     .getSingleResult();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return 0;
         }
     }
@@ -317,7 +314,6 @@ public class TransactionDao extends AbstractDao<Transaction> {
                     .setParameter("categoryId", categoryId)
                     .getSingleResult();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return 0;
         }
     }

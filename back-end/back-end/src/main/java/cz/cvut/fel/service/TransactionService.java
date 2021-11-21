@@ -228,6 +228,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     /**
      * update only amount, date, jottings
+     * ma vliv na enitu BankAccount
      *
      * @param transactionId
      * @param updateTransaction
@@ -253,6 +254,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     /**
      * update type of Transaction
+     * ma vliv na enitu Budget a BankAccount
      *
      * @param transactionId
      * @param typeTransaction
@@ -274,6 +276,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     /**
      * Editace kategorie u Transaction
+     * Ma vliv na entitu Budget
      *
      * @param transactionId
      * @param categoryId
