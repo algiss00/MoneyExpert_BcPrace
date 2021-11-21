@@ -75,6 +75,80 @@ export async function getDebtById(id) {
     }
 }
 
+export async function getSumOfExpenseForCategoryByMonth(bankId, month, year, categoryId) {
+    try {
+        let result = await axios.get(`${url}/transaction/sum-expense-category/${bankId}`, {
+            withCredentials: true,
+            params: {
+                month: month,
+                year: year,
+                categoryId: categoryId
+            },
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getSumOfIncomeForCategoryByMonth(bankId, month, year, categoryId) {
+    try {
+        let result = await axios.get(`${url}/transaction/sum-income-category/${bankId}`, {
+            withCredentials: true,
+            params: {
+                month: month,
+                year: year,
+                categoryId: categoryId
+            },
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getSumOfExpenseByMonth(bankId, month, year) {
+    try {
+        let result = await axios.get(`${url}/transaction/sum-expense/${bankId}`, {
+            withCredentials: true,
+            params: {
+                month: month,
+                year: year
+            },
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getSumOfIncomeByMonth(bankId, month, year) {
+    try {
+        let result = await axios.get(`${url}/transaction/sum-income/${bankId}`, {
+            withCredentials: true,
+            params: {
+                month: month,
+                year: year
+            },
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function getAllTransactions(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {

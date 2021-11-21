@@ -21,7 +21,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="font-weight-medium black--text m-left" v-if="budgets.length === 0">
-                        Empty list :)
+                        No budgets :)
                     </div>
                     <v-list v-if="budgets.length !== 0">
                         <v-list-item

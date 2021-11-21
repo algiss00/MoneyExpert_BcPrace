@@ -20,7 +20,7 @@
 
                 <div class="font-weight-medium black--text m-left"
                      v-if="createdBanks.length === 0 && availableBanks.length === 0">
-                    Empty list :)
+                    No bank accounts :)
                 </div>
 
                 <div class="font-weight-medium black--text m-left" v-if="createdBanks.length !== 0">

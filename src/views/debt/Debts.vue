@@ -19,7 +19,7 @@
                 </v-card-title>
                 <div class="font-weight-medium black--text m-left"
                      v-if="debts.length === 0">
-                    Empty list :)
+                    No debts :)
                 </div>
                 <v-simple-table dark v-if="debts.length !== 0">
                     <template v-slot:default>

@@ -114,7 +114,7 @@
                                         <v-card-text>
                                             <div class="font-weight-medium black--text m-left"
                                                  v-if="owners.length === 0">
-                                                Empty list :)
+                                                No owners :)
                                             </div>
                                             <v-list v-if="owners.length !== 0">
                                                 <v-list-item

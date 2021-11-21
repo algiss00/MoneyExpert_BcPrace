@@ -55,7 +55,7 @@
                 </v-card-title>
                 <div class="font-weight-medium black--text m-left"
                      v-if="createdCategories.length === 0 && defaultCategories.length === 0">
-                    Empty list :)
+                    No categories :)
                 </div>
                 <v-list
                         v-if="createdCategories.length !== 0"

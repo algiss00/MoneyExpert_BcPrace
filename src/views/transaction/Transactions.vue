@@ -87,7 +87,7 @@
                 </v-card-text>
                 <div class="font-weight-medium black--text m-left"
                      v-if="transactions.length === 0">
-                    Empty list :)
+                    No transactions :)
                 </div>
                 <v-simple-table dark v-if="transactions.length !== 0">
                     <template v-slot:default>
