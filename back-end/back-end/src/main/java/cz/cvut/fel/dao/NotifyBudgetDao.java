@@ -27,7 +27,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * vrati NoitfyBudget pro urcity Budget podle Typu notifikace
+     * return NoitfyBudget for certain Budget id by Notification Type.
      *
      * @param budgetId
      * @return
@@ -42,7 +42,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * pokud notifyBudget pro tento budget s urcitym typem jiz existuje
+     * check if notifyBudget for this budget with a certain type already exists.
      *
      * @param budgetId
      * @param type
@@ -58,7 +58,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * vrati NoitfyBudgets pro urcity Budget
+     * return NoitfyBudget for certain Budget.
      *
      * @param budgetId
      * @return
@@ -70,7 +70,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * vrati vse NotifyBudgets z BankAccount
+     * get all NotifyBudgets from BankAccount.
      *
      * @param bankAccId
      * @return
@@ -82,7 +82,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * Odstrani vse NotifyBudgets, ktere maji urcity budget
+     * delete all NotifyBudgets, which have certain budget id.
      *
      * @param budgetId
      * @throws Exception
@@ -99,7 +99,7 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
-     * Delete NotifyBudget by Id
+     * Delete NotifyBudget by Id.
      *
      * @param notifyId
      * @throws Exception

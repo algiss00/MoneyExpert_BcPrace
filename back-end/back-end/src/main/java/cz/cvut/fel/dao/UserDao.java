@@ -28,7 +28,7 @@ public class UserDao extends AbstractDao<User> {
     }
 
     /**
-     * get User by username
+     * get User by username.
      *
      * @param username
      * @return
@@ -43,7 +43,7 @@ public class UserDao extends AbstractDao<User> {
     }
 
     /**
-     * get User by Email
+     * get User by Email.
      *
      * @param email
      * @return

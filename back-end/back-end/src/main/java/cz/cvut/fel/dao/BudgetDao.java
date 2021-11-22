@@ -26,8 +26,8 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     /**
-     * Vrati budget podle category v urcitem BankAccount
-     * v jednom bankAccount je pouze jeden budget na urcitou Category, tj. nejsou dva budgety na stejnou Category v jednom BankAcc
+     * Returns a budget by category in a certain BankAccount.
+     * in one bankAccount there is only one budget for a certain Category, ie there are not two budgets for the same Category in one BankAcc
      *
      * @param categoryId
      * @param bankAccId
@@ -53,7 +53,7 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     /**
-     * get Budget z urciteho BankAccount
+     * get Budget from certain BankAccount.
      *
      * @param budgetId  - budget Id
      * @param bankAccId
@@ -70,7 +70,7 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     /**
-     * get Budget by name from BankAccount
+     * get Budget by name from BankAccount.
      *
      * @param bankAccId
      * @param name
@@ -84,7 +84,7 @@ public class BudgetDao extends AbstractDao<Budget> {
     }
 
     /**
-     * Odstrani vsechny realce mezi budget a category v tabulce relation_budget_category
+     * Removes all relations between budget and category in the relation_budget_category table.
      *
      * @param budgetId
      * @throws Exception

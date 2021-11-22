@@ -27,7 +27,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * Vrati default Categories
+     * returns default Categories.
      *
      * @return
      */
@@ -36,7 +36,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * Get All users category include default and created categories
+     * Get All users category include default and created categories.
      *
      * @param uid
      * @return
@@ -56,7 +56,9 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * vrati vse userem vytvorene categorie - pouziva se protoze jenom je ma prarvo editovat, do defult categoies nema pravo zasahovat
+     * return all users created categories.
+     * it is used because only creator of category have the right to edit.
+     * and user has no right to edit default categories.
      *
      * @param uid
      * @return
@@ -76,7 +78,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * Vrati category userove category
+     * return users category by id.
      *
      * @param uid
      * @param catId
@@ -101,7 +103,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * get Users category By name
+     * get Users category By name.
      *
      * @param uid
      * @param catName
@@ -126,7 +128,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * Odstrani realce mezi Category a User v tabulce relation_category_user
+     * Delete the relations between Category and User in the relation_category_user table.
      *
      * @param uid
      * @param catId

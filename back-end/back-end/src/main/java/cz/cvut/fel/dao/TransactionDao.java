@@ -28,7 +28,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Vrati vse transacke z BankAccount, ktere patri k urcite Category a jsou v urcitem obdobi
+     * Returns all transactions from BankAccount that belong to a certain Category and are in a certain period.
      *
      * @param categoryId - categoryId
      * @param accountId
@@ -54,7 +54,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * get All transactions from BankAccount
+     * get All transactions from BankAccount.
      *
      * @param accountId
      * @param transId
@@ -70,7 +70,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * get All transactions from BankAccount by TypeTransaction
+     * get All transactions from BankAccount by TypeTransaction.
      *
      * @param bankAccountId
      * @param typeTransaction
@@ -84,7 +84,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Get all transactions from BankAccount, which belongs to defined Category
+     * Get all transactions from BankAccount, which belongs to defined Category.
      *
      * @param bankAccountId
      * @param categoryId
@@ -98,7 +98,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Get all transactions from BankAccount, which belongs to Category and have TypeTransaction
+     * Get all transactions from BankAccount, which belongs to Category and have TypeTransaction.
      *
      * @param bankAccountId
      * @param categoryId
@@ -114,7 +114,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * get all transactions from BankAccount sorted by Date - desc
+     * get all transactions from BankAccount sorted by Date - desc.
      *
      * @param bankAccId
      * @return
@@ -147,7 +147,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
 //    }
 
     /**
-     * get All Transactions from BankAccount sorted by month and year
+     * get All Transactions from BankAccount sorted by month and year.
      *
      * @param month
      * @param year
@@ -170,7 +170,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * vrati vse transakce z BankAccount podle TypeTransaction v urcitem obdobi
+     * returns all transactions from BankAccount by TypeTransaction in a certain period.
      *
      * @param bankAccId
      * @param type
@@ -196,7 +196,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * vrati vse transakce z BankAccount podle category a typu zaroven v urcitem obdobi
+     * returns all transactions from BankAccount by category and type in a certain period.
      *
      * @param categoryId
      * @param bankAccId
@@ -225,7 +225,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Vrati soucet vsech vydaju v urcitem obdobi z bankAccount
+     * Returns the sum of all expenses in a certain period from bankAccount.
      *
      * @param month
      * @param year
@@ -247,7 +247,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Vrati soucet vsech prijmu v urcitem obdobi z bankAccount
+     * Returns the sum of all incomes in a certain period from bankAccount.
      *
      * @param month
      * @param year
@@ -269,7 +269,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Vrati soucet vsech vydaju, ktere patri do Category, v urcitem obdobi z bankAccount
+     * Returns the sum of all expenses that belong to the Category, in a certain period from bankAccount.
      *
      * @param month
      * @param year
@@ -294,7 +294,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Vrati soucet vsech prijmu, ktere patri do Category, v urcitem obdobi z bankAccount
+     * Returns the sum of all incomes that belong to a Category in a certain period from bankAccount.
      *
      * @param month
      * @param year
@@ -319,7 +319,7 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * get Transactions which date is between some date
+     * get Transactions which date is between some date.
      *
      * @param from          - date from
      * @param to            - date to

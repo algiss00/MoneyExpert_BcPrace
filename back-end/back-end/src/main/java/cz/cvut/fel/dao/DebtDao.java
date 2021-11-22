@@ -27,7 +27,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     /**
-     * Vrati vse Debt u kterych notifyDebt uz nastal ale deadline jeste ne
+     * Returns all Debt that notifyDebt has already occurred but no deadline yet.
      *
      * @return
      */
@@ -36,7 +36,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     /**
-     * get Debts from BankAccount sorted by Deadline
+     * get Debts from BankAccount sorted by Deadline.
      *
      * @param bankAccId
      * @return
@@ -48,7 +48,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     /**
-     * Vrati vse debt u kterych deadline date uz nastal
+     * Returns all debt for which the deadline date has already occurred.
      *
      * @return
      */
@@ -57,7 +57,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     /**
-     * get debt by name in BankAccount
+     * get debt by name in BankAccount.
      *
      * @param bankAccId - bankAccount Id
      * @param debtName
@@ -71,7 +71,7 @@ public class DebtDao extends AbstractDao<Debt> {
     }
 
     /**
-     * Get Debt from BankAccount by Id
+     * Get Debt from BankAccount by Id.
      *
      * @param debtId
      * @param bankAccId

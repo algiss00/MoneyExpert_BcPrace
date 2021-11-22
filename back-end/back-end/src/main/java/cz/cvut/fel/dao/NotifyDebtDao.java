@@ -27,7 +27,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * vrati NotifyDebt pro urcity Debt podle Typu notifikace
+     * return NotifyDebt for certain Debt id by Notification Type
      *
      * @param debtId
      * @return
@@ -42,7 +42,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * vrati vse NotifyDebts z BankAccount
+     * get all NotifyDebts from BankAccount
      *
      * @param bankAccId
      * @return
@@ -54,7 +54,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * pokud NotifyDebt pro tento debt s urcitym typem jiz existuje
+     * check if NotifyDebt already exists for debt with a certain type.
      *
      * @param debtId
      * @param type
@@ -70,7 +70,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * vrati NotifyDebts pro urcity Debt
+     * get NotifyDebts by certain Debt.
      *
      * @param debtId
      * @return
@@ -82,7 +82,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * Odstranit vse Notifydebts, ktere maji urcity debt
+     * remove all NotifyDebts, which have certain debt id.
      *
      * @param debtId
      * @throws Exception
@@ -99,7 +99,7 @@ public class NotifyDebtDao extends AbstractDao<NotifyDebt> {
     }
 
     /**
-     * Odstranit Notifydebt, ktere maji urcity debt podle typu
+     * Delete NotifyDebt, which have certain debt id and type
      *
      * @param debtId
      * @param typeNotification
