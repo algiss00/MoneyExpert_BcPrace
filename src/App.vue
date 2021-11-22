@@ -24,6 +24,12 @@
                        router
                        @click="toPage(item)">
                     {{item.title}}
+                    <v-icon
+                            v-if="item.title === 'Závazky' && $store.state.notificationBudget.length > 0"
+                            color="red"
+                    >
+                        mdi-alert-circle
+                    </v-icon>
                 </v-btn>
             </v-toolbar-items>
         </v-app-bar>
@@ -38,6 +44,26 @@
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
+
+        <v-snackbar
+                v-model="$store.state.snackbar"
+                :timeout="timeout"
+        >
+            {{ text }}
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                        color="blue"
+                        icon
+                        v-bind="attrs"
+                        @click="$store.commit('setSnackbar', false)"
+                >
+                    <v-icon>
+                        mdi-close
+                    </v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
 
         <v-dialog
                 v-model="profileDrawer"
@@ -148,7 +174,6 @@
 </template>
 
 <script>
-
     import {
         editEmail,
         editNameLastname,
@@ -191,6 +216,8 @@
                     v => !!v.trim() || 'E-mail is required',
                     v => /.+@.+/.test(v) || 'E-mail must be valid'
                 ],
+                text: 'Success',
+                timeout: 2000
             }
         },
         methods: {
@@ -236,7 +263,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editEmail(event) {
@@ -248,7 +275,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editUsername(event) {
@@ -260,7 +287,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editPassword(event) {
@@ -277,7 +304,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.passwordOld = ""
                     this.passwordNew = ""
                 }
@@ -292,7 +319,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.profileDrawer = false
                     this.$store.commit("setUser", null)
                     await this.$router.push("/")
@@ -302,9 +329,8 @@
         async beforeMount() {
             let user = await getCurrentUserBackEnd()
             if (user) {
+                // todo get all notifiactions and add to store
                 this.$store.commit("setUser", user)
-                // todo - chci aby se vracel na ten path kde byl ale ne v login
-                //console.log(this.$route.path)
                 await this.$router.push("/banks")
             } else {
                 this.$store.commit("setUser", null)

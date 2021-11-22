@@ -219,6 +219,24 @@ export async function getAllTransactionsByCategory(bankAccId, month, year, categ
     }
 }
 
+export async function getAllTransactionsBetweenDate(bankAccId, from, to) {
+    try {
+        let result = await axios.get(`${url}/transaction/between-date/${bankAccId}`, {
+            params: {
+                from: from,
+                to: to
+            },
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function getAllTransactionsByCategoryAndType(bankAccId, month, year, type, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/sorted-type-category/${bankAccId}`, {

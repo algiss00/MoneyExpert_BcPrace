@@ -146,7 +146,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/budgets/' + this.$route.params.bankId)
                 }
             },
@@ -161,7 +161,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editNameBudget() {
@@ -169,7 +169,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editAmountBudget() {
@@ -177,7 +177,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editPercentBudget() {
@@ -185,7 +185,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
         },

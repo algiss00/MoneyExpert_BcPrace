@@ -186,7 +186,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/debts/' + this.$route.params.bankId)
                 }
             },

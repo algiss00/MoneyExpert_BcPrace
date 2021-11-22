@@ -39,6 +39,7 @@
                                 <v-progress-linear
                                         :value="item.percentOfSumAmount"
                                         height="25"
+                                        :color="item.percentOfSumAmount >= item.percentNotify ? 'red' : 'primary'"
                                 >
                                     <template v-slot:default="{ value }">
                                         <strong>{{ Math.ceil(value) }}%</strong>

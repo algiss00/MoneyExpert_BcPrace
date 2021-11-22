@@ -121,7 +121,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/budgets/' + this.$route.params.bankId)
                 }
             },

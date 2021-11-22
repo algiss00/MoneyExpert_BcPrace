@@ -45,7 +45,8 @@
                                         label="popis"
                                         rows="2"
                                 />
-                                <v-btn color="primary" text class="editBtnDebt" @click="editBasic($event)">Změnit název, částku, popis
+                                <v-btn color="primary" text class="editBtnDebt" @click="editBasic($event)">Změnit název,
+                                    částku, popis
                                 </v-btn>
                                 <v-menu
                                         ref="menu"
@@ -89,7 +90,8 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text class="editBtnDebt" @click="editDeadline($event)">Změnit deadline
+                                <v-btn color="primary" text class="editBtnDebt" @click="editDeadline($event)">Změnit
+                                    deadline
                                 </v-btn>
                                 <v-menu
                                         ref="menu2"
@@ -133,7 +135,8 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text class="editBtnDebt" @click="editNotifyDate($event)">Změnit datum upozornění
+                                <v-btn color="primary" text class="editBtnDebt" @click="editNotifyDate($event)">Změnit
+                                    datum upozornění
                                 </v-btn>
                                 <v-text-field
                                         id="bankAcc"
@@ -145,8 +148,9 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
-                            <v-spacer></v-spacer>
                             <v-btn color="#e7f6ff" @click="toDebts">Zpět</v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color="#e7f6ff" @click="toAddTransactionDebt">Potvrdit akci</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -183,6 +187,9 @@
             toDebts() {
                 this.$router.push('/debts/' + this.$route.params.bankId)
             },
+            toAddTransactionDebt() {
+                this.$router.push('/transactions/' + this.$route.params.bankId + "/addTransaction/")
+            },
             async removeDebt(event) {
                 if (!confirm("Opravdu checete smazat závazek?")) {
                     event.preventDefault()
@@ -193,7 +200,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/debts/' + this.$route.params.bankId)
                 }
             },
@@ -213,7 +220,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editDeadline(event) {
@@ -226,7 +233,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editNotifyDate(event) {
@@ -239,7 +246,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             }
         },

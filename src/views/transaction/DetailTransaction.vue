@@ -4,6 +4,45 @@
             <v-layout align-center justify-center>
                 <v-flex xs12 sm8 md4>
                     <v-card class="elevation-12">
+                        <v-dialog
+                                v-model="dialog"
+                                max-width="500px"
+                        >
+                            <v-card>
+                                <v-card-title>
+                                    <span>Převod transakci</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-select
+                                            id="bankAccounts"
+                                            :items="allBankAccounts"
+                                            v-model="bankAccount"
+                                            label="dostupné bankovní účty"
+                                            item-text="name"
+                                            item-value="id"
+                                            persistent-hint
+                                            return-object
+                                    />
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn
+                                            color="primary"
+                                            text
+                                            @click="dialog = false"
+                                    >
+                                        Zavřit
+                                    </v-btn>
+                                    <v-spacer/>
+                                    <v-btn
+                                            color="primary"
+                                            text
+                                            @click="transferTransaction($event)"
+                                    >
+                                        Transfer
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail transakce</v-toolbar-title>
                             <v-btn
@@ -16,46 +55,6 @@
                                     mdi-share
                                 </v-icon>
                             </v-btn>
-                            <v-dialog
-                                    v-model="dialog"
-                                    max-width="500px"
-                            >
-                                <v-card>
-                                    <v-card-title>
-                                        <span>Převod transakci</span>
-                                    </v-card-title>
-                                    <v-card-text>
-                                        <v-select
-                                                id="bankAccounts"
-                                                :items="allBankAccounts"
-                                                v-model="bankAccount"
-                                                label="dostupné bankovní účty"
-                                                item-text="name"
-                                                item-value="id"
-                                                persistent-hint
-                                                return-object
-                                        />
-                                    </v-card-text>
-                                    <v-card-actions>
-                                        <v-btn
-                                                color="primary"
-                                                text
-                                                @click="dialog = false"
-                                        >
-                                            Zavřit
-                                        </v-btn>
-                                        <v-spacer/>
-                                        <v-btn
-                                                color="primary"
-                                                text
-                                                @click="transferTransaction($event)"
-                                        >
-                                            Transfer
-                                        </v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog>
-
                             <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
@@ -245,7 +244,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editTypeTransaction() {
@@ -253,7 +252,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async editCategoryTransaction() {
@@ -267,7 +266,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async removeTransaction(event) {
@@ -280,7 +279,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
                 }
             },
@@ -295,7 +294,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
                 }
             }

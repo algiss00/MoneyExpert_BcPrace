@@ -57,6 +57,42 @@
                      v-if="createdCategories.length === 0 && defaultCategories.length === 0">
                     No categories :)
                 </div>
+                <v-dialog
+                        v-model="dialogEditCategory"
+                        max-width="500px"
+                >
+                    <v-card>
+                        <v-card-title>
+                            <span>Editace kategorii</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-text-field
+                                    id="nameCategoryEdit"
+                                    label="název"
+                                    :rules="rules"
+                                    v-model="nameCategoryEdit"
+                                    hide-details="auto"
+                            />
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn
+                                    color="primary"
+                                    text
+                                    @click="dialogEditCategory = false"
+                            >
+                                Zavřit
+                            </v-btn>
+                            <v-spacer/>
+                            <v-btn
+                                    color="primary"
+                                    text
+                                    @click="editCategory($event)"
+                            >
+                                Změnit nazev
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
                 <v-list
                         v-if="createdCategories.length !== 0"
                         subheader
@@ -75,7 +111,7 @@
                             <v-btn
                                     class="mx-2"
                                     icon
-                                    @click="dialogEditCategory = true, addName(item)"
+                                    @click="dialogEditCategory = true, selectedItem = item, nameCategoryEdit = item.name"
                             >
                                 <v-icon
                                 >
@@ -83,42 +119,6 @@
                                 </v-icon>
                             </v-btn>
                         </v-list-item-icon>
-                        <v-dialog
-                                v-model="dialogEditCategory"
-                                max-width="500px"
-                        >
-                            <v-card>
-                                <v-card-title>
-                                    <span>Editace kategorii</span>
-                                </v-card-title>
-                                <v-card-text>
-                                    <v-text-field
-                                            id="nameCategoryEdit"
-                                            label="název"
-                                            :rules="rules"
-                                            v-model="nameCategoryEdit"
-                                            hide-details="auto"
-                                    />
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-btn
-                                            color="primary"
-                                            text
-                                            @click="dialogEditCategory = false"
-                                    >
-                                        Zavřit
-                                    </v-btn>
-                                    <v-spacer/>
-                                    <v-btn
-                                            color="primary"
-                                            text
-                                            @click="editCategory($event, item)"
-                                    >
-                                        Změnit nazev
-                                    </v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
                         <v-list-item-icon>
                             <v-btn
                                     class="mx-2"
@@ -177,20 +177,18 @@
             dialogAddCategory: false,
             nameCategory: "",
             nameCategoryEdit: "",
-            dialogEditCategory: false
+            dialogEditCategory: false,
+            selectedItem: {}
         }),
         methods: {
-            addName(item) {
-                this.nameCategoryEdit = item.name
-            },
-            async editCategory(event, item) {
+            async editCategory(event) {
                 let nameEditEl = document.getElementById("nameCategoryEdit")
                 if (nameEditEl.value.trim().length === 0) {
                     event.preventDefault()
                     alert("empty field!")
                     return
                 }
-                let result = await editCategory(item.id, this.nameCategoryEdit)
+                let result = await editCategory(this.selectedItem.id, this.nameCategoryEdit)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe category with this name already exists.")
                 } else if (result.status === 201) {
@@ -199,7 +197,7 @@
                         alert("Invalid data!")
                         return
                     }
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.createdCategories = createdCategories
                     this.dialogEditCategory = false
                 }
@@ -224,8 +222,9 @@
                         alert("Invalid data!")
                         return
                     }
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.createdCategories = createdCategories
+                    this.nameCategory = ""
                     this.dialogAddCategory = false
                 }
             },
@@ -244,7 +243,7 @@
                         alert("Invalid data!")
                         return
                     }
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.createdCategories = createdCategories
                 }
             }

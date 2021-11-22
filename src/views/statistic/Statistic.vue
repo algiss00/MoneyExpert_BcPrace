@@ -50,22 +50,27 @@
                         </v-date-picker>
                     </v-menu>
                 </v-card-text>
-                <div class="font-weight-medium black--text m-left"
-                     v-if="sumOfExpensesCategoryByMonth.length === 0">
-                    No transactions in this period :)
-                </div>
-                <div class="font-weight-light black--text m-left"
-                     v-if="sumOfExpensesCategoryByMonth.length !== 0">
-                    Koláčový graf - výdaje podle kategorie
-                </div>
-                <div id="chartCategory" v-if="sumOfExpensesCategoryByMonth.length !== 0">
-                    <apexchart type="pie" width="380" :options="chartOptions" :series="sumOfExpensesCategoryByMonth"/>
-                </div>
-                <v-spacer></v-spacer>
+                <div class="d-md-inline-flex">
+                    <div class="font-weight-medium black--text m-left"
+                         v-if="sumOfExpensesCategoryByMonth.length === 0 && sumOfExpensesCategoryByMonth === 0">
+                        No transactions in this period :)
+                    </div>
 
-                <div id="chartCashflow" v-if="sumExpenseAndIncomeByMonth.length !== 0">
-                    <apexchart type="bar" width="800" height="300" :options="chartOptions2"
-                               :series="sumExpenseAndIncomeByMonth"/>
+                    <div id="chartCategory" v-if="sumOfExpensesCategoryByMonth.length !== 0" class="mr-5">
+                        <div class="font-weight-light black--text m-left">
+                            Koláčový graf - výdaje podle kategorie
+                        </div>
+                        <apexchart type="pie" width="380" :options="chartOptions"
+                                   :series="sumOfExpensesCategoryByMonth"/>
+                    </div>
+
+                    <div id="chartCashflow" v-if="sumExpenseAndIncomeByMonth.length !== 0" class="ml-10">
+                        <div class="font-weight-light black--text m-left">
+                            Cashflow - utrácím méně než výdělávám?
+                        </div>
+                        <apexchart type="bar" width="600" height="300" :options="chartOptions2"
+                                   :series="sumExpenseAndIncomeByMonth"/>
+                    </div>
                 </div>
             </v-card>
         </v-container>
@@ -87,8 +92,14 @@
                 date: new Date().toISOString().substr(0, 7),
                 menu: false,
                 sumExpenseAndIncomeByMonth: [{
-                    data: []
-                }],
+                    data: [],
+                    name: "INCOME"
+                },
+                    {
+                        data: [],
+                        name: "EXPENSE"
+                    }
+                ],
                 sumOfExpensesCategoryByMonth: [],
                 chartOptions: {
                     labels: [],
@@ -109,7 +120,7 @@
                     }]
                 },
                 chartOptions2: {
-                    colors: ['#00FF00', '#fb0018'],
+                    colors: ['#61ff7e', '#fb0018'],
                     chart: {
                         type: 'bar',
                         height: 100
@@ -121,6 +132,9 @@
                         }
                     },
                     dataLabels: {
+                        enabled: true
+                    },
+                    tooltip: {
                         enabled: false
                     },
                     xaxis: {
@@ -181,11 +195,26 @@
             let sumExpense = await getSumOfExpenseByMonth(this.$route.params.bankId, month, year)
             let sumIncome = await getSumOfIncomeByMonth(this.$route.params.bankId, month, year)
             if (sumIncome !== 0) {
-                this.sumExpenseAndIncomeByMonth[0].data.push(sumIncome)
+                this.sumExpenseAndIncomeByMonth = [{
+                    data: [...this.sumExpenseAndIncomeByMonth[0].data, sumIncome],
+                    name: "INCOME"
+                },
+                    this.sumExpenseAndIncomeByMonth[1]
+                ]
             }
             if (sumExpense !== 0) {
-                this.sumExpenseAndIncomeByMonth[0].data.push(sumExpense)
+                this.sumExpenseAndIncomeByMonth = [
+                    this.sumExpenseAndIncomeByMonth[0],
+                    {
+                        data: [...this.sumExpenseAndIncomeByMonth[1].data, sumExpense],
+                        name: "EXPENSE"
+                    }
+                ]
             }
         }
     }
 </script>
+
+<style>
+
+</style>

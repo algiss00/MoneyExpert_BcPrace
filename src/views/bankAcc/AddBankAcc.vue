@@ -86,8 +86,8 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
-                    alert("Success!")
                     await this.$router.push('/banks')
+                    this.$store.commit("setSnackbar", true)
                 }
             }
         },

@@ -36,7 +36,7 @@
                                     readonly
                                     v-bind="attrs"
                                     v-on="on"
-                            ></v-text-field>
+                            />
                         </template>
                         <v-date-picker
                                 v-model="date"
@@ -61,7 +61,7 @@
                             </v-btn>
                         </v-date-picker>
                     </v-menu>
-                    <div id="filtr">
+                    <div class="d-md-inline-flex">
                         <v-select
                                 id="type"
                                 :items="types"
@@ -232,9 +232,3 @@
         }
     }
 </script>
-
-<style>
-    #filtr {
-        display: inline-block;
-    }
-</style>

@@ -23,7 +23,7 @@
                                 >
                                     <template v-slot:activator="{ on, attrs }">
                                         <v-text-field
-                                                v-model="date"
+                                                v-model="dateRangeText"
                                                 label="Date"
                                                 :rules="rules"
                                                 prepend-icon="mdi-calendar"
@@ -135,6 +135,11 @@
             ],
             valid: true,
         }),
+        computed: {
+            dateRangeText() {
+                return this.date.split('T').join(' ')
+            },
+        },
         methods: {
             async addTransaction(event) {
                 if (!this.$refs.form.validate()) {
@@ -160,7 +165,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
                 }
             },

@@ -4,6 +4,42 @@
             <v-layout align-center justify-center>
                 <v-flex xs12 sm8 md4>
                     <v-card class="elevation-12">
+                        <v-dialog
+                                v-model="dialog"
+                                max-width="500px"
+                        >
+                            <v-card>
+                                <v-card-title>
+                                    <span>Sdílet bankovní účet</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-text-field
+                                            id="username"
+                                            label="username"
+                                            :rules="rules"
+                                            v-model="username"
+                                            hide-details="auto"
+                                    />
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-btn
+                                            color="primary"
+                                            text
+                                            @click="dialog = false, username = ''"
+                                    >
+                                        Zavřit
+                                    </v-btn>
+                                    <v-spacer/>
+                                    <v-btn
+                                            color="primary"
+                                            text
+                                            @click="shareBankAcc($event)"
+                                    >
+                                        Sdílet
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail účtu</v-toolbar-title>
                             <v-btn
@@ -16,42 +52,6 @@
                                     mdi-share
                                 </v-icon>
                             </v-btn>
-                            <v-dialog
-                                    v-model="dialog"
-                                    max-width="500px"
-                            >
-                                <v-card>
-                                    <v-card-title>
-                                        <span>Sdílet bankovní účet</span>
-                                    </v-card-title>
-                                    <v-card-text>
-                                        <v-text-field
-                                                id="username"
-                                                label="username"
-                                                :rules="rules"
-                                                v-model="username"
-                                                hide-details="auto"
-                                        />
-                                    </v-card-text>
-                                    <v-card-actions>
-                                        <v-btn
-                                                color="primary"
-                                                text
-                                                @click="dialog = false"
-                                        >
-                                            Zavřit
-                                        </v-btn>
-                                        <v-spacer/>
-                                        <v-btn
-                                                color="primary"
-                                                text
-                                                @click="shareBankAcc($event)"
-                                        >
-                                            Sdílet
-                                        </v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog>
                             <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
@@ -219,7 +219,7 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                 }
             },
             async removeBankAcc(event) {
@@ -232,7 +232,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     await this.$router.push('/banks/')
                 }
             },
@@ -256,7 +256,7 @@
                     this.dialog = false
                     alert("Invalid data!")
                 } else {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.username = ""
                     this.dialog = false
                 }
@@ -268,9 +268,6 @@
                     return
                 }
                 this.owners = owners
-                if (this.owners.isEmpty) {
-                    //todo - napsat do textu Empty list!
-                }
             },
             async removeOwnerFromBankAcc(event, user) {
                 if (!confirm("Opravdu checete smazat vlastnika?")) {
@@ -282,7 +279,7 @@
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
-                    alert("Success!")
+                    this.$store.commit("setSnackbar", true)
                     this.ownersDialog = false
                 }
             }
