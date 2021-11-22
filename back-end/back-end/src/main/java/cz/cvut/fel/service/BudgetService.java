@@ -20,22 +20,45 @@ public class BudgetService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
+    /**
+     * get budgets by Name.
+     *
+     * @param bankAccId
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public List<Budget> getByName(int bankAccId, String name) throws Exception {
         return budgetDao.getByName(getByIdBankAccount(bankAccId).getId(), name);
     }
 
+    /**
+     * get Transactions from budget.
+     *
+     * @param budgetId
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getTransactionsFromBudget(int budgetId) throws Exception {
         return getByIdBudget(budgetId).getTransactions();
     }
 
+    /**
+     * get category if budget.
+     *
+     * @param budgetId
+     * @return
+     * @throws Exception
+     */
     public Category getCategoryOfBudget(int budgetId) throws Exception {
         return getByIdBudget(budgetId).getCategory().stream().findFirst().orElse(null);
     }
 
     /**
-     * Pridani budgetu do BankAccount s urcitou Category
-     * Budget v BankAccount muze patrit jen k jedne Category
-     * tzn. V bankAccount muze byt jen jeden budget na jednu Category
+     * Persist budget.
+     * Added budget to BankAccount with a certain Category
+     * The budget in BankAccount can belong to only one Category
+     * it means than there can be only one budget per Category in bankAccount
      *
      * @param budget
      * @param bankAccId
@@ -61,6 +84,15 @@ public class BudgetService extends AbstractServiceHelper {
         return persistedBudget;
     }
 
+    /**
+     * Validation of Budget.
+     *
+     * @param budget
+     * @param bankAccountId
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     private boolean validate(Budget budget, int bankAccountId, int catId) throws Exception {
         if (budget.getName().trim().isEmpty() || budget.getAmount() <= 0
                 || budget.getPercentNotify() > 100 || budget.getPercentNotify() < 0) {
@@ -74,7 +106,7 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * Update only budget name
+     * Update only budget name.
      *
      * @param budgetId
      * @param name
@@ -91,8 +123,8 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * update only amount of budget
-     * Pri tom se dela logika budgetu
+     * update only amount of budget.
+     * has an effect on NotifyBudget that's why invoke updateAmountLogic and checkPercentBudget
      *
      * @param budgetId
      * @param amount
@@ -113,7 +145,7 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * Kontrola pokud se nezmenil percent od sumAmount
+     * check if percent of sumAmount not changed.
      *
      * @param budget
      * @throws Exception
@@ -131,7 +163,7 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * update only Budget percentNotify
+     * update only Budget percentNotify.
      *
      * @param budgetId
      * @param percent
@@ -151,9 +183,9 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * Update category in Budget
-     * V bankAcc nesmi byt budget na stejnou kategorii
-     * Take pri zmene category odstrani se vse notifyBudget pro ten Budget
+     * Update category in Budget.
+     * In bankAcc may not be a budget for the same category
+     * Also, when you change the category, all notifyBudgets for that Budget are removed
      *
      * @param budgetId
      * @param categoryId
@@ -182,8 +214,8 @@ public class BudgetService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika pri update Amount
-     * Kontrolujou se tady NotifyBudget entity
+     * Logic for updateAmount.
+     * NotifyBudgets are checked here
      *
      * @param budget
      * @param updatedAmount
@@ -219,7 +251,12 @@ public class BudgetService extends AbstractServiceHelper {
         }
     }
 
-
+    /**
+     * remove category from Budget
+     *
+     * @param buId
+     * @throws Exception
+     */
     public void removeCategoryFromBudget(int buId) throws Exception {
         Budget budget = getByIdBudget(buId);
         budget.setCategory(null);

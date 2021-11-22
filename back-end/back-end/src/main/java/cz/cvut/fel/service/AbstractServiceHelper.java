@@ -6,14 +6,16 @@ import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * Trida slouzi pro sdileni funkci mezi Service tridami
+ * This Class is used to share function between Service Classes.
  */
+@Transactional
 abstract class AbstractServiceHelper {
     protected final UserDao userDao;
     protected final BankAccountDao bankAccountDao;
@@ -40,7 +42,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Vrati Autentizovaneho Usera
+     * return Authenticated user.
      *
      * @return
      * @throws NotAuthenticatedClient
@@ -58,6 +60,13 @@ abstract class AbstractServiceHelper {
         }
     }
 
+    /**
+     * get user By Id.
+     *
+     * @param id
+     * @return
+     * @throws UserNotFoundException
+     */
     public User getByIdUser(int id) throws UserNotFoundException {
         User u = userDao.find(id);
         if (u == null) {
@@ -66,14 +75,32 @@ abstract class AbstractServiceHelper {
         return u;
     }
 
+    /**
+     * get User by username.
+     *
+     * @param username
+     * @return
+     */
     public User getByUsername(String username) {
         return userDao.getByUsername(username);
     }
 
+    /**
+     * get all default categories, which is in resources directory - import.sql.
+     *
+     * @return
+     */
     public List<Category> getDefaultCategories() {
         return categoryDao.getDefaultCategories();
     }
 
+    /**
+     * get by Id category.
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Category getByIdCategory(int id) throws Exception {
         Category c = categoryDao.find(id);
         if (c == null) {
@@ -85,6 +112,13 @@ abstract class AbstractServiceHelper {
         return c;
     }
 
+    /**
+     * get by id Debt.
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Debt getByIdDebt(int id) throws Exception {
         Debt d = debtDao.find(id);
         if (d == null) {
@@ -96,6 +130,13 @@ abstract class AbstractServiceHelper {
         return d;
     }
 
+    /**
+     * get by id Budget.
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Budget getByIdBudget(int id) throws Exception {
         Budget budget = budgetDao.find(id);
         if (budget == null) {
@@ -108,8 +149,8 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * pokud user ma pravo pristupovat do Budget
-     * to zjistim pokud user je vlastnikem BankAccount, ke kteremu parti Budget
+     * check if user has the right to access the Budget.
+     * I will find out if the user is the owner of the Bank Account to which the Budget belongs
      *
      * @param budget
      * @return
@@ -122,8 +163,8 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * pokud user ma pravo pristupovat do Debt
-     * to zjistim pokud user je vlastnikem BankAccount, ke kteremu parti Debt
+     * check if the user has the right to access Debt.
+     * I will find out if the user is the owner of the Bank Account to which the Debt belongs
      *
      * @param debt
      * @return
@@ -135,6 +176,13 @@ abstract class AbstractServiceHelper {
         return isUserOwnerOrCreatorOfBankAccount(debtBankAccount);
     }
 
+    /**
+     * get Transaction by id.
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public Transaction getByIdTransaction(int id) throws Exception {
         Transaction t = transactionDao.find(id);
         if (t == null) {
@@ -147,7 +195,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Pokud user je vlastni Category
+     * Check if the user is creator of category.
      *
      * @param categoryId
      * @return
@@ -158,6 +206,13 @@ abstract class AbstractServiceHelper {
         return categoryDao.getUsersCategoryById(user.getId(), categoryId) != null;
     }
 
+    /**
+     * get BankAccount by Id
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
     public BankAccount getByIdBankAccount(int id) throws Exception {
         BankAccount bankAccount = bankAccountDao.find(id);
         if (bankAccount == null) {
@@ -170,7 +225,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * pokud user je mezi Owners bankAccount nebo je creator
+     * check if the user is among the owners of bankAccount or is a creator.
      *
      * @param bankAccount
      * @return
@@ -185,7 +240,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Pokud user je pouze mezi Owners v BankAccount
+     * check if the user is among the owners of bankAccount.
      *
      * @param user
      * @param bankAccount
@@ -197,7 +252,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Create NotifyBudget s TypeNotification
+     * Create NotifyBudget with TypeNotification.
      *
      * @param budgetForTransaction
      * @param typeNotification
@@ -214,7 +269,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Odstraneni Transaction z BankAccount
+     * Remove Transaction from BankAccount.
      *
      * @param transactionId
      * @throws Exception
@@ -224,9 +279,9 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Delete Transaction
-     * Odstrani z budgetu
-     * Zmeni bankAccount balance
+     * Delete Transaction from db.
+     * Remove transaction from budget
+     * Update bankAccount balance
      *
      * @param id
      * @throws Exception
@@ -255,7 +310,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Budget logic pri delete Expense transaction
+     * Budget logic for delete Expense transaction.
      *
      * @param transaction
      * @throws Exception
@@ -281,7 +336,8 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * kontroluju pokud se zmenil stav budgetu, pokud se zmenil tak odstranim notifyBudget
+     * check if the budget sumAmount and percentNotify has changed to not notify status.
+     * if it has changed - remove notifyBudget.
      *
      * @param actualBudget
      * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
@@ -303,7 +359,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * pokud Transaction in BankAccount
+     * check if Transaction in BankAccount.
      *
      * @param bankAccountId
      * @param transactionId
@@ -314,7 +370,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Odstraneni Budget z DB
+     * Delete Budget from db.
      *
      * @param budgetId
      * @throws Exception
@@ -336,7 +392,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Delete notifyBudget by Budget Id, if not exists then do nothing
+     * Delete notifyBudget by Budget Id, if not exists then do nothing.
      *
      * @param budgetId
      * @throws Exception
@@ -350,7 +406,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Odstranit Debt z DB
+     * Delete Debt from db.
      *
      * @param debtId
      * @throws Exception
@@ -362,7 +418,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Delete notifydebt by Debt Id, if not exists then do nothing
+     * Delete notifyDebt by Debt Id, if not exists then do nothing.
      *
      * @param debtId
      * @throws Exception
@@ -376,7 +432,8 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * Only Creator of BankAccount can delete the BankAccount
+     * Delete bankAccount from db.
+     * Only Creator of BankAccount can delete the BankAccount.
      *
      * @param bankAccId
      * @throws Exception
@@ -401,9 +458,10 @@ abstract class AbstractServiceHelper {
 
 
     /**
-     * Pri smazani category nastavim defualt category u vsech jeji transakci na "No category"
-     * Take odstrani se vsechny Budget z DB, ktere meli odstranenou Category
-     * Je zakazno delete default categories - maji id od -1 do -14
+     * Delete category from db.
+     * After deleting a category, set the default category for all its transactions to "No category".
+     * All budgets from the DB for which the category has been removed will also be removed
+     * It is forbidden to delete default categories - they have ids from -1 to -14
      *
      * @param categoryId
      * @throws Exception

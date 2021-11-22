@@ -20,29 +20,62 @@ public class CategoryService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
+    /**
+     * get all categories.
+     * Not used
+     *
+     * @return
+     */
     public List<Category> getAll() {
         return categoryDao.findAll();
     }
 
+    /**
+     * get all users created categories.
+     *
+     * @return
+     * @throws NotAuthenticatedClient
+     */
     public List<Category> getUsersCreatedCategory() throws NotAuthenticatedClient {
         return categoryDao.getUsersCreatedCategory(getAuthenticatedUser().getId());
     }
 
+    /**
+     * get category by name.
+     *
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public Category getUsersCategoryByName(String name) throws Exception {
         return categoryDao.getUsersCategoryByName(getAuthenticatedUser().getId(), name);
     }
 
+    /**
+     * get budget from category.
+     *
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     public List<Budget> getAllBudgetsFromCategory(int catId) throws Exception {
         return getByIdCategory(catId).getBudget();
     }
 
+    /**
+     * get transactions from category.
+     *
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getTransactions(int catId) throws Exception {
         return getByIdCategory(catId).getTransactions();
     }
 
     /**
-     * Pridani Category
-     * name of Category je unikatni
+     * Persist category.
+     * name of Category is unique
      *
      * @param category
      * @return
@@ -60,6 +93,13 @@ public class CategoryService extends AbstractServiceHelper {
         return persistedCategory;
     }
 
+    /**
+     * add transaction to category.
+     *
+     * @param transId
+     * @param categoryId
+     * @throws Exception
+     */
     public void addTransactionToCategory(int transId, int categoryId) throws Exception {
         Transaction t = getByIdTransaction(transId);
         Category category = getByIdCategory(categoryId);
@@ -70,6 +110,14 @@ public class CategoryService extends AbstractServiceHelper {
         transactionDao.update(t);
     }
 
+    /**
+     * validation of category
+     *
+     * @param category
+     * @param user
+     * @return
+     * @throws Exception
+     */
     private boolean validate(Category category, User user) throws Exception {
         if (category.getName().trim().isEmpty()) {
             return false;
@@ -79,7 +127,7 @@ public class CategoryService extends AbstractServiceHelper {
     }
 
     /**
-     * update only name of Category
+     * update only name of Category.
      * cannot update default category
      * cannot update name to existed name
      *

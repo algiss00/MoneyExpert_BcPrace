@@ -26,48 +26,135 @@ public class TransactionService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
+    /**
+     * get Transactions sorted by month and year from bankAccount.
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getSortedByMonthAndYear(int month, int year, int bankAccId) throws Exception {
         return transactionDao.getByMonthSortedAndYear(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
+    /**
+     * get all Transactions sorted by month and year and type from bankAccount.
+     *
+     * @param accId
+     * @param type
+     * @param month
+     * @param year
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getTransactionsByType(int accId, TypeTransaction type, int month, int year) throws Exception {
         return transactionDao.getTransactionsByType(getByIdBankAccount(accId).getId(), type, month, year);
     }
 
+    /**
+     * get sum of expense Transactions by month, year from bankAccount.
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
     public double getSumOfExpenseOnMonth(int month, int year, int bankAccId) throws Exception {
         return transactionDao.getExpenseSum(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
+    /**
+     * get sum of incomes Transactions by month, year from bankAccount.
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @return
+     * @throws Exception
+     */
     public double getSumOfIncomeOnMonth(int month, int year, int bankAccId) throws Exception {
         return transactionDao.getIncomeSum(month, year, getByIdBankAccount(bankAccId).getId());
     }
 
+    /**
+     * get sum of expense Transactions by category from bankAccount.
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     public double getSumOfExpenseWithCategory(int month, int year, int bankAccId, int catId)
             throws Exception {
         return transactionDao.getExpenseSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
+    /**
+     * get sum of income Transactions by category from bankAccount.
+     *
+     * @param month
+     * @param year
+     * @param bankAccId
+     * @param catId
+     * @return
+     * @throws Exception
+     */
     public double getSumOfIncomeWithCategory(int month, int year, int bankAccId, int catId)
             throws Exception {
         return transactionDao.getIncomeSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
+    /**
+     * get all Transactions by category from bankAccount.
+     *
+     * @param catId
+     * @param accountId
+     * @param month
+     * @param year
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getAllTransFromCategoryFromBankAcc(int catId, int accountId, int month, int year) throws
             Exception {
         return transactionDao.getAllTransFromCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId(), month, year);
     }
 
+    /**
+     * get all Transactions by type and category from bankAccount.
+     *
+     * @param catId
+     * @param accountId
+     * @param type
+     * @param month
+     * @param year
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getTransactionsByTypeAndCategory(int catId, int accountId, TypeTransaction type, int month, int year) throws
             Exception {
         return transactionDao.getTransactionsByTypeAndCategory(getByIdCategory(catId).getId(), getByIdBankAccount(accountId).getId(), type, month, year);
     }
 
+    /**
+     * get transactions between date from BankAccount.
+     *
+     * @param strFrom
+     * @param strTo
+     * @param accountId
+     * @return
+     * @throws Exception
+     */
     public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
         return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId).getId());
     }
 
     /**
-     * Persist transaction to BankAccount with Category
+     * Persist transaction to BankAccount with Category.
      *
      * @param transaction
      * @param bankAccId
@@ -95,15 +182,21 @@ public class TransactionService extends AbstractServiceHelper {
         return persistedTransaction;
     }
 
-    private boolean validate(Transaction t) {
-        if (t.getTypeTransaction() == null || t.getAmount() <= 0) {
+    /**
+     * validation.
+     *
+     * @param transaction
+     * @return
+     */
+    private boolean validate(Transaction transaction) {
+        if (transaction.getTypeTransaction() == null || transaction.getAmount() <= 0) {
             return false;
         }
         return true;
     }
 
     /**
-     * Logika pri pridani transakce do BankAccount
+     * Logic for persist transaction to bankAccount.
      *
      * @param bankAccount
      * @param transaction
@@ -120,7 +213,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika pro Budget, kdyz se pridat transakce typu Expense s Category ktera patri do Budget
+     * Logic for Budget, when add an expense transaction with a Category that belongs to the Budget.
      *
      * @param bankAccount
      * @param transaction
@@ -157,7 +250,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logic for Transfer transaction to another BankAccount
+     * Logic for Transfer transaction to another BankAccount.
      *
      * @param fromBankAccId - from bankAccount
      * @param toBankAccId   - to BankAccount
@@ -206,6 +299,14 @@ public class TransactionService extends AbstractServiceHelper {
         return persistedTransaction;
     }
 
+    /**
+     * Currency convert.
+     * From czk to eur and eur to czk.
+     *
+     * @param amount
+     * @param currency
+     * @return
+     */
     private double currencyConvertLogic(double amount, TypeCurrency currency) {
         if (currency == TypeCurrency.CZK) {
             // this is from eur to czk
@@ -215,7 +316,7 @@ public class TransactionService extends AbstractServiceHelper {
         return amount * 0.039;
     }
 
-    // todo API - zatim neni implementovano, ale bude potreba v budoucnu
+    // todo API - not implemented yet, but will be needed in the future.
 //    public String currency() {
 //        String url = "https://api.ratesapi.io/api/2010-01-12?base=EUR";
 //        return this.restTemplate.getForObject(url, String.class);
@@ -227,8 +328,8 @@ public class TransactionService extends AbstractServiceHelper {
 //    }
 
     /**
-     * update only amount, date, jottings
-     * ma vliv na enitu BankAccount
+     * update only amount, date, jottings.
+     * affects to BankAccount balance.
      *
      * @param transactionId
      * @param updateTransaction
@@ -253,8 +354,8 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * update type of Transaction
-     * ma vliv na enitu Budget a BankAccount
+     * update type of Transaction.
+     * affects to the Budget and Bank Account.
      *
      * @param transactionId
      * @param typeTransaction
@@ -275,8 +376,8 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Editace kategorie u Transaction
-     * Ma vliv na entitu Budget
+     * update Category in Transaction.
+     * It affects to the Budget entity.
      *
      * @param transactionId
      * @param categoryId
@@ -306,7 +407,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika pri editaci Category u Transaction
+     * Logic for update category in transaction.
      *
      * @param transaction
      * @throws Exception
@@ -335,7 +436,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logic for update TransactionType
+     * Logic for update TransactionType.
      *
      * @param transaction
      * @throws Exception
@@ -366,7 +467,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika pri editaci Type of Transaction
+     * Logic for update Type of Transaction.
      *
      * @param oldTransaction
      * @param typeTransaction
@@ -384,8 +485,8 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika pri editaci amount transakce
-     * pokud tranksakce typu Expense, tehdy se udela budget logic
+     * Logic for update amount in Transaction.
+     * if an transaction of type Expense, then invokes budget logic
      *
      * @param oldTransaction
      * @param updatedTransaction
@@ -406,7 +507,7 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * Logika Budget pri update amount Expense transakci
+     * Budget Logic for update amount of expense transaction.
      *
      * @param oldTransaction
      * @param updatedTransaction

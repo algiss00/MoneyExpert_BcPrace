@@ -25,13 +25,21 @@ public class DebtService extends AbstractServiceHelper {
         super(userDao, bankAccountDao, transactionDao, budgetDao, debtDao, categoryDao, notifyBudgetDao, notifyDebtDao);
     }
 
+    /**
+     * get debt by name from bankAccount.
+     *
+     * @param bankAccountId
+     * @param name
+     * @return
+     * @throws Exception
+     */
     public List<Debt> getByNameFromBankAcc(int bankAccountId, String name) throws Exception {
         BankAccount bankAccount = getByIdBankAccount(bankAccountId);
         return debtDao.getByNameFromBankAcc(bankAccount.getId(), name);
     }
 
     /**
-     * Persist debt to BankAccount
+     * Persist debt to BankAccount.
      *
      * @param debt
      * @param bankAccountId
@@ -48,12 +56,13 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     /**
-     * Scheduled funkce, ktera se vola kazde 6 hodin
-     * Kontroluje vsechny Debts u kterych nastal NotifyDate
-     * pak ty co najde prida do NotifyDebt entity
+     * Scheduled function,  which is called every 6 hours.
+     * Checks all Debts for which NotifyDate has occurred
+     * then those find will add to the NotifyDebt entity
      */
     //every 6 hours - "0 0 */6 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
+    // ted to mam kazde 1:30 minut
     @Scheduled(cron = "30 * * * * * ")
     public void checkNotifyDates() {
         log.info("check DEBT NotifyDate");
@@ -75,14 +84,21 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
+    /**
+     * check if NotifyDebt with this type exists.
+     *
+     * @param notifiedDebtId
+     * @param type
+     * @return
+     */
     private boolean notifyDebtExits(int notifiedDebtId, TypeNotification type) {
         return notifyDebtDao.alreadyExistsDebt(notifiedDebtId, type) != null;
     }
 
     /**
-     * Scheduled funkce, ktera se vola kazde 6 hodin
-     * Kontroluje vsechny Debts u kterych nastal Deadline
-     * pak ty co najde prida do NotifyDebt entity
+     * Scheduled function,  which is called every 6 hours.
+     * Checks all Debts for which Deadline date has occurred
+     * then those find will add to the NotifyDebt entity
      */
     @Scheduled(cron = "*/20 * * * * * ")
     public void checkDeadlineDates() {
@@ -105,6 +121,12 @@ public class DebtService extends AbstractServiceHelper {
         }
     }
 
+    /**
+     * Validation if debt.
+     *
+     * @param debt
+     * @return
+     */
     private boolean validate(Debt debt) {
         if (debt.getName().trim().isEmpty() || debt.getAmount() <= 0 || debt.getDeadline().before(debt.getNotifyDate())) {
             return false;
@@ -113,7 +135,7 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     /**
-     * update Debt only name amount and description
+     * update Debt only name amount and description.
      *
      * @param id
      * @param updatedDebt
@@ -131,8 +153,8 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     /**
-     * update only NotifyDate
-     * nelze editovat na vetsi nez deadline datum
+     * update only NotifyDate.
+     * deadline cannot be before the NotifyDate
      *
      * @param id
      * @param notifyDate
@@ -153,7 +175,7 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     /**
-     * logic of updating NotifyDate
+     * logic for updating NotifyDate.
      * check NotifyDebts
      *
      * @param debt
@@ -181,7 +203,8 @@ public class DebtService extends AbstractServiceHelper {
     }
 
     /**
-     * update only Deadline
+     * update only Deadline.
+     * deadline cannot be before the NotifyDate
      *
      * @param id
      * @param deadline
@@ -193,7 +216,7 @@ public class DebtService extends AbstractServiceHelper {
         Date updatedDeadline = new SimpleDateFormat("yyyy-MM-dd").parse(deadline);
 
         if (debt.getNotifyDate().after(updatedDeadline)) {
-            throw new NotValidDataException("Deadline date is after notifyDate date!");
+            throw new NotValidDataException("Deadline date is before notifyDate date!");
         }
 
         updateDebtNotifyDateLogic(debt, updatedDeadline, "Deadline");

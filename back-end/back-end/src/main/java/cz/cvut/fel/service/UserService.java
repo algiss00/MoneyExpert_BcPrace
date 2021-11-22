@@ -27,24 +27,53 @@ public class UserService extends AbstractServiceHelper {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * get user by email.
+     *
+     * @param email
+     * @return
+     */
     public User getByEmail(String email) {
         return userDao.getByEmail(email);
     }
 
+    /**
+     * check if user already exists.
+     *
+     * @param user
+     * @return
+     */
     public boolean alreadyExists(User user) {
         return getByUsername(user.getUsername()) != null
                 || getByEmail(user.getEmail()) != null;
     }
 
+    /**
+     * get all users.
+     *
+     * @return
+     */
     public List<User> getAll() {
         return userDao.findAll();
     }
 
+    /**
+     * get users available bankAccounts.
+     *
+     * @return
+     * @throws NotAuthenticatedClient
+     */
     public List<BankAccount> getAvailableBankAccounts() throws NotAuthenticatedClient {
         User u = getAuthenticatedUser();
         return u.getAvailableBankAccounts();
     }
 
+    /**
+     * get users created bankAccounts.
+     *
+     * @return
+     * @throws NotAuthenticatedClient
+     */
     public List<BankAccount> getCreatedBankAccounts() throws NotAuthenticatedClient {
         User u = getAuthenticatedUser();
         return u.getCreatedBankAccounts();
@@ -67,13 +96,19 @@ public class UserService extends AbstractServiceHelper {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * get all users categories.
+     *
+     * @return
+     * @throws Exception
+     */
     public List<Category> getAllUsersCategories() throws Exception {
         return categoryDao.getAllUsersCategory(getAuthenticatedUser().getId());
     }
 
     /**
      * persist user
-     * password je zahashovan
+     * password is encoded.
      *
      * @param userObj
      * @return
@@ -98,7 +133,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * Validate if columns are empty
+     * Validate if columns are empty.
      *
      * @param user
      * @return
@@ -110,7 +145,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * update only name and lastname
+     * update only name and lastname.
      *
      * @param user
      * @return
@@ -125,7 +160,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * update only Username
+     * update only Username.
      *
      * @param username
      * @return
@@ -141,7 +176,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * update only Email
+     * update only Email.
      *
      * @param email
      * @return
@@ -157,7 +192,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * update only Password
+     * update only Password.
      *
      * @param oldPassword
      * @param newPassword
@@ -177,7 +212,7 @@ public class UserService extends AbstractServiceHelper {
     }
 
     /**
-     * Delete User
+     * Delete User from db.
      * first delete all relation with category then delete all user-created categories,
      * after delete all users bankAccounts
      *
