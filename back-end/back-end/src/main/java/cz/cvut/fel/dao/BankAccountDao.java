@@ -23,7 +23,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     /**
-     * get available BankAccount by name
+     * get available BankAccount by name.
      *
      * @param name - name of BankAcc
      * @param uid  - userId
@@ -46,7 +46,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     /**
-     * get available BankAccount by Id
+     * get available BankAccount by Id.
      *
      * @param uid       - user Id
      * @param bankAccId - bankAcc id
@@ -72,7 +72,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     /**
-     * Delete relation between user and BankAccount - delete available Bank Account
+     * Delete relation between user and BankAccount - delete available Bank Account.
      *
      * @param uid
      * @param bankAccId
@@ -96,7 +96,7 @@ public class BankAccountDao extends AbstractDao<BankAccount> {
     }
 
     /**
-     * get created Bank Accounts by name
+     * get created Bank Accounts by name.
      *
      * @param name - name of BankAcc
      * @param uid  - userId
