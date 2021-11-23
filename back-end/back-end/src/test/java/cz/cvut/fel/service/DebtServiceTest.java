@@ -119,7 +119,7 @@ public class DebtServiceTest {
             when(debtDao.update(debt)).thenReturn(debt);
             when(notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_NOTIFY)).thenReturn(null);
 
-            debtService.updateDebtNotifyDate(debt.getId(), "2021-11-10");
+            debtService.updateDebtNotifyDate(debt.getId(), notify2);
             verify(debtDao, times(1)).update(debt);
             assertEquals(debt.getNotifyDate(), notify2);
         }
@@ -145,7 +145,7 @@ public class DebtServiceTest {
             when(debtDao.update(debt)).thenReturn(debt);
             when(notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_DEADLINE)).thenReturn(null);
 
-            debtService.updateDebtDeadlineDate(debt.getId(), "2021-11-25");
+            debtService.updateDebtDeadlineDate(debt.getId(), deadline2);
             verify(debtDao, times(1)).update(debt);
             assertEquals(debt.getDeadline(), deadline2);
         }

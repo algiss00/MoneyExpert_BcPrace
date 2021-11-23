@@ -3,6 +3,7 @@ package cz.cvut.fel.controller;
 import cz.cvut.fel.model.Debt;
 import cz.cvut.fel.service.DebtService;
 import cz.cvut.fel.service.exceptions.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -43,19 +45,21 @@ public class DebtController {
         }
         return new ResponseEntity<>(debt, HttpStatus.CREATED);
     }
-    
+
     @PostMapping(value = "/update-basic", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Debt> updateDebt(@RequestParam int debtId, @RequestBody Debt debt) throws Exception {
         return new ResponseEntity<>(debtService.updateDebtBasic(debtId, debt), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update-notify-date", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> updateNotifyDate(@RequestParam int debtId, @RequestParam String notifyDate) throws Exception {
+    ResponseEntity<Debt> updateNotifyDate(@RequestParam int debtId,
+                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date notifyDate) throws Exception {
         return new ResponseEntity<>(debtService.updateDebtNotifyDate(debtId, notifyDate), HttpStatus.CREATED);
     }
 
     @PostMapping(value = "/update-deadline-date", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Debt> updateDeadlineDate(@RequestParam int debtId, @RequestParam String deadline) throws Exception {
+    ResponseEntity<Debt> updateDeadlineDate(@RequestParam int debtId,
+                                            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date deadline) throws Exception {
         return new ResponseEntity<>(debtService.updateDebtDeadlineDate(debtId, deadline), HttpStatus.CREATED);
     }
 

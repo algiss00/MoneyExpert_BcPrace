@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 @Service
@@ -52,6 +53,8 @@ public class DebtService extends AbstractServiceHelper {
         if (!validate(debt))
             throw new NotValidDataException("debt");
         debt.setBankAccount(bankAccount);
+        debt.setDeadline(debt.getDeadline());
+        debt.setNotifyDate(debt.getNotifyDate());
         return debtDao.persist(debt);
     }
 
@@ -161,15 +164,14 @@ public class DebtService extends AbstractServiceHelper {
      * @return
      * @throws Exception
      */
-    public Debt updateDebtNotifyDate(int id, String notifyDate) throws Exception {
+    public Debt updateDebtNotifyDate(int id, Date notifyDate) throws Exception {
         Debt debt = getByIdDebt(id);
-        Date updatedNotifyDate = new SimpleDateFormat("yyyy-MM-dd").parse(notifyDate);
 
-        if (debt.getDeadline().before(updatedNotifyDate)) {
+        if (debt.getDeadline().before(notifyDate)) {
             throw new NotValidDataException("Notify date is after deadline date!");
         }
-        updateDebtNotifyDateLogic(debt, updatedNotifyDate, "NotifyDate");
-        debt.setNotifyDate(updatedNotifyDate);
+        updateDebtNotifyDateLogic(debt, "NotifyDate");
+        debt.setNotifyDate(notifyDate);
 
         return debtDao.update(debt);
     }
@@ -179,24 +181,19 @@ public class DebtService extends AbstractServiceHelper {
      * check NotifyDebts
      *
      * @param debt
-     * @param updatedNotifyDate
      * @param typeOfNotify
      * @throws Exception
      */
-    private void updateDebtNotifyDateLogic(Debt debt, Date updatedNotifyDate, String typeOfNotify) throws Exception {
+    private void updateDebtNotifyDateLogic(Debt debt, String typeOfNotify) throws Exception {
         if (typeOfNotify.equals("NotifyDate")) {
-            if (debt.getNotifyDate().before(updatedNotifyDate)) {
-                NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_NOTIFY);
-                if (notifyDebt != null) {
-                    notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_NOTIFY);
-                }
+            NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_NOTIFY);
+            if (notifyDebt != null) {
+                notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_NOTIFY);
             }
         } else if (typeOfNotify.equals("Deadline")) {
-            if (debt.getDeadline().before(updatedNotifyDate)) {
-                NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_DEADLINE);
-                if (notifyDebt != null) {
-                    notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_DEADLINE);
-                }
+            NotifyDebt notifyDebt = notifyDebtDao.getDebtsNotifyDebtsByType(debt.getId(), TypeNotification.DEBT_DEADLINE);
+            if (notifyDebt != null) {
+                notifyDebtDao.deleteNotifyDebtByDebtIdAndType(debt.getId(), TypeNotification.DEBT_DEADLINE);
             }
         }
 
@@ -211,16 +208,15 @@ public class DebtService extends AbstractServiceHelper {
      * @return
      * @throws Exception
      */
-    public Debt updateDebtDeadlineDate(int id, String deadline) throws Exception {
+    public Debt updateDebtDeadlineDate(int id, Date deadline) throws Exception {
         Debt debt = getByIdDebt(id);
-        Date updatedDeadline = new SimpleDateFormat("yyyy-MM-dd").parse(deadline);
 
-        if (debt.getNotifyDate().after(updatedDeadline)) {
+        if (debt.getNotifyDate().after(deadline)) {
             throw new NotValidDataException("Deadline date is before notifyDate date!");
         }
 
-        updateDebtNotifyDateLogic(debt, updatedDeadline, "Deadline");
-        debt.setDeadline(updatedDeadline);
+        updateDebtNotifyDateLogic(debt, "Deadline");
+        debt.setDeadline(deadline);
 
         return debtDao.update(debt);
     }
