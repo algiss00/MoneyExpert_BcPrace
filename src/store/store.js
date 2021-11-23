@@ -7,12 +7,8 @@ const store = new Vuex.Store({
     state: {
         user: null,
         snackbar: false,
-        notificationBudget: [{
-            id: 10,
-            typeNotification: "BUDGET_AMOUNT",
-            budget: 34
-        }],
-        notificationDebt: []
+        notificationDebt: [],
+        notificationBudget: [],
     },
     mutations: {
         setUser(state, user) {
@@ -21,9 +17,12 @@ const store = new Vuex.Store({
         setSnackbar(state, status) {
             state.snackbar = status
         },
+        setNotificationDebt(state, status) {
+            state.notificationDebt = status
+        },
         setNotificationBudget(state, status) {
             state.notificationBudget = status
-        }
+        },
     }
 })
 

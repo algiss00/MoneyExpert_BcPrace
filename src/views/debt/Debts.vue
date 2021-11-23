@@ -21,51 +21,67 @@
                      v-if="debts.length === 0">
                     No debts :)
                 </div>
-                <v-simple-table dark v-if="debts.length !== 0">
-                    <template v-slot:default>
-                        <thead>
-                        <tr>
-                            <th class="text-left">
-                                Název
-                            </th>
-                            <th class="text-left">
-                                Deadline
-                            </th>
-                            <th class="text-left">
-                                Částka
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr
-                                v-for="item in debts"
-                                :key="item.id"
-                                @click="toDetailDebt(item)"
-                        >
-                            <td>{{ item.name }}</td>
-                            <td>{{ new Date(item.deadline).toDateString() }}</td>
-                            <td>{{ item.amount }}</td>
-                        </tr>
-                        </tbody>
+                <v-data-table
+                        dark
+                        :headers="headers"
+                        :items="debts"
+                        item-key="id"
+                        class="elevation-1"
+                        :search="search"
+                        :custom-filter="filterOnlyCapsText"
+                        @click:row="toDetailDebt"
+                        :item-class="statusColor"
+                >
+                    <template v-slot:item.deadline="{ item }">
+                        <span>{{ new Date(item.deadline).toDateString() }}</span>
                     </template>
-                </v-simple-table>
+                    <template v-slot:top>
+                        <v-text-field
+                                v-model="search"
+                                label="Search (UPPER CASE ONLY)"
+                                class="mx-4"
+                        />
+                    </template>
+                </v-data-table>
             </v-card>
         </v-container>
     </v-app>
 </template>
 
 <script>
-    import {getAllDebtsFromBankAcc} from "../../api";
+    import {getAllDebtsFromBankAcc, getAllNotificationDebts} from "../../api";
 
     export default {
         name: "Debts",
         data: () => {
             return {
+                search: '',
                 debts: [],
-                date: new Date().toISOString().substr(0, 7),
+                headers: [
+                    {text: 'Název', value: 'name'},
+                    {text: 'Deadline', value: 'deadline'},
+                    {text: 'Částka', value: 'amount'},
+                ]
             }
         },
         methods: {
+            filterOnlyCapsText(value, search) {
+                return value != null &&
+                    search != null &&
+                    typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            },
+            statusColor(item) {
+                let notifications = this.$store.state.notificationDebt
+                if (this.$store.state.notificationDebt.length > 0) {
+                    for (let i = 0; i < notifications.length; i++) {
+                        if (notifications[i].debt.id === item.id) {
+                            return 'alertColor'
+                        }
+                    }
+                }
+                return 'alertColorBlack'
+            },
             toAddDebt() {
                 this.$router.push('/debts/' + this.$route.params.bankId + '/addDebt/')
             },
@@ -82,6 +98,18 @@
                 alert("Invalid bankAcc id")
                 return
             }
+            let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
+            this.$store.commit("setNotificationDebt", debtsNotification)
         }
     }
 </script>
+
+<style>
+    .alertColor {
+        background-color: #DC143C
+    }
+
+    .alertColorBlack {
+        background-color: black
+    }
+</style>

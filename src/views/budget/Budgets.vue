@@ -31,6 +31,23 @@
                                 @click="toDetailBudget(item)"
                         >
                             <v-list-item-content>
+                                <v-alert
+                                        dense
+                                        type="error"
+                                        v-if="isBudgetInPercentNotification(item) === true
+                                        && isBudgetInAmountNotification(item) === false"
+                                >
+                                    Nastalo procento upozornění!
+                                </v-alert>
+
+                                <v-alert
+                                        dense
+                                        type="error"
+                                        v-if="isBudgetInAmountNotification(item) === true"
+                                >
+                                    Nastal limit rozpočtu!
+                                </v-alert>
+
                                 <v-list-item-title v-text="item.name"/>
                                 <v-list-item-action-text class="text-right text-sm-subtitle-1">
                                     {{item.category[0].name}}
@@ -39,7 +56,7 @@
                                 <v-progress-linear
                                         :value="item.percentOfSumAmount"
                                         height="25"
-                                        :color="item.percentOfSumAmount >= item.percentNotify ? 'red' : 'primary'"
+                                        :color="item.percentOfSumAmount >= item.percentNotify ? 'red' : 'green'"
                                 >
                                     <template v-slot:default="{ value }">
                                         <strong>{{ Math.ceil(value) }}%</strong>
@@ -55,7 +72,7 @@
 </template>
 
 <script>
-    import {getAllBudgetsFromBankAcc} from "../../api";
+    import {getAllBudgetsFromBankAcc, getAllNotificationBudgets, getAllNotificationBudgetsByType} from "../../api";
 
     function getPercentOfSumAmount(budget) {
         return budget.sumAmount * 100 / budget.amount;
@@ -64,6 +81,8 @@
     export default {
         data: () => ({
             budgets: [],
+            alertPercentBudgets: [],
+            alertAmountBudgets: [],
         }),
         methods: {
             toAddBudget() {
@@ -72,6 +91,22 @@
             toDetailBudget(item) {
                 this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id)
             },
+            isBudgetInPercentNotification(budget) {
+                for (let i = 0; i < this.alertPercentBudgets.length; i++) {
+                    if (this.alertPercentBudgets[i].budget.id === budget.id) {
+                        return true
+                    }
+                }
+                return false
+            },
+            isBudgetInAmountNotification(budget) {
+                for (let i = 0; i < this.alertAmountBudgets.length; i++) {
+                    if (this.alertAmountBudgets[i].budget.id === budget.id) {
+                        return true
+                    }
+                }
+                return false
+            }
         },
         async mounted() {
             if (!this.$store.state.user) {
@@ -83,10 +118,19 @@
                 alert("Invalid bankAcc id")
                 return
             }
+
+            // set notifications for Budget
+            let notifyBudgets = await getAllNotificationBudgets(this.$route.params.bankId)
+            this.$store.commit("setNotificationBudget", notifyBudgets)
+
+            // set for each budget percentOfSumAmount and set alerts
             for (let budget of budgets) {
                 let percentOfSumAmount = getPercentOfSumAmount(budget)
                 this.$set(budget, 'percentOfSumAmount', percentOfSumAmount)
             }
+
+            this.alertPercentBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_PERCENT")
+            this.alertAmountBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_AMOUNT")
         }
     }
 </script>

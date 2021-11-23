@@ -149,6 +149,51 @@ export async function getSumOfIncomeByMonth(bankId, month, year) {
     }
 }
 
+export async function getAllNotificationDebts(bankAccId) {
+    try {
+        let result = await axios.get(`${url}/notify-debt/bank-account/${bankAccId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllNotificationBudgets(bankAccId) {
+    try {
+        let result = await axios.get(`${url}/notify-budget/bank-account/${bankAccId}`, {
+            withCredentials: true
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
+export async function getAllNotificationBudgetsByType(bankAccId, type) {
+    try {
+        let result = await axios.get(`${url}/notify-budget/bank-account-by-type/${bankAccId}`, {
+            withCredentials: true,
+            params: {
+                type: type
+            }
+        })
+        return result.data
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.data.message);
+        }
+        return null
+    }
+}
+
 export async function getAllTransactions(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {

@@ -111,7 +111,13 @@
 </template>
 
 <script>
-    import {getBankAccById, getCategoryByName, addTransaction, getAllUsersCategories} from "../../api";
+    import {
+        getBankAccById,
+        getCategoryByName,
+        addTransaction,
+        getAllUsersCategories,
+        getAllNotificationBudgets
+    } from "../../api";
 
     export default {
         name: 'AddTransaction',
@@ -166,6 +172,8 @@
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
+                    let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
+                    this.$store.commit("setNotificationBudget", budgetsNotification)
                     await this.$router.push('/transactions/' + this.$route.params.bankId)
                 }
             },

@@ -25,7 +25,14 @@
                        @click="toPage(item)">
                     {{item.title}}
                     <v-icon
-                            v-if="item.title === 'Závazky' && $store.state.notificationBudget.length > 0"
+                            v-if="item.title === 'Závazky' && $store.state.notificationDebt.length > 0"
+                            color="red"
+                    >
+                        mdi-alert-circle
+                    </v-icon>
+
+                    <v-icon
+                            v-if="item.title === 'Rozpočty' && $store.state.notificationBudget.length > 0"
                             color="red"
                     >
                         mdi-alert-circle
@@ -329,7 +336,6 @@
         async beforeMount() {
             let user = await getCurrentUserBackEnd()
             if (user) {
-                // todo get all notifiactions and add to store
                 this.$store.commit("setUser", user)
                 await this.$router.push("/banks")
             } else {

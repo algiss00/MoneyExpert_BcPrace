@@ -4,6 +4,21 @@
             <v-layout align-center justify-center>
                 <v-flex xs12 sm8 md4>
                     <v-card class="elevation-12">
+                        <v-alert
+                                dense
+                                type="error"
+                                v-if="alertDebtNotify"
+                        >
+                            Nastal datum upozornění!
+                        </v-alert>
+
+                        <v-alert
+                                dense
+                                type="error"
+                                v-if="alertDebtDeadline"
+                        >
+                            Nastal deadline!
+                        </v-alert>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail závazku</v-toolbar-title>
                             <v-spacer></v-spacer>
@@ -160,7 +175,15 @@
 </template>
 
 <script>
-    import {editBasicDebt, editDeadline, editNotifyDate, getBankAccById, getDebtById, removeDebt} from "../../api";
+    import {
+        editBasicDebt,
+        editDeadline,
+        editNotifyDate,
+        getAllNotificationDebts,
+        getBankAccById,
+        getDebtById,
+        removeDebt
+    } from "../../api";
 
     export default {
         name: 'DetailDebt',
@@ -182,8 +205,21 @@
                 v => Number(v) > 0 || 'must be > 0'
             ],
             valid: true,
+            alertDebtNotify: false,
+            alertDebtDeadline: false
         }),
         methods: {
+            isDebtNotify(item) {
+                let notifications = this.$store.state.notificationDebt
+                for (let i = 0; i < notifications.length; i++) {
+                    if (notifications[i].debt.id === item.id && notifications[i].typeNotification === "DEBT_DEADLINE") {
+                        return "deadline"
+                    } else if (notifications[i].debt.id === item.id && notifications[i].typeNotification === "DEBT_NOTIFY") {
+                        return "notify"
+                    }
+                }
+                return "empty"
+            },
             toDebts() {
                 this.$router.push('/debts/' + this.$route.params.bankId)
             },
@@ -231,9 +267,11 @@
 
                 let result = await editDeadline(this.$route.params.debtId, this.deadline)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
+                    let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
+                    this.$store.commit("setNotificationDebt", debtsNotification)
                 }
             },
             async editNotifyDate(event) {
@@ -247,6 +285,8 @@
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
+                    let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
+                    this.$store.commit("setNotificationDebt", debtsNotification)
                 }
             }
         },
@@ -265,6 +305,15 @@
             if (debt == null) {
                 alert("Invalid transaction id")
                 return
+            }
+            if (this.isDebtNotify(debt) !== "empty") {
+                if (this.isDebtNotify(debt) === "deadline") {
+                    this.alertDebtDeadline = true
+                    this.alertDebtNotify = false
+                } else if (this.isDebtNotify(debt) === "notify") {
+                    this.alertDebtNotify = true
+                    this.alertDebtDeadline = false
+                }
             }
 
             this.name = debt.name

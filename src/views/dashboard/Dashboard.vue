@@ -51,7 +51,7 @@
 </template>
 
 <script>
-    import {getBankAccById} from "../../api";
+    import {getAllNotificationBudgets, getAllNotificationDebts, getBankAccById} from "../../api";
 
     export default {
         name: "Dashboard",
@@ -80,6 +80,13 @@
             let infoEl = document.getElementById("info")
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: " + bankAcc.balance
+
+            // check notify debts
+            let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
+            this.$store.commit("setNotificationDebt", debtsNotification)
+
+            let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
+            this.$store.commit("setNotificationBudget", budgetsNotification)
         }
     }
 </script>

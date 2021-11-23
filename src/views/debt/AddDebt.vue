@@ -172,7 +172,6 @@
                     event.preventDefault()
                     return
                 }
-
                 const jsonDebt = JSON.stringify({
                     amount: this.amount,
                     deadline: this.deadline,
