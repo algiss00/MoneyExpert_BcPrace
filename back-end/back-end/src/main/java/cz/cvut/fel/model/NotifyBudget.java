@@ -17,6 +17,8 @@ import javax.persistence.*;
                 "where n.budget.id = :budgetId"),
         @NamedQuery(name = "NotifyBudget.getNotifyBudgetsFromBankAccount", query = "SELECT n FROM NotifyBudget n" +
                 " where n.budget.bankAccount.id = :bankAccId"),
+        @NamedQuery(name = "NotifyBudget.getNotifyBudgetsFromBankAccountByType", query = "SELECT n FROM NotifyBudget n" +
+                " where n.budget.bankAccount.id = :bankAccId and n.typeNotification = :typeNotif"),
         @NamedQuery(name = "NotifyBudget.deleteNotifyBudgetById", query = "delete FROM NotifyBudget n " +
                 "where n.id = :notifyId"),
 })

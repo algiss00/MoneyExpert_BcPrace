@@ -111,6 +111,8 @@ NOTIFY-BUDGET
 
 /notify-budget/bank-account/{bankAccId} - get all notifyBudget from bankAccount where bankAccId = {bankAccId}
 
+/notify-budget/bank-account-by-type/{bankAccId}?type={TypeNotification} - get all notifyBudget from bankAccount by type where bankAccId = {bankAccId}
+
 /notify-budget/budget/{budgetId} - get all notifyBudget with Budget where budgetId = {budgetId}
 
 /notify-budget/budget-by-type/{budgetId}?type={TypeNotification} - get all notifyBudget with Budget by type where budgetId = {budgetId}

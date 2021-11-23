@@ -82,6 +82,20 @@ public class NotifyBudgetDao extends AbstractDao<NotifyBudget> {
     }
 
     /**
+     * get all NotifyBudgets from BankAccount by typeNotification.
+     *
+     * @param bankAccId
+     * @param type
+     * @return
+     */
+    public List<NotifyBudget> getNotifyBudgetsFromBankAccountByType(int bankAccId, TypeNotification type) {
+        return em.createNamedQuery("NotifyBudget.getNotifyBudgetsFromBankAccountByType", NotifyBudget.class)
+                .setParameter("bankAccId", bankAccId)
+                .setParameter("typeNotif", type)
+                .getResultList();
+    }
+
+    /**
      * delete all NotifyBudgets, which have certain budget id.
      *
      * @param budgetId

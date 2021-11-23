@@ -36,6 +36,12 @@ public class NotifyBudgetController {
         return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/bank-account-by-type/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getNotifyBudgetsFromBankAccountByType(@PathVariable int bankAccId, @RequestParam TypeNotification type) throws Exception {
+        List<NotifyBudget> notifyBudget = notifyBudgetService.getNotifyBudgetsFromBankAccountByType(bankAccId, type);
+        return new ResponseEntity<>(notifyBudget, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/budget/{budgetId}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getBudgetsNotifyBudgets(@PathVariable int budgetId) throws Exception {
         List<NotifyBudget> notifyBudget = notifyBudgetService.getBudgetsNotifyBudgets(budgetId);
