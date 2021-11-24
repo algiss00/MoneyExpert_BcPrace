@@ -40,7 +40,7 @@
                     <template v-slot:top>
                         <v-text-field
                                 v-model="search"
-                                label="Search (UPPER CASE ONLY)"
+                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
                                 class="mx-4"
                         />
                     </template>
@@ -85,15 +85,18 @@
                 return 'alertColorBlack'
             },
             toAddDebt() {
-                this.$router.push('/debts/' + this.$route.params.bankId + '/addDebt/').catch(() => {})
+                this.$router.push('/debts/' + this.$route.params.bankId + '/addDebt/').catch(() => {
+                })
             },
             toDetailDebt(item) {
-                this.$router.push('/debts/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
+                this.$router.push('/debts/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {
+                })
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             this.debts = await getAllDebtsFromBankAcc(this.$route.params.bankId)
             if (this.debts == null) {

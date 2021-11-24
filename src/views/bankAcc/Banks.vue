@@ -27,47 +27,31 @@
                     Created accounts
                 </div>
 
-                <v-simple-table dark id="createdTab" v-if="createdBanks.length !== 0">
-                    <template v-slot:default>
-                        <thead>
-                        <tr>
-                            <th class="text-left">
-                                Nazev
-                            </th>
-                            <th class="text-left">
-                                Zůstatek
-                            </th>
-                            <th class="text-left">
-                                Měna
-                            </th>
-                            <th class="text-left">
-                                Nastavení
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr
-                                v-for="item in createdBanks"
-                                :key="item.id"
-                                @click="toDashboard(item)"
-                        >
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.balance }}</td>
-                            <td>{{ item.currency }}</td>
-                            <td>
-                                <v-btn
-                                        icon
-                                        @click.stop="detailBankAcc(item)"
-                                >
-                                    <v-icon>
-                                        mdi-wrench
-                                    </v-icon>
-                                </v-btn>
-                            </td>
-                        </tr>
-                        </tbody>
+                <v-data-table
+                        v-if="createdBanks.length !== 0"
+                        dark
+                        :headers="headersCreated"
+                        :items-per-page="5"
+                        :items="createdBanks"
+                        item-key="id"
+                        class="elevation-1"
+                        :search="searchCreated"
+                        :custom-filter="filterOnlyCapsText"
+                        @click:row="toDashboard"
+                >
+                    <template v-slot:item.detail="props">
+                        <v-btn icon @click="detailBankAcc(props.item)">
+                            <v-icon dark>mdi-wrench</v-icon>
+                        </v-btn>
                     </template>
-                </v-simple-table>
+                    <template v-slot:top>
+                        <v-text-field
+                                v-model="searchCreated"
+                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
+                                class="mx-4"
+                        />
+                    </template>
+                </v-data-table>
 
                 <div class="font-weight-medium black--text m-left" v-if="availableBanks.length !== 0">
                     Available accounts
@@ -201,15 +185,30 @@
                 currency: "",
                 balance: "",
                 creator: "",
-                dialog: false
+                dialog: false,
+                headersCreated: [
+                    {text: 'Nazev', value: 'name'},
+                    {text: 'Zůstatek', value: 'balance'},
+                    {text: 'Měna', value: 'currency'},
+                    {text: 'Nastavení', value: 'detail'},
+                ],
+                searchCreated: '',
             }
         },
         methods: {
+            filterOnlyCapsText(value, search) {
+                return value != null &&
+                    search != null &&
+                    typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            },
             detailBankAcc(item) {
-                this.$router.push('/banks/detail/' + item.id).catch(() => {})
+                this.$router.push('/banks/detail/' + item.id).catch(() => {
+                })
             },
             toDashboard(item) {
-                this.$router.push('/dashboard/' + item.id).catch(() => {})
+                this.$router.push('/dashboard/' + item.id).catch(() => {
+                })
             },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
@@ -225,7 +224,8 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {

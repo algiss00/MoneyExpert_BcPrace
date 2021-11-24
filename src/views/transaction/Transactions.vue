@@ -87,38 +87,29 @@
                      v-if="transactions.length === 0">
                     No transactions :)
                 </div>
-                <v-simple-table dark v-if="transactions.length !== 0">
-                    <template v-slot:default>
-                        <thead>
-                        <tr>
-                            <th class="text-left">
-                                Datum
-                            </th>
-                            <th class="text-left">
-                                Kategorie
-                            </th>
-                            <th class="text-left">
-                                Typ
-                            </th>
-                            <th class="text-left">
-                                Částka
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr
-                                v-for="item in transactions"
-                                :key="item.id"
-                                @click="toDetailTransaction(item)"
-                        >
-                            <td>{{ new Date(item.date).toDateString() }}</td>
-                            <td>{{ item.category.name }}</td>
-                            <td>{{ item.typeTransaction }}</td>
-                            <td>{{ item.amount }}</td>
-                        </tr>
-                        </tbody>
+                <v-data-table
+                        v-if="transactions.length !== 0"
+                        dark
+                        :headers="headers"
+                        :items-per-page="10"
+                        :items="transactions"
+                        item-key="id"
+                        class="elevation-1"
+                        :search="search"
+                        :custom-filter="filterOnlyCapsText"
+                        @click:row="toDetailTransaction"
+                >
+                    <template v-slot:item.date="{ item }">
+                        <span>{{ new Date(item.date).toDateString() }}</span>
                     </template>
-                </v-simple-table>
+                    <template v-slot:top>
+                        <v-text-field
+                                v-model="search"
+                                label="Vyhledej podle kategorii nebo typu (POUZE VELKÁ PÍSMENA)"
+                                class="mx-4"
+                        />
+                    </template>
+                </v-data-table>
             </v-card>
         </v-container>
     </v-app>
@@ -146,6 +137,7 @@
         name: "Transactions",
         data: () => {
             return {
+                search: '',
                 transactions: [],
                 date: [new Date(new Date().getFullYear(), new Date().getMonth(), 2)
                     .toISOString().substr(0, 10),
@@ -159,6 +151,12 @@
                     id: -1000,
                     name: "All"
                 },
+                headers: [
+                    {text: 'Datum', value: 'date'},
+                    {text: 'Kategorie', value: 'category.name'},
+                    {text: 'Typ', value: 'typeTransaction'},
+                    {text: 'Částka', value: 'amount'},
+                ]
             }
         },
         computed: {
@@ -167,11 +165,19 @@
             },
         },
         methods: {
+            filterOnlyCapsText(value, search) {
+                return value != null &&
+                    search != null &&
+                    typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            },
             toDetailTransaction(item) {
-                this.$router.push('/transactions/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
+                this.$router.push('/transactions/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {
+                })
             },
             toAddTransaction() {
-                this.$router.push('/transactions/' + this.$route.params.bankId + '/addTransaction/').catch(() => {})
+                this.$router.push('/transactions/' + this.$route.params.bankId + '/addTransaction/').catch(() => {
+                })
             },
             async getTransactionsBetweenDate() {
                 let from = this.date[0]
@@ -235,7 +241,8 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
