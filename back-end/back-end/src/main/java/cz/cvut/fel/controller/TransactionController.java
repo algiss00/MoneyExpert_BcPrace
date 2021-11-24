@@ -4,6 +4,7 @@ import cz.cvut.fel.model.Transaction;
 import cz.cvut.fel.dto.TypeTransaction;
 import cz.cvut.fel.service.TransactionService;
 import cz.cvut.fel.service.exceptions.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,8 +27,37 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/between-date/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getBetweenDate(@RequestParam String from, @RequestParam String to, @PathVariable int accId) throws Exception {
+    ResponseEntity<?> getBetweenDate(@RequestParam
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from, @RequestParam
+                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to, @PathVariable int accId) throws Exception {
         List<Transaction> transactions = transactionService.getBetweenDate(from, to, accId);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/between-date-category/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getBetweenDateCategory(@RequestParam int catId, @PathVariable int accId,
+                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to) throws Exception {
+        List<Transaction> transactions = transactionService.getAllTransFromCategoryBetweenDate(catId, accId, from, to);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/between-date-type/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getBetweenDateType(@RequestParam TypeTransaction type, @PathVariable int accId,
+                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to) throws Exception {
+        List<Transaction> transactions = transactionService.getTransactionsByTypeBetweenDate(accId, type, from, to);
+        return new ResponseEntity<>(transactions, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/between-date-category-type/{accId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> getTransactionsByTypeAndCategoryBetweenDate(@RequestParam int catId, @RequestParam TypeTransaction type,
+                                                                  @PathVariable int accId,
+                                                                  @RequestParam
+                                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+                                                                  @RequestParam
+                                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to) throws Exception {
+        List<Transaction> transactions = transactionService.getTransactionsByTypeAndCategoryBetweenDate(catId, accId, type, from, to);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 
@@ -65,24 +96,42 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/sum-expense/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getSumExpenseInMonth(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
+    ResponseEntity<?> getSumExpenseBetweenDate(@PathVariable int bankAccId,
+                                               @RequestParam
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                       Date from,
+                                               @RequestParam
+                                               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                       Date to)
             throws Exception {
-        double sum = transactionService.getSumOfExpenseOnMonth(month, year, bankAccId);
+        double sum = transactionService.getSumOfExpenseBetweenDate(from, to, bankAccId);
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sum-income/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getSumIncomeInMonth(@PathVariable int bankAccId, @RequestParam int month, @RequestParam int year)
+    ResponseEntity<?> getSumIncomeBetweenDate(@PathVariable int bankAccId,
+                                              @RequestParam
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                      Date from,
+                                              @RequestParam
+                                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                      Date to)
             throws Exception {
-        double sum = transactionService.getSumOfIncomeOnMonth(month, year, bankAccId);
+        double sum = transactionService.getSumOfIncomeBetweenDate(from, to, bankAccId);
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
     @GetMapping(value = "/sum-expense-category/{bankAccId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> getSumExpenseWithCategory(@PathVariable int bankAccId, @RequestParam int month,
-                                                @RequestParam int year, @RequestParam int categoryId)
+    ResponseEntity<?> getSumExpenseWithCategoryBetweenDate(@PathVariable int bankAccId,
+                                                           @RequestParam
+                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                                   Date from,
+                                                           @RequestParam
+                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                                   Date to,
+                                                           @RequestParam int categoryId)
             throws Exception {
-        double sum = transactionService.getSumOfExpenseWithCategory(month, year, bankAccId, categoryId);
+        double sum = transactionService.getSumOfExpenseWithCategory(from, to, bankAccId, categoryId);
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 

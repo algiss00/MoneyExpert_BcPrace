@@ -27,7 +27,7 @@ public class CategoryDao extends AbstractDao<Category> {
     }
 
     /**
-     * returns default Categories.
+     * returns default Categories, which have id < 0, and are located in import.sql resource file.
      *
      * @return
      */

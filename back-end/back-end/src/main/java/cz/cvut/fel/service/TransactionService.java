@@ -54,44 +54,44 @@ public class TransactionService extends AbstractServiceHelper {
     }
 
     /**
-     * get sum of expense Transactions by month, year from bankAccount.
+     * get sum of expense Transactions between date from bankAccount.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @return
      * @throws Exception
      */
-    public double getSumOfExpenseOnMonth(int month, int year, int bankAccId) throws Exception {
-        return transactionDao.getExpenseSum(month, year, getByIdBankAccount(bankAccId).getId());
+    public double getSumOfExpenseBetweenDate(Date from, Date to, int bankAccId) throws Exception {
+        return transactionDao.getExpenseSum(from, to, getByIdBankAccount(bankAccId).getId());
     }
 
     /**
-     * get sum of incomes Transactions by month, year from bankAccount.
+     * get sum of incomes Transactions between date from bankAccount.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @return
      * @throws Exception
      */
-    public double getSumOfIncomeOnMonth(int month, int year, int bankAccId) throws Exception {
-        return transactionDao.getIncomeSum(month, year, getByIdBankAccount(bankAccId).getId());
+    public double getSumOfIncomeBetweenDate(Date from, Date to, int bankAccId) throws Exception {
+        return transactionDao.getIncomeSum(from, to, getByIdBankAccount(bankAccId).getId());
     }
 
     /**
-     * get sum of expense Transactions by category from bankAccount.
+     * get sum of expense Transactions by category from bankAccount between date.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @param catId
      * @return
      * @throws Exception
      */
-    public double getSumOfExpenseWithCategory(int month, int year, int bankAccId, int catId)
+    public double getSumOfExpenseWithCategory(Date from, Date to, int bankAccId, int catId)
             throws Exception {
-        return transactionDao.getExpenseSumWithCategory(month, year, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
+        return transactionDao.getExpenseSumWithCategory(from, to, getByIdBankAccount(bankAccId).getId(), getByIdCategory(catId).getId());
     }
 
     /**
@@ -143,14 +143,58 @@ public class TransactionService extends AbstractServiceHelper {
     /**
      * get transactions between date from BankAccount.
      *
-     * @param strFrom
-     * @param strTo
+     * @param from
+     * @param to
      * @param accountId
      * @return
      * @throws Exception
      */
-    public List<Transaction> getBetweenDate(String strFrom, String strTo, int accountId) throws Exception {
-        return transactionDao.getBetweenDate(strFrom, strTo, getByIdBankAccount(accountId).getId());
+    public List<Transaction> getBetweenDate(Date from, Date to, int accountId) throws Exception {
+        return transactionDao.getBetweenDate(from, to, getByIdBankAccount(accountId).getId());
+    }
+
+    /**
+     * Returns all transactions from BankAccount that belong to a certain Category and are in a between date.
+     *
+     * @param categoryId - categoryId
+     * @param accountId
+     * @param from
+     * @param to
+     * @return
+     * @throws Exception
+     */
+    public List<Transaction> getAllTransFromCategoryBetweenDate(int categoryId, int accountId, Date from, Date to) throws Exception {
+        return transactionDao.getAllTransFromCategoryBetweenDate(getByIdCategory(categoryId).getId(),
+                getByIdBankAccount(accountId).getId(), from, to);
+    }
+
+    /**
+     * returns all transactions from BankAccount by category and type and are in a between date.
+     *
+     * @param categoryId
+     * @param bankAccId
+     * @param type
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Transaction> getTransactionsByTypeAndCategoryBetweenDate(int categoryId, int bankAccId,
+                                                                         TypeTransaction type, Date from, Date to) throws Exception {
+        return transactionDao.getTransactionsByTypeAndCategoryBetweenDate(getByIdCategory(categoryId).getId(),
+                getByIdBankAccount(bankAccId).getId(), type, from, to);
+    }
+
+    /**
+     * returns all transactions from BankAccount by TypeTransaction and are in a between date.
+     *
+     * @param bankAccId
+     * @param type
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Transaction> getTransactionsByTypeBetweenDate(int bankAccId, TypeTransaction type, Date from, Date to) throws Exception {
+        return transactionDao.getTransactionsByTypeBetweenDate(getByIdBankAccount(bankAccId).getId(), type, from, to);
     }
 
     /**
@@ -329,7 +373,7 @@ public class TransactionService extends AbstractServiceHelper {
 
     /**
      * update only amount, date, jottings.
-     * affects to BankAccount balance.
+     * affects to BankAccount balance and budget.
      *
      * @param transactionId
      * @param updateTransaction

@@ -12,3 +12,4 @@ INSERT INTO category_table VALUES (-11, 'Darek');
 INSERT INTO category_table VALUES (-12, 'No category');
 INSERT INTO category_table VALUES (-13, 'Zabava');
 INSERT INTO category_table VALUES (-14, 'Dane');
+INSERT INTO category_table VALUES (-15, 'Zavazek');

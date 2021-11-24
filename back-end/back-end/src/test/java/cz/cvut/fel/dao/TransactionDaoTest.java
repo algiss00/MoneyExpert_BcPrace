@@ -70,10 +70,8 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getByMonthSorted() throws ParseException {
+    public void getByMonthSorted() {
         List<Transaction> transactions = transactionDao.getByMonthSortedAndYear(9, 2021, 18);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = formatter.parse("2021-09-01");
 
         assertFalse(transactions.isEmpty());
         assertEquals(3, transactions.size());
@@ -96,31 +94,41 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getExpenseSum() {
-        double sum = transactionDao.getExpenseSum(9, 2021, 18);
+    public void getExpenseSum() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2021-09-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2021-09-30");
+        double sum = transactionDao.getExpenseSum(from, to, 18);
         assertEquals(300, sum);
     }
 
     @Test
-    public void getExpenseSumException() {
-        assertEquals(0, transactionDao.getExpenseSum(9, 2020, 18));
+    public void getExpenseSumException() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2020-09-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2020-09-30");
+        assertEquals(0, transactionDao.getExpenseSum(from, to, 18));
     }
 
     @Test
-    public void getExpenseSumWithCategory() {
-        double sum = transactionDao.getExpenseSumWithCategory(9, 2021, 18, -4);
+    public void getExpenseSumWithCategory() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2021-09-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2021-09-30");
+        double sum = transactionDao.getExpenseSumWithCategory(from, to, 18, -4);
         assertEquals(100, sum);
     }
 
     @Test
-    public void getExpenseSumExceptionException() {
-        assertEquals(0 ,transactionDao.getExpenseSumWithCategory(9, 2020, 18, -4));
+    public void getExpenseSumExceptionException() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2020-09-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2020-09-30");
+        assertEquals(0, transactionDao.getExpenseSumWithCategory(from, to, 18, -4));
     }
 
     @Test
-    public void getBetweenDate() {
-        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-01", "2021-10-05", 18);
-        int[] ids = {36, 37, 38};
+    public void getBetweenDate() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-05");
+        List<Transaction> transactions = transactionDao.getBetweenDate(from, to, 18);
+        int[] ids = {38, 37, 36};
         assertFalse(transactions.isEmpty());
         assertEquals(3, transactions.size());
         for (int i = 0; i < transactions.size(); i++) {
@@ -129,14 +137,17 @@ public class TransactionDaoTest {
     }
 
     @Test
-    public void getBetweenDateWrongToAndFrom() {
-        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-05", "2021-10-01", 18);
+    public void getBetweenDateWrongToAndFrom() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-01");
+        Date to = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-05");
+        List<Transaction> transactions = transactionDao.getBetweenDate(to, from, 18);
         assertTrue(transactions.isEmpty());
     }
 
     @Test
-    public void getBetweenDateOneTransaction() {
-        List<Transaction> transactions = transactionDao.getBetweenDate("2021-10-01", "2021-10-01", 18);
+    public void getBetweenDateOneTransaction() throws ParseException {
+        Date from = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-01");
+        List<Transaction> transactions = transactionDao.getBetweenDate(from, from, 18);
         int[] ids = {36};
         assertFalse(transactions.isEmpty());
         assertEquals(1, transactions.size());

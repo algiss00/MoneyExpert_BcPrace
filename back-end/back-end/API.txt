@@ -18,7 +18,8 @@ USER
 
 /user/created-accounts - get users created bankAccounts, not available BankAccounts
 
-/user/categories - get all users Categories (but exists in Category Controller get users created categories, its mean that no default Categories, only User created Categories)
+/user/categories - get all users Categories (but exists in Category Controller get users created categories,
+its mean that no default Categories, only User created Categories)
 
 ------------------------------------------------------------------------------
 DEBT
@@ -44,7 +45,8 @@ BANK_ACCOUNT
 
 /bankAccount/transactions-by-category/{accId}?categoryId={CategoryId} - get All transactions from BankAcc by Category
 
-/bankAccount/transactions-by-category-type/{accId}?categoryId={CategoryId}&type={TypeTransaction} - get All transactions from BankAcc by Category and TypeTransaction
+/bankAccount/transactions-by-category-type/{accId}?categoryId={CategoryId}&type={TypeTransaction} -
+get All transactions from BankAcc by Category and TypeTransaction
 
 /bankAccount/debts/{accId} - get All debts from BankAcc {accId} = BankAccId
 
@@ -55,25 +57,41 @@ BANK_ACCOUNT
 ------------------------------------------------------------------------------
 TRANSACTION
 
-/transaction/between-date/{accId}?from={date}&to={date} - get transactions from BankAccount between dates from = String Date and to = String Date
+/transaction/between-date/{accId}?from={date}&to={date} -
+get transactions from BankAccount between dates from = String Date and to = String Date
 
-/transaction/sorted-category/{accId}?catId={categoryId}&month={month}&year={year} -  get transactions from BankAccount with Category and in month and year
+/transaction/between-date-category/{accId}?catId={categoryId}&from={date}&to={date} -
+get transactions from BankAccount between dates from = String Date and to = String Date by Category
 
-/transaction/{id} - get transaction by id, if user is not owner or creator of BankAccount where transaction belongs then throw Exception NotAuthenticatedClient
+/transaction/between-date-type/{accId}?type={typeTransaction}&from={date}&to={date} -
+get transactions from BankAccount between dates from = String Date and to = String Date by Type
+
+/transaction/between-date-category-type/{accId}?catId={categoryId}&type={typeTransaction}&from={date}&to={date} -
+get transactions from BankAccount between dates from = String Date and to = String Date by Type and Category
+
+/transaction/sorted-category/{accId}?catId={categoryId}&month={month}&year={year} -
+get transactions from BankAccount with Category and in month and year
+
+/transaction/{id} -
+get transaction by id, if user is not owner or creator of BankAccount where transaction belongs then throw Exception NotAuthenticatedClient
 
 /transaction/sorted-month-year/{bankAccId}?month={month}&year={year} - get Transactions from BankAccount sorted by Month and Year
 
-/transaction/sorted-type/{accId}?type={TypeTransaction}&month={month}&year={year} - get Transactions from BankAccount sorted by type and Month and Year
+/transaction/sorted-type/{accId}?type={TypeTransaction}&month={month}&year={year} -
+get Transactions from BankAccount sorted by type and Month and Year
 
-/transaction/sorted-type-category/{accId}?type={TypeTransaction}&catId={categoryId}&month={month}&year={year} - get sorted Transactions from BankAcc by type and category and month, year
+/transaction/sorted-type-category/{accId}?type={TypeTransaction}&catId={categoryId}&month={month}&year={year} -
+get sorted Transactions from BankAcc by type and category and month, year
 
-/transaction/sum-expense/{bankAccId}?month={month}&year={year} - get Sum of all Expense Transactions from BankAccount by Month and Year
+/transaction/sum-expense/{bankAccId}?from={date}&to={date} - get Sum of all Expense Transactions from BankAccount between date
 
-/transaction/sum-income/{bankAccId}?month={month}&year={year} - get Sum of all Income Transactions from BankAccount by Month and Year
+/transaction/sum-income/{bankAccId}?from={date}&to={date} - get Sum of all Income Transactions from BankAccount between date
 
-/transaction/sum-expense-category/{bankAccId}?month={month}&year={year}&categoryId={categoryId} - get Sum of all Expense Transactions from BankAccount with defined Category by Month and Year
+/transaction/sum-expense-category/{bankAccId}?from={date}&to={date}&categoryId={categoryId} -
+get Sum of all Expense Transactions from BankAccount with defined Category between date
 
-/transaction/sum-income-category/{bankAccId}?month={month}&year={year}&categoryId={categoryId} - get Sum of all Income Transactions from BankAccount with defined Category by Month and Year
+/transaction/sum-income-category/{bankAccId}?month={month}&year={year}&categoryId={categoryId} -
+ get Sum of all Income Transactions from BankAccount with defined Category by Month and Year
 
 ------------------------------------------------------------------------------
 BUDGET
@@ -111,7 +129,8 @@ NOTIFY-BUDGET
 
 /notify-budget/bank-account/{bankAccId} - get all notifyBudget from bankAccount where bankAccId = {bankAccId}
 
-/notify-budget/bank-account-by-type/{bankAccId}?type={TypeNotification} - get all notifyBudget from bankAccount by type where bankAccId = {bankAccId}
+/notify-budget/bank-account-by-type/{bankAccId}?type={TypeNotification} -
+get all notifyBudget from bankAccount by type where bankAccId = {bankAccId}
 
 /notify-budget/budget/{budgetId} - get all notifyBudget with Budget where budgetId = {budgetId}
 
@@ -176,13 +195,17 @@ BANK_ACCOUNT
 ------------------------------------------------------------------------------
 TRANSACTION
 
-/transaction?accId={bankAccountId}&categoryId={categoryId} - add transaction to bankAccount with defined Category and @RequestBody Transaction transaction
+/transaction?accId={bankAccountId}&categoryId={categoryId} -
+add transaction to bankAccount with defined Category and @RequestBody Transaction transaction
 
-/transaction/transfer?fromAccId={bankAccountId}&toAccId={bankAccountId}&transId={TransactionId} - transfer Transaction with TransactionId = transId from BankAccount to another BankAccount
+/transaction/transfer?fromAccId={bankAccountId}&toAccId={bankAccountId}&transId={TransactionId} -
+transfer Transaction with TransactionId = transId from BankAccount to another BankAccount
 
-/transaction/update-basic?transId={TransactionId} - update Transaction by id and with @RequestBody Transaction transaction - ONLY attributes = amount, date and jottings
+/transaction/update-basic?transId={TransactionId} - update Transaction by id and with @RequestBody Transaction transaction -
+ONLY attributes = amount, date and jottings
 
-/transaction/update-type?transId={TransactionId}&typeTransaction={TypeTransaction} - update Type of Transaction with @RequestParam typeTransaction
+/transaction/update-type?transId={TransactionId}&typeTransaction={TypeTransaction} -
+update Type of Transaction with @RequestParam typeTransaction
 
 /transaction/update-category?transId={TransactionId}&catId={CategoryId} - update Category of Transaction with @RequestParam catId
 

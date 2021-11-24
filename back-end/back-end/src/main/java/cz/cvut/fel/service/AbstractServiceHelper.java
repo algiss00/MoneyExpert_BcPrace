@@ -86,7 +86,7 @@ abstract class AbstractServiceHelper {
     }
 
     /**
-     * get all default categories, which is in resources directory - import.sql.
+     * get all default categories, which have id < 0, and are located in import.sql resource file.
      *
      * @return
      */
@@ -337,23 +337,30 @@ abstract class AbstractServiceHelper {
 
     /**
      * check if the budget sumAmount and percentNotify has changed to not notify status.
-     * if it has changed - remove notifyBudget.
      *
      * @param actualBudget
      * @param percentOfSumAmount - actual percent of sumAmount from budget.amount
      * @throws Exception
      */
     public void checkNotifiesBudget(Budget actualBudget, double percentOfSumAmount) throws Exception {
+        NotifyBudget notifyBudgetAmount = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
         if (actualBudget.getSumAmount() < actualBudget.getAmount()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_AMOUNT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            if (notifyBudgetAmount != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudgetAmount.getId());
+            }
+        } else {
+            if (notifyBudgetAmount == null) {
+                createNotifyBudget(actualBudget, TypeNotification.BUDGET_AMOUNT);
             }
         }
+        NotifyBudget notifyBudgetPercent = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
         if (percentOfSumAmount < actualBudget.getPercentNotify()) {
-            NotifyBudget notifyBudget = notifyBudgetDao.getBudgetsNotifyBudgetByType(actualBudget.getId(), TypeNotification.BUDGET_PERCENT);
-            if (notifyBudget != null) {
-                notifyBudgetDao.deleteNotifyBudgetById(notifyBudget.getId());
+            if (notifyBudgetPercent != null) {
+                notifyBudgetDao.deleteNotifyBudgetById(notifyBudgetPercent.getId());
+            }
+        } else {
+            if (notifyBudgetPercent == null) {
+                createNotifyBudget(actualBudget, TypeNotification.BUDGET_PERCENT);
             }
         }
     }
@@ -461,7 +468,7 @@ abstract class AbstractServiceHelper {
      * Delete category from db.
      * After deleting a category, set the default category for all its transactions to "No category".
      * All budgets from the DB for which the category has been removed will also be removed
-     * It is forbidden to delete default categories - they have ids from -1 to -14
+     * It is forbidden to delete default categories - they have ids from -1 to -15
      *
      * @param categoryId
      * @throws Exception

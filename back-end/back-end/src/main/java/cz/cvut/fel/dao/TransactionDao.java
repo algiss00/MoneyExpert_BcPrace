@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -225,20 +226,20 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Returns the sum of all expenses in a certain period from bankAccount.
+     * Returns the sum of all expenses between date period from bankAccount.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @return
      * @throws Exception
      */
-    public double getExpenseSum(int month, int year, int bankAccId) {
+    public double getExpenseSum(Date from, Date to, int bankAccId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE'")
-                    .setParameter("month", month)
-                    .setParameter("year", year)
+                    "where t.date BETWEEN :from AND :to and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE'")
+                    .setParameter("from", from)
+                    .setParameter("to", to)
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
@@ -247,20 +248,20 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Returns the sum of all incomes in a certain period from bankAccount.
+     * Returns the sum of all incomes between date period from bankAccount.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @return
      * @throws Exception
      */
-    public double getIncomeSum(int month, int year, int bankAccId) {
+    public double getIncomeSum(Date from, Date to, int bankAccId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME'")
-                    .setParameter("month", month)
-                    .setParameter("year", year)
+                    "where t.date BETWEEN :from AND :to and t.bank_account_id = :bankAccId and t.type_transaction = 'INCOME'")
+                    .setParameter("from", from)
+                    .setParameter("to", to)
                     .setParameter("bankAccId", bankAccId)
                     .getSingleResult();
         } catch (Exception ex) {
@@ -269,22 +270,22 @@ public class TransactionDao extends AbstractDao<Transaction> {
     }
 
     /**
-     * Returns the sum of all expenses that belong to the Category, in a certain period from bankAccount.
+     * Returns the sum of all expenses that belong to the Category, between date period from bankAccount.
      *
-     * @param month
-     * @param year
+     * @param from
+     * @param to
      * @param bankAccId
      * @param categoryId
      * @return
      * @throws Exception
      */
-    public double getExpenseSumWithCategory(int month, int year, int bankAccId, int categoryId) {
+    public double getExpenseSumWithCategory(Date from, Date to, int bankAccId, int categoryId) {
         try {
             return (double) em.createNativeQuery("SELECT SUM(t.amount) from transaction_table as t " +
-                    "where MONTH(t.date) = :month and YEAR(t.date) = :year and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE' " +
+                    "where t.date BETWEEN :from AND :to and t.bank_account_id = :bankAccId and t.type_transaction = 'EXPENSE' " +
                     "and t.category_id = :categoryId")
-                    .setParameter("month", month)
-                    .setParameter("year", year)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
                     .setParameter("bankAccId", bankAccId)
                     .setParameter("categoryId", categoryId)
                     .getSingleResult();
@@ -326,14 +327,96 @@ public class TransactionDao extends AbstractDao<Transaction> {
      * @param bankAccountId
      * @return
      */
-    public List<Transaction> getBetweenDate(String from, String to, int bankAccountId) {
+    public List<Transaction> getBetweenDate(Date from, Date to, int bankAccountId) {
         try {
             return em.createNativeQuery("SELECT * from transaction_table as t where t.bank_account_id = :bankAccId " +
-                            "and t.date BETWEEN :from AND :to",
+                            "and t.date BETWEEN :from AND :to order by t.date desc",
                     Transaction.class)
                     .setParameter("from", from)
                     .setParameter("to", to)
                     .setParameter("bankAccId", bankAccountId)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Returns all transactions from BankAccount that belong to a certain Category and are in a between date.
+     *
+     * @param categoryId - categoryId
+     * @param accountId
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Transaction> getAllTransFromCategoryBetweenDate(int categoryId, int accountId, Date from, Date to) {
+        try {
+            return em.createNativeQuery("SELECT * from transaction_table as t " +
+                            "where t.date BETWEEN :from AND :to " +
+                            "and t.bank_account_id = :bankAccId and t.category_id = :categoryId order by t.date desc",
+                    Transaction.class)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
+                    .setParameter("bankAccId", accountId)
+                    .setParameter("categoryId", categoryId)
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * returns all transactions from BankAccount by TypeTransaction and are in a between date.
+     *
+     * @param bankAccId
+     * @param type
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Transaction> getTransactionsByTypeBetweenDate(int bankAccId, TypeTransaction type, Date from, Date to) {
+        try {
+            return em.createNativeQuery("SELECT * from transaction_table as t " +
+                            "where t.date BETWEEN :from AND :to " +
+                            "and t.bank_account_id = :bankAccId and t.type_transaction = :typeTrans order by t.date desc",
+                    Transaction.class)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
+                    .setParameter("bankAccId", bankAccId)
+                    .setParameter("typeTrans", type.toString())
+                    .getResultList();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * returns all transactions from BankAccount by category and type and are in a between date.
+     *
+     * @param categoryId
+     * @param bankAccId
+     * @param type
+     * @param from
+     * @param to
+     * @return
+     */
+    public List<Transaction> getTransactionsByTypeAndCategoryBetweenDate(int categoryId, int bankAccId,
+                                                                         TypeTransaction type, Date from, Date to) {
+        try {
+            return em.createNativeQuery("SELECT * from transaction_table as t " +
+                            "where t.date BETWEEN :from AND :to " +
+                            "and t.bank_account_id = :bankAccId " +
+                            "and t.type_transaction = :type and t.category_id = :categoryId order by t.date desc",
+                    Transaction.class)
+                    .setParameter("from", from)
+                    .setParameter("to", to)
+                    .setParameter("bankAccId", bankAccId)
+                    .setParameter("type", type.toString())
+                    .setParameter("categoryId", categoryId)
                     .getResultList();
         } catch (Exception ex) {
             ex.printStackTrace();

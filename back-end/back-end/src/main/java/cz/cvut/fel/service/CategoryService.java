@@ -22,7 +22,6 @@ public class CategoryService extends AbstractServiceHelper {
 
     /**
      * get all categories.
-     * Not used
      *
      * @return
      */
