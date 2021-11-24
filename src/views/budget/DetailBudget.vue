@@ -134,7 +134,7 @@
         }),
         methods: {
             toBudgets() {
-                this.$router.push('/budgets/' + this.$route.params.bankId)
+                this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
             },
             async removeBudget(event) {
                 if (!confirm("Opravdu checete smazat rozpočet?")) {
@@ -147,7 +147,7 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/budgets/' + this.$route.params.bankId)
+                    await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
                 }
             },
             async editCategoryBudget() {
@@ -191,7 +191,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

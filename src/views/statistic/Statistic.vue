@@ -18,19 +18,17 @@
                     >
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                    v-model="date"
-                                    label="Měsíc"
+                                    v-model="dateRangeText"
+                                    label="Období"
                                     prepend-icon="mdi-calendar"
                                     readonly
                                     v-bind="attrs"
                                     v-on="on"
-                            ></v-text-field>
+                            />
                         </template>
                         <v-date-picker
                                 v-model="date"
-                                type="month"
-                                no-title
-                                scrollable
+                                range
                         >
                             <v-spacer></v-spacer>
                             <v-btn
@@ -43,7 +41,7 @@
                             <v-btn
                                     text
                                     color="primary"
-                                    @click="$refs.menu.save(date), getByMonth()"
+                                    @click="$refs.menu.save(date), getBetweenDate()"
                             >
                                 OK
                             </v-btn>
@@ -52,24 +50,27 @@
                 </v-card-text>
                 <div class="d-md-inline-flex">
                     <div class="font-weight-medium black--text m-left"
-                         v-if="sumOfExpensesCategoryByMonth.length === 0 && sumOfExpensesCategoryByMonth === 0">
+                         v-if="sumOfExpensesCategoryBetweenDate.length === 0
+                         && sumExpenseAndIncomeBetweenDate[0].data.length === 0
+                         && sumExpenseAndIncomeBetweenDate[1].data.length === 0">
                         No transactions in this period :)
                     </div>
 
-                    <div id="chartCategory" v-if="sumOfExpensesCategoryByMonth.length !== 0" class="mr-5">
+                    <div id="chartCategory" v-if="sumOfExpensesCategoryBetweenDate.length !== 0" class="mr-5">
                         <div class="font-weight-light black--text m-left">
                             Koláčový graf - výdaje podle kategorie
                         </div>
                         <apexchart type="pie" width="380" :options="chartOptions"
-                                   :series="sumOfExpensesCategoryByMonth"/>
+                                   :series="sumOfExpensesCategoryBetweenDate"/>
                     </div>
 
-                    <div id="chartCashflow" v-if="sumExpenseAndIncomeByMonth.length !== 0" class="ml-10">
+                    <div id="chartCashflow" v-if="sumExpenseAndIncomeBetweenDate[0].data.length !== 0
+                    || sumExpenseAndIncomeBetweenDate[1].data.length !== 0" class="ml-10">
                         <div class="font-weight-light black--text m-left">
                             Cashflow - utrácím méně než výdělávám?
                         </div>
                         <apexchart type="bar" width="600" height="300" :options="chartOptions2"
-                                   :series="sumExpenseAndIncomeByMonth"/>
+                                   :series="sumExpenseAndIncomeBetweenDate"/>
                     </div>
                 </div>
             </v-card>
@@ -80,18 +81,21 @@
 <script>
     import {
         getAllUsersCategories,
-        getSumOfExpenseByMonth,
-        getSumOfExpenseForCategoryByMonth,
-        getSumOfIncomeByMonth
+        getSumOfExpenseBetweenDate,
+        getSumOfExpenseForCategoryBetweenDate,
+        getSumOfIncomeBetweenDate
     } from "../../api";
 
     export default {
         name: "Statistic",
         data: () => {
             return {
-                date: new Date().toISOString().substr(0, 7),
+                date: [new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+                    .toISOString().substr(0, 10),
+                    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                        .toISOString().substr(0, 10)],
                 menu: false,
-                sumExpenseAndIncomeByMonth: [{
+                sumExpenseAndIncomeBetweenDate: [{
                     data: [],
                     name: "INCOME"
                 },
@@ -100,7 +104,7 @@
                         name: "EXPENSE"
                     }
                 ],
-                sumOfExpensesCategoryByMonth: [],
+                sumOfExpensesCategoryBetweenDate: [],
                 chartOptions: {
                     labels: [],
                     chart: {
@@ -143,11 +147,26 @@
                 },
             }
         },
+        computed: {
+            dateRangeText() {
+                return this.date.join(' ~ ')
+            },
+        },
         methods: {
-            async getByMonth() {
-                let month = this.date.substr(5, 8)
-                let year = this.date.substr(0, 4)
-                this.sumOfExpensesCategoryByMonth = []
+            async getBetweenDate() {
+                let from = this.date[0]
+                let to = this.date[1]
+
+                if (from === undefined || to === undefined) {
+                    alert("Invalid date period! Must be start date and end date!")
+                    return
+                }
+                if (from > to) {
+                    alert("Invalid date period! Start date must be before end date!")
+                    return
+                }
+
+                this.sumOfExpensesCategoryBetweenDate = []
                 this.chartOptions.labels = []
 
                 let categories = await getAllUsersCategories()
@@ -156,24 +175,54 @@
                     return
                 }
                 for (let i = 0; i < categories.length; i++) {
-                    let sumExpense = await getSumOfExpenseForCategoryByMonth(this.$route.params.bankId, month, year, categories[i].id)
+                    let sumExpense = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId, from, to, categories[i].id)
                     if (sumExpense == null) {
                         alert("Invalid data!")
                         return
                     }
                     if (sumExpense !== 0) {
-                        this.sumOfExpensesCategoryByMonth.push(sumExpense)
+                        this.sumOfExpensesCategoryBetweenDate.push(sumExpense)
                         this.chartOptions.labels.push(categories[i].name)
                     }
+                }
+
+                this.sumExpenseAndIncomeBetweenDate = [{
+                    data: [],
+                    name: "INCOME"
+                },
+                    {
+                        data: [],
+                        name: "EXPENSE"
+                    }
+                ]
+
+                let sumExpense = await getSumOfExpenseBetweenDate(this.$route.params.bankId, from, to)
+                let sumIncome = await getSumOfIncomeBetweenDate(this.$route.params.bankId, from, to)
+                if (sumIncome !== 0) {
+                    this.sumExpenseAndIncomeBetweenDate = [{
+                        data: [...this.sumExpenseAndIncomeBetweenDate[0].data, sumIncome],
+                        name: "INCOME"
+                    },
+                        this.sumExpenseAndIncomeBetweenDate[1]
+                    ]
+                }
+                if (sumExpense !== 0) {
+                    this.sumExpenseAndIncomeBetweenDate = [
+                        this.sumExpenseAndIncomeBetweenDate[0],
+                        {
+                            data: [...this.sumExpenseAndIncomeBetweenDate[1].data, sumExpense],
+                            name: "EXPENSE"
+                        }
+                    ]
                 }
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
-            let month = this.date.substr(5, 8)
-            let year = this.date.substr(0, 4)
+            let from = this.date[0]
+            let to = this.date[1]
 
             let categories = await getAllUsersCategories()
             if (categories == null) {
@@ -181,32 +230,33 @@
                 return
             }
             for (let i = 0; i < categories.length; i++) {
-                let sumExpenseCategory = await getSumOfExpenseForCategoryByMonth(this.$route.params.bankId, month, year, categories[i].id)
+                let sumExpenseCategory = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId,
+                    from, to, categories[i].id)
                 if (sumExpenseCategory == null) {
                     alert("Invalid data!")
                     return
                 }
                 if (sumExpenseCategory !== 0) {
-                    this.sumOfExpensesCategoryByMonth.push(sumExpenseCategory)
+                    this.sumOfExpensesCategoryBetweenDate.push(sumExpenseCategory)
                     this.chartOptions.labels.push(categories[i].name)
                 }
             }
 
-            let sumExpense = await getSumOfExpenseByMonth(this.$route.params.bankId, month, year)
-            let sumIncome = await getSumOfIncomeByMonth(this.$route.params.bankId, month, year)
+            let sumExpense = await getSumOfExpenseBetweenDate(this.$route.params.bankId, from, to)
+            let sumIncome = await getSumOfIncomeBetweenDate(this.$route.params.bankId, from, to)
             if (sumIncome !== 0) {
-                this.sumExpenseAndIncomeByMonth = [{
-                    data: [...this.sumExpenseAndIncomeByMonth[0].data, sumIncome],
+                this.sumExpenseAndIncomeBetweenDate = [{
+                    data: [...this.sumExpenseAndIncomeBetweenDate[0].data, sumIncome],
                     name: "INCOME"
                 },
-                    this.sumExpenseAndIncomeByMonth[1]
+                    this.sumExpenseAndIncomeBetweenDate[1]
                 ]
             }
             if (sumExpense !== 0) {
-                this.sumExpenseAndIncomeByMonth = [
-                    this.sumExpenseAndIncomeByMonth[0],
+                this.sumExpenseAndIncomeBetweenDate = [
+                    this.sumExpenseAndIncomeBetweenDate[0],
                     {
-                        data: [...this.sumExpenseAndIncomeByMonth[1].data, sumExpense],
+                        data: [...this.sumExpenseAndIncomeBetweenDate[1].data, sumExpense],
                         name: "EXPENSE"
                     }
                 ]

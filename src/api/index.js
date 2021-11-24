@@ -75,13 +75,13 @@ export async function getDebtById(id) {
     }
 }
 
-export async function getSumOfExpenseForCategoryByMonth(bankId, month, year, categoryId) {
+export async function getSumOfExpenseForCategoryBetweenDate(bankId, from, to, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/sum-expense-category/${bankId}`, {
             withCredentials: true,
             params: {
-                month: month,
-                year: year,
+                from: from,
+                to: to,
                 categoryId: categoryId
             },
         })
@@ -113,13 +113,13 @@ export async function getSumOfIncomeForCategoryByMonth(bankId, month, year, cate
     }
 }
 
-export async function getSumOfExpenseByMonth(bankId, month, year) {
+export async function getSumOfExpenseBetweenDate(bankId, from, to) {
     try {
         let result = await axios.get(`${url}/transaction/sum-expense/${bankId}`, {
             withCredentials: true,
             params: {
-                month: month,
-                year: year
+                from: from,
+                to: to
             },
         })
         return result.data
@@ -131,13 +131,13 @@ export async function getSumOfExpenseByMonth(bankId, month, year) {
     }
 }
 
-export async function getSumOfIncomeByMonth(bankId, month, year) {
+export async function getSumOfIncomeBetweenDate(bankId, from, to) {
     try {
         let result = await axios.get(`${url}/transaction/sum-income/${bankId}`, {
             withCredentials: true,
             params: {
-                month: month,
-                year: year
+                from: from,
+                to: to
             },
         })
         return result.data
@@ -226,13 +226,13 @@ export async function getAllTransactionsByMonth(bankAccId, month, year) {
     }
 }
 
-export async function getAllTransactionsByType(bankAccId, month, year, type) {
+export async function getAllTransactionsByType(bankAccId, from, to, type) {
     try {
-        let result = await axios.get(`${url}/transaction/sorted-type/${bankAccId}`, {
+        let result = await axios.get(`${url}/transaction/between-date-type/${bankAccId}`, {
             params: {
                 type: type,
-                month: month,
-                year: year
+                from: from,
+                to: to
             },
             withCredentials: true
         })
@@ -245,13 +245,13 @@ export async function getAllTransactionsByType(bankAccId, month, year, type) {
     }
 }
 
-export async function getAllTransactionsByCategory(bankAccId, month, year, categoryId) {
+export async function getAllTransactionsByCategory(bankAccId, from, to, categoryId) {
     try {
-        let result = await axios.get(`${url}/transaction/sorted-category/${bankAccId}`, {
+        let result = await axios.get(`${url}/transaction/between-date-category/${bankAccId}`, {
             params: {
                 catId: categoryId,
-                month: month,
-                year: year
+                from: from,
+                to: to
             },
             withCredentials: true
         })
@@ -282,14 +282,14 @@ export async function getAllTransactionsBetweenDate(bankAccId, from, to) {
     }
 }
 
-export async function getAllTransactionsByCategoryAndType(bankAccId, month, year, type, categoryId) {
+export async function getAllTransactionsByCategoryAndType(bankAccId, from, to, type, categoryId) {
     try {
-        let result = await axios.get(`${url}/transaction/sorted-type-category/${bankAccId}`, {
+        let result = await axios.get(`${url}/transaction/between-date-category-type/${bankAccId}`, {
             params: {
                 type: type,
                 catId: categoryId,
-                month: month,
-                year: year
+                from: from,
+                to: to
             },
             withCredentials: true
         })

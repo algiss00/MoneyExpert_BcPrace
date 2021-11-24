@@ -233,7 +233,7 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/banks/')
+                    await this.$router.push('/banks/').catch(() => {})
                 }
             },
             async shareBankAcc(event) {
@@ -286,7 +286,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {

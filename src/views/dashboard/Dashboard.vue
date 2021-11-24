@@ -70,21 +70,22 @@
         },
         methods: {
             toPage(item) {
-                return this.$router.push(item.link + this.$route.params.bankId)
+                return this.$router.push(item.link + this.$route.params.bankId).catch(() => {})
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let infoEl = document.getElementById("info")
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: " + bankAcc.balance
 
-            // check notify debts
+            // set notify debts
             let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
             this.$store.commit("setNotificationDebt", debtsNotification)
 
+            // set notify budgets
             let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
             this.$store.commit("setNotificationBudget", budgetsNotification)
         }

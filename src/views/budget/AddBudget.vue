@@ -122,16 +122,16 @@
                     alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/budgets/' + this.$route.params.bankId)
+                    await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
                 }
             },
             toBudgets() {
-                this.$router.push('/budgets/' + this.$route.params.bankId)
+                this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

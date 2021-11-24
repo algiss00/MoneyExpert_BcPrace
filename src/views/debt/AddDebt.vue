@@ -186,16 +186,16 @@
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/debts/' + this.$route.params.bankId)
+                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
                 }
             },
             toDebts() {
-                this.$router.push('/debts/' + this.$route.params.bankId)
+                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

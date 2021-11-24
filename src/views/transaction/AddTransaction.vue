@@ -174,16 +174,16 @@
                     this.$store.commit("setSnackbar", true)
                     let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
                     this.$store.commit("setNotificationBudget", budgetsNotification)
-                    await this.$router.push('/transactions/' + this.$route.params.bankId)
+                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
                 }
             },
             toTransactions() {
-                this.$router.push('/transactions/' + this.$route.params.bankId)
+                this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

@@ -58,9 +58,7 @@
                                         height="25"
                                         :color="item.percentOfSumAmount >= item.percentNotify ? 'red' : 'green'"
                                 >
-                                    <template v-slot:default="{ value }">
-                                        <strong>{{ Math.ceil(value) }}%</strong>
-                                    </template>
+                                    <strong>{{ Math.ceil(item.sumAmount) }}</strong>
                                 </v-progress-linear>
                             </v-list-item-content>
                         </v-list-item>
@@ -86,10 +84,10 @@
         }),
         methods: {
             toAddBudget() {
-                this.$router.push('/budgets/' + this.$route.params.bankId + '/addBudget/')
+                this.$router.push('/budgets/' + this.$route.params.bankId + '/addBudget/').catch(() => {})
             },
             toDetailBudget(item) {
-                this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id)
+                this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
             },
             isBudgetInPercentNotification(budget) {
                 for (let i = 0; i < this.alertPercentBudgets.length; i++) {
@@ -110,7 +108,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let budgets = await getAllBudgetsFromBankAcc(this.$route.params.bankId)
             this.budgets = budgets

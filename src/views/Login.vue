@@ -74,7 +74,7 @@
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     let user = await getUserByUsername(this.usernameLogin)
                     this.$store.commit("setUser", user)
-                    await this.$router.push('/banks')
+                    await this.$router.push('/banks').catch(() => {})
                 } else {
                     if (result.errorMessage) {
                         alert(result.errorMessage)
@@ -84,7 +84,7 @@
         },
         beforeMount() {
             if (this.$store.state.user) {
-                this.$router.push('/banks')
+                this.$router.push('/banks').catch(() => {})
             }
         }
     };

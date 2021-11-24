@@ -21,6 +21,17 @@
                         </v-alert>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail závazku</v-toolbar-title>
+                            <v-btn
+                                    class="mx-2"
+                                    icon
+                                    @click="dialogDebt = true"
+                            >
+                                <v-icon
+                                        color="green"
+                                >
+                                    mdi-check-bold
+                                </v-icon>
+                            </v-btn>
                             <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
@@ -164,9 +175,42 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-btn color="#e7f6ff" @click="toDebts">Zpět</v-btn>
-                            <v-spacer></v-spacer>
-                            <v-btn color="#e7f6ff" @click="toAddTransactionDebt">Potvrdit akci</v-btn>
                         </v-card-actions>
+                        <v-dialog
+                                v-model="dialogDebt"
+                                max-width="290"
+                        >
+                            <v-card>
+                                <v-card-title class="text-h5">
+                                    Potverzujete ukončení závazku.
+                                </v-card-title>
+
+                                <v-card-text>
+                                    Potvrzením ukončení - závazek se odstraní, pak se přidá transakce s částkou závazku
+                                    a bude mít kategorii 'zavazek'.
+                                </v-card-text>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+
+                                    <v-btn
+                                            color="green darken-1"
+                                            text
+                                            @click="dialogDebt = false"
+                                    >
+                                        Zrušit
+                                    </v-btn>
+
+                                    <v-btn
+                                            color="green darken-1"
+                                            text
+                                            @click="dialogDebt = false, closeDebt()"
+                                    >
+                                        Potvrdit
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -176,6 +220,7 @@
 
 <script>
     import {
+        addTransaction,
         editBasicDebt,
         editDeadline,
         editNotifyDate,
@@ -206,7 +251,8 @@
             ],
             valid: true,
             alertDebtNotify: false,
-            alertDebtDeadline: false
+            alertDebtDeadline: false,
+            dialogDebt: false
         }),
         methods: {
             isDebtNotify(item) {
@@ -221,10 +267,31 @@
                 return "empty"
             },
             toDebts() {
-                this.$router.push('/debts/' + this.$route.params.bankId)
+                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
             },
-            toAddTransactionDebt() {
-                this.$router.push('/transactions/' + this.$route.params.bankId + "/addTransaction/")
+            async closeDebt() {
+                let currentDate = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19)
+                const jsonTransaction = JSON.stringify({
+                    amount: this.amount,
+                    jottings: "Závazek " + this.name,
+                    typeTransaction: "EXPENSE",
+                    date: currentDate,
+                });
+
+                let result = await addTransaction(jsonTransaction, this.$route.params.bankId, -15)
+
+                if (result == null || result.status !== 201) {
+                    alert("Invalid data! Transaction is not added")
+                }
+
+                let resultRemove = await removeDebt(this.$route.params.debtId)
+                if (resultRemove == null || resultRemove.status !== 200) {
+                    alert("Invalid delete debt!")
+                } else if (resultRemove.status === 200) {
+                    this.$store.commit("setSnackbar", true)
+                }
+
+                await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
             },
             async removeDebt(event) {
                 if (!confirm("Opravdu checete smazat závazek?")) {
@@ -237,7 +304,7 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/debts/' + this.$route.params.bankId)
+                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
                 }
             },
             async editBasic(event) {
@@ -292,7 +359,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

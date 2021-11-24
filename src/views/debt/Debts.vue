@@ -22,8 +22,10 @@
                     No debts :)
                 </div>
                 <v-data-table
+                        v-if="debts.length !== 0"
                         dark
                         :headers="headers"
+                        :items-per-page="5"
                         :items="debts"
                         item-key="id"
                         class="elevation-1"
@@ -83,15 +85,15 @@
                 return 'alertColorBlack'
             },
             toAddDebt() {
-                this.$router.push('/debts/' + this.$route.params.bankId + '/addDebt/')
+                this.$router.push('/debts/' + this.$route.params.bankId + '/addDebt/').catch(() => {})
             },
             toDetailDebt(item) {
-                this.$router.push('/debts/' + this.$route.params.bankId + '/detail/' + item.id)
+                this.$router.push('/debts/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             this.debts = await getAllDebtsFromBankAcc(this.$route.params.bankId)
             if (this.debts == null) {

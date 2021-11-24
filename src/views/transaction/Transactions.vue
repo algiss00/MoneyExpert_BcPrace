@@ -30,8 +30,8 @@
                     >
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field
-                                    v-model="date"
-                                    label="Měsíc"
+                                    v-model="dateRangeText"
+                                    label="Období"
                                     prepend-icon="mdi-calendar"
                                     readonly
                                     v-bind="attrs"
@@ -40,9 +40,7 @@
                         </template>
                         <v-date-picker
                                 v-model="date"
-                                type="month"
-                                no-title
-                                scrollable
+                                range
                         >
                             <v-spacer></v-spacer>
                             <v-btn
@@ -55,7 +53,7 @@
                             <v-btn
                                     text
                                     color="primary"
-                                    @click="$refs.menu.save(date), getTransactionsByMonth()"
+                                    @click="$refs.menu.save(date), getTransactionsBetweenDate()"
                             >
                                 OK
                             </v-btn>
@@ -128,14 +126,15 @@
 
 <script>
     import {
-        getAllTransactionsByCategory, getAllTransactionsByCategoryAndType,
-        getAllTransactionsByMonth,
+        getAllTransactionsBetweenDate,
+        getAllTransactionsByCategoryAndType,
+        getAllTransactionsByCategory,
         getAllTransactionsByType,
-        getAllUsersCategories
+        getAllUsersCategories, getAllNotificationBudgets
     } from "../../api";
 
-    async function getAllTransactionsByTypeAndCategoryMethod(bankId, month, year, type, categoryId) {
-        let result = await getAllTransactionsByCategoryAndType(bankId, month, year, type, categoryId)
+    async function getAllTransactionsByTypeAndCategoryMethod(bankId, from, to, type, categoryId) {
+        let result = await getAllTransactionsByCategoryAndType(bankId, from, to, type, categoryId)
         if (result == null) {
             alert("Invalid bankAcc id")
             return
@@ -148,7 +147,10 @@
         data: () => {
             return {
                 transactions: [],
-                date: new Date().toISOString().substr(0, 7),
+                date: [new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+                    .toISOString().substr(0, 10),
+                    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                        .toISOString().substr(0, 10)],
                 menu: false,
                 types: ['All', 'EXPENSE', 'INCOME'],
                 type: "All",
@@ -159,47 +161,71 @@
                 },
             }
         },
+        computed: {
+            dateRangeText() {
+                return this.date.join(' ~ ')
+            },
+        },
         methods: {
             toDetailTransaction(item) {
-                this.$router.push('/transactions/' + this.$route.params.bankId + '/detail/' + item.id)
+                this.$router.push('/transactions/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
             },
             toAddTransaction() {
-                this.$router.push('/transactions/' + this.$route.params.bankId + '/addTransaction/')
+                this.$router.push('/transactions/' + this.$route.params.bankId + '/addTransaction/').catch(() => {})
             },
-            async getTransactionsByMonth() {
-                let month = this.date.substr(5, 8)
-                let year = this.date.substr(0, 4)
+            async getTransactionsBetweenDate() {
+                let from = this.date[0]
+                let to = this.date[1]
+
+                if (from === undefined || to === undefined) {
+                    alert("Invalid date period! Must be start date and end date!")
+                    return
+                }
                 this.type = "All"
                 this.category = {
                     id: -1000,
                     name: "All"
                 }
-                this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+
+                if (from > to) {
+                    alert("Invalid date period! Start date must be before end date!")
+                    return
+                }
+
+                this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                 if (this.transactions == null) {
                     alert("Invalid bankAcc id")
                     return
                 }
             },
             async getAllTransactionsByTypeAndCategoryMethod() {
-                let month = this.date.substr(5, 8)
-                let year = this.date.substr(0, 4)
+                if (this.date.length <= 1) {
+                    alert("Invalid date period! Must be start date and end date period!")
+                    return
+                }
+                let from = this.date[0]
+                let to = this.date[1]
+                if (from > to) {
+                    alert("Invalid date period! From date is later then another!")
+                    return
+                }
                 if (this.type === "All" && this.category.name === "All") {
-                    this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+                    this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                     if (this.transactions == null) {
                         alert("Invalid bankAcc id")
                         return
                     }
                 } else if (this.type !== "All" && this.category.name !== "All") {
-                    this.transactions = await getAllTransactionsByTypeAndCategoryMethod(this.$route.params.bankId, month,
-                        year, this.type, this.category.id)
+                    this.transactions = await getAllTransactionsByTypeAndCategoryMethod(this.$route.params.bankId, from,
+                        to, this.type, this.category.id)
                 } else if (this.type !== "All" && this.category.name === "All") {
-                    this.transactions = await getAllTransactionsByType(this.$route.params.bankId, month, year, this.type)
+                    this.transactions = await getAllTransactionsByType(this.$route.params.bankId, from, to, this.type)
                     if (this.transactions == null) {
                         alert("Invalid bankAcc id")
                         return
                     }
                 } else if (this.type === "All" && this.category.name !== "All") {
-                    this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, month, year, this.category.id)
+                    this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, from, to, this.category.id)
                     if (this.transactions == null) {
                         alert("Invalid bankAcc id")
                         return
@@ -209,7 +235,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
@@ -222,13 +248,14 @@
             }
             categories.push(defaultCategory)
             this.categories = categories
-            let month = this.date.substr(5, 8)
-            let year = this.date.substr(0, 4)
-            this.transactions = await getAllTransactionsByMonth(this.$route.params.bankId, month, year)
+
+            this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, this.date[0], this.date[1])
             if (this.transactions == null) {
                 alert("Invalid bankAcc id")
                 return
             }
+            let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
+            this.$store.commit("setNotificationBudget", budgetsNotification)
         }
     }
 </script>

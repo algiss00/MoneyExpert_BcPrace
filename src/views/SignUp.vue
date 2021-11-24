@@ -118,7 +118,7 @@
                     alert("Invalid data!")
                 } else if (result.data.username === this.username && result.data.email === this.email) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/')
+                    await this.$router.push('/').catch(() => {})
                 }
             }
         }

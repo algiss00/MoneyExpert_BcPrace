@@ -86,14 +86,14 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
-                    await this.$router.push('/banks')
+                    await this.$router.push('/banks').catch(() => {})
                     this.$store.commit("setSnackbar", true)
                 }
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
         }
     }

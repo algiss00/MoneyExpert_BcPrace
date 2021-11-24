@@ -206,10 +206,10 @@
         },
         methods: {
             detailBankAcc(item) {
-                this.$router.push('/banks/detail/' + item.id)
+                this.$router.push('/banks/detail/' + item.id).catch(() => {})
             },
             toDashboard(item) {
-                this.$router.push('/dashboard/' + item.id)
+                this.$router.push('/dashboard/' + item.id).catch(() => {})
             },
             async detailAvailableBank(item) {
                 let creator = await getCreatorOfBankAcc(item.id)
@@ -225,7 +225,7 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {})
             }
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {

@@ -251,7 +251,8 @@
         ,
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/")
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let createdCategories = await getAllUsersCreatedCategories()
             if (createdCategories == null) {
