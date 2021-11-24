@@ -45,6 +45,7 @@
                             <v-btn
                                     icon
                                     @click="dialog = true"
+                                    title="Sdílet bank account"
                             >
                                 <v-icon
                                         color="blue"
@@ -57,6 +58,7 @@
                                     class="mx-2"
                                     icon
                                     @click="removeBankAcc($event)"
+                                    title="Smazat bank account"
                             >
                                 <v-icon
                                         color="red"
@@ -140,6 +142,7 @@
                                             </v-list>
                                         </v-card-text>
                                         <v-card-actions>
+                                            <v-spacer></v-spacer>
                                             <v-btn
                                                     color="primary"
                                                     text
@@ -233,7 +236,8 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/banks/').catch(() => {})
+                    await this.$router.push('/banks/').catch(() => {
+                    })
                 }
             },
             async shareBankAcc(event) {
@@ -286,7 +290,8 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {

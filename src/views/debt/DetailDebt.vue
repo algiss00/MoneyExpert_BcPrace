@@ -25,6 +25,7 @@
                                     class="mx-2"
                                     icon
                                     @click="dialogDebt = true"
+                                    title="Ukončení závazku"
                             >
                                 <v-icon
                                         color="green"
@@ -37,6 +38,7 @@
                                     class="mx-2"
                                     icon
                                     @click="removeDebt($event)"
+                                    title="Smazat závazek"
                             >
                                 <v-icon
                                         color="red"
@@ -174,6 +176,7 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
+                            <v-spacer></v-spacer>
                             <v-btn color="#e7f6ff" @click="toDebts">Zpět</v-btn>
                         </v-card-actions>
                         <v-dialog

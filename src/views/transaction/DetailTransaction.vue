@@ -48,6 +48,7 @@
                             <v-btn
                                     icon
                                     @click="dialog = true"
+                                    title="Převod transakci"
                             >
                                 <v-icon
                                         color="blue"
@@ -60,6 +61,7 @@
                                     class="mx-2"
                                     icon
                                     @click="removeTransaction($event)"
+                                    title="Smazat transakci"
                             >
                                 <v-icon
                                         color="red"
@@ -226,7 +228,8 @@
         }),
         methods: {
             toTransactions() {
-                this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
+                this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
+                })
             },
             async editBasicInfo(event) {
                 if (!this.$refs.form.validate()) {
@@ -280,7 +283,8 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
             },
             async transferTransaction(event) {
@@ -295,13 +299,15 @@
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
             }
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

@@ -84,10 +84,12 @@
         }),
         methods: {
             toAddBudget() {
-                this.$router.push('/budgets/' + this.$route.params.bankId + '/addBudget/').catch(() => {})
+                this.$router.push('/budgets/' + this.$route.params.bankId + '/addBudget/').catch(() => {
+                })
             },
             toDetailBudget(item) {
-                this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {})
+                this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {
+                })
             },
             isBudgetInPercentNotification(budget) {
                 for (let i = 0; i < this.alertPercentBudgets.length; i++) {
@@ -108,7 +110,8 @@
         },
         async mounted() {
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let budgets = await getAllBudgetsFromBankAcc(this.$route.params.bankId)
             this.budgets = budgets

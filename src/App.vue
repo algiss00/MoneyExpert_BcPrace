@@ -79,13 +79,24 @@
                 <v-toolbar color="#e7f6ff">
                     <v-toolbar-title>Profile</v-toolbar-title>
                     <v-card-actions>
-                        <v-btn @click="logout">Logout</v-btn>
+                        <v-btn
+                                class="mx-2"
+                                icon
+                                @click="logout"
+                                title="Logout"
+                        >
+                            <v-icon
+                            >
+                                mdi-logout
+                            </v-icon>
+                        </v-btn>
                     </v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
                             class="mx-2"
                             icon
                             @click="deleteProfile"
+                            title="Smazat profile"
                     >
                         <v-icon
                                 color="red"
@@ -230,13 +241,16 @@
         methods: {
             async toPage(item) {
                 if (item.title === 'Účty') {
-                    return this.$router.push(item.link).catch(() => {})
+                    return this.$router.push(item.link).catch(() => {
+                    })
                 }
-                return this.$router.push(item.link + this.$route.params.bankId).catch(() => {})
+                return this.$router.push(item.link + this.$route.params.bankId).catch(() => {
+                })
             },
             async startDialogProfile() {
                 if (!this.$store.state.user) {
-                    return await this.$router.push("/").catch(() => {})
+                    return await this.$router.push("/").catch(() => {
+                    })
                 }
                 let user = await getCurrentUserBackEnd()
                 if (user == null) {
@@ -254,7 +268,8 @@
                 await logout()
                 this.profileDrawer = false
                 this.$store.commit("setUser", null)
-                await this.$router.push('/').catch(() => {})
+                await this.$router.push('/').catch(() => {
+                })
             },
             async editNameLastname(event) {
                 if (!this.$refs.form.validate()) {
@@ -329,7 +344,8 @@
                     this.$store.commit("setSnackbar", true)
                     this.profileDrawer = false
                     this.$store.commit("setUser", null)
-                    await this.$router.push("/").catch(() => {})
+                    await this.$router.push("/").catch(() => {
+                    })
                 }
             }
         },
@@ -337,7 +353,8 @@
             let user = await getCurrentUserBackEnd()
             if (user) {
                 this.$store.commit("setUser", user)
-                await this.$router.push("/banks").catch(() => {})
+                await this.$router.push("/banks").catch(() => {
+                })
             } else {
                 this.$store.commit("setUser", null)
             }

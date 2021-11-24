@@ -93,6 +93,42 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-dialog
+                        v-model="dialogConfirm"
+                        max-width="330"
+                >
+                    <v-card>
+                        <v-card-title class="text-h5">
+                            Opravdu checete smazat kategorii?
+                        </v-card-title>
+
+                        <v-card-text>
+                            Potvrzením odstranění - kategorie se odstraní, pak se také odstraní vše rozpočty,
+                            které patří k dané kategorii. Dále vše transakce s danou kategorii, budou patřit
+                            ke kategorii "No category".
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+
+                            <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="dialogConfirm = false"
+                            >
+                                Zrušit
+                            </v-btn>
+
+                            <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="dialogConfirm = false, removeCategory()"
+                            >
+                                Potvrdit
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
                 <v-list
                         v-if="createdCategories.length !== 0"
                         subheader
@@ -112,6 +148,7 @@
                                     class="mx-2"
                                     icon
                                     @click="dialogEditCategory = true, selectedItem = item, nameCategoryEdit = item.name"
+                                    title="Editace kategorii"
                             >
                                 <v-icon
                                 >
@@ -123,7 +160,8 @@
                             <v-btn
                                     class="mx-2"
                                     icon
-                                    @click="removeCategory($event, item)"
+                                    @click="dialogConfirm = true, selectedItem = item"
+                                    title="Smazat kategorii"
                             >
                                 <v-icon
                                         color="red"
@@ -178,7 +216,8 @@
             nameCategory: "",
             nameCategoryEdit: "",
             dialogEditCategory: false,
-            selectedItem: {}
+            selectedItem: {},
+            dialogConfirm: false
         }),
         methods: {
             async editCategory(event) {
@@ -228,13 +267,8 @@
                     this.dialogAddCategory = false
                 }
             },
-            async removeCategory(event, item) {
-                if (!confirm("Opravdu checete smazat kategorii?")) {
-                    event.preventDefault()
-                    return
-                }
-
-                let result = await removeCategory(item.id)
+            async removeCategory() {
+                let result = await removeCategory(this.selectedItem.id)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
@@ -247,8 +281,7 @@
                     this.createdCategories = createdCategories
                 }
             }
-        }
-        ,
+        },
         async mounted() {
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {

@@ -28,6 +28,7 @@
                 </div>
 
                 <v-data-table
+                        id="createdTab"
                         v-if="createdBanks.length !== 0"
                         dark
                         :headers="headersCreated"
@@ -57,45 +58,32 @@
                     Available accounts
                 </div>
 
-                <v-simple-table dark id="availableTab" v-if="availableBanks.length !== 0">
-                    <template v-slot:default>
-                        <thead>
-                        <tr>
-                            <th class="text-left">
-                                Nazev
-                            </th>
-                            <th class="text-left">
-                                Zůstatek
-                            </th>
-                            <th class="text-left">
-                                Měna
-                            </th>
-                            <th class="text-left">
-                                Detail
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr
-                                v-for="item in availableBanks"
-                                :key="item.id"
-                                @click="toDashboard(item)"
-                        >
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.balance }}</td>
-                            <td>{{ item.currency }}</td>
-                            <td>
-                                <v-btn
-                                        icon
-                                        @click.stop="dialog = !dialog, detailAvailableBank(item)"
-                                >
-                                    <v-icon>mdi-dots-horizontal</v-icon>
-                                </v-btn>
-                            </td>
-                        </tr>
-                        </tbody>
+                <v-data-table
+                        id="availableTab"
+                        v-if="availableBanks.length !== 0"
+                        dark
+                        :headers="headersAvailable"
+                        :items-per-page="5"
+                        :items="availableBanks"
+                        item-key="id"
+                        class="elevation-1"
+                        :search="searchAvailable"
+                        :custom-filter="filterOnlyCapsText"
+                        @click:row="toDashboard"
+                >
+                    <template v-slot:item.detail="props">
+                        <v-btn icon @click.stop="dialog = !dialog, detailAvailableBank(props.item)">
+                            <v-icon>mdi-dots-horizontal</v-icon>
+                        </v-btn>
                     </template>
-                </v-simple-table>
+                    <template v-slot:top>
+                        <v-text-field
+                                v-model="searchAvailable"
+                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
+                                class="mx-4"
+                        />
+                    </template>
+                </v-data-table>
 
                 <v-dialog
                         v-model="dialog"
@@ -136,6 +124,7 @@
                             />
                         </v-card-text>
                         <v-card-actions>
+                            <v-spacer></v-spacer>
                             <v-btn
                                     color="primary"
                                     text
@@ -193,6 +182,13 @@
                     {text: 'Nastavení', value: 'detail'},
                 ],
                 searchCreated: '',
+                headersAvailable: [
+                    {text: 'Nazev', value: 'name'},
+                    {text: 'Zůstatek', value: 'balance'},
+                    {text: 'Měna', value: 'currency'},
+                    {text: 'Detail', value: 'detail'},
+                ],
+                searchAvailable: '',
             }
         },
         methods: {
