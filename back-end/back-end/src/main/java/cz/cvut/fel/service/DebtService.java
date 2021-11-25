@@ -65,8 +65,8 @@ public class DebtService extends AbstractServiceHelper {
      */
     //every 6 hours - "0 0 */6 * * * "
     // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
-    // ted to mam kazde 1:30 minut
-    @Scheduled(cron = "10 * * * * * ")
+    // ted to mam kazde 10 sec
+    @Scheduled(cron = "*/10 * * * * * ")
     public void checkNotifyDates() {
         log.info("check DEBT NotifyDate");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
