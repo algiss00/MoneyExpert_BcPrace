@@ -1,7 +1,16 @@
 import axios from "axios";
 
+/**
+ * This file contains the requests to the back-end part
+ */
+
 const url = "http://localhost:8080";
 
+/**
+ * get users category by name
+ * @param name
+ * @returns {Promise<null|T>}
+ */
 export async function getCategoryByName(name) {
     try {
         let result = await axios.get(`${url}/category/user-by-name`, {
@@ -19,6 +28,11 @@ export async function getCategoryByName(name) {
     }
 }
 
+/**
+ * get bankAcc by id
+ * @param id
+ * @returns {Promise<null|T>}
+ */
 export async function getBankAccById(id) {
     try {
         let result = await axios.get(`${url}/bank-account/${id}`, {
@@ -33,6 +47,11 @@ export async function getBankAccById(id) {
     }
 }
 
+/**
+ * get transaction by id
+ * @param id
+ * @returns {Promise<null|T>}
+ */
 export async function getTransactionById(id) {
     try {
         let result = await axios.get(`${url}/transaction/${id}`, {
@@ -47,6 +66,11 @@ export async function getTransactionById(id) {
     }
 }
 
+/**
+ * get budget by id
+ * @param id
+ * @returns {Promise<null|T>}
+ */
 export async function getBudgetById(id) {
     try {
         let result = await axios.get(`${url}/budget/${id}`, {
@@ -61,6 +85,11 @@ export async function getBudgetById(id) {
     }
 }
 
+/**
+ * get debt by id
+ * @param id
+ * @returns {Promise<null|T>}
+ */
 export async function getDebtById(id) {
     try {
         let result = await axios.get(`${url}/debt/${id}`, {
@@ -75,6 +104,14 @@ export async function getDebtById(id) {
     }
 }
 
+/**
+ * get sum of all expenses which in certain category and between date
+ * @param bankId
+ * @param from
+ * @param to
+ * @param categoryId
+ * @returns {Promise<null|T>}
+ */
 export async function getSumOfExpenseForCategoryBetweenDate(bankId, from, to, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/sum-expense-category/${bankId}`, {
@@ -94,6 +131,14 @@ export async function getSumOfExpenseForCategoryBetweenDate(bankId, from, to, ca
     }
 }
 
+/**
+ * get sum of all incomes which in certain category and month, year
+ * @param bankId
+ * @param month
+ * @param year
+ * @param categoryId
+ * @returns {Promise<null|T>}
+ */
 export async function getSumOfIncomeForCategoryByMonth(bankId, month, year, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/sum-income-category/${bankId}`, {
@@ -113,6 +158,13 @@ export async function getSumOfIncomeForCategoryByMonth(bankId, month, year, cate
     }
 }
 
+/**
+ * get sum of all expenses from bankAcc and between date
+ * @param bankId
+ * @param from
+ * @param to
+ * @returns {Promise<null|T>}
+ */
 export async function getSumOfExpenseBetweenDate(bankId, from, to) {
     try {
         let result = await axios.get(`${url}/transaction/sum-expense/${bankId}`, {
@@ -131,6 +183,13 @@ export async function getSumOfExpenseBetweenDate(bankId, from, to) {
     }
 }
 
+/**
+ * get sum of all incomes from bankAcc and between date
+ * @param bankId
+ * @param from
+ * @param to
+ * @returns {Promise<null|T>}
+ */
 export async function getSumOfIncomeBetweenDate(bankId, from, to) {
     try {
         let result = await axios.get(`${url}/transaction/sum-income/${bankId}`, {
@@ -149,6 +208,11 @@ export async function getSumOfIncomeBetweenDate(bankId, from, to) {
     }
 }
 
+/**
+ * get all notifications for debts
+ * @param bankAccId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllNotificationDebts(bankAccId) {
     try {
         let result = await axios.get(`${url}/notify-debt/bank-account/${bankAccId}`, {
@@ -163,6 +227,11 @@ export async function getAllNotificationDebts(bankAccId) {
     }
 }
 
+/**
+ * get all notifications for budgets
+ * @param bankAccId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllNotificationBudgets(bankAccId) {
     try {
         let result = await axios.get(`${url}/notify-budget/bank-account/${bankAccId}`, {
@@ -177,6 +246,12 @@ export async function getAllNotificationBudgets(bankAccId) {
     }
 }
 
+/**
+ * get all notifications for budget by type
+ * @param bankAccId
+ * @param type
+ * @returns {Promise<null|T>}
+ */
 export async function getAllNotificationBudgetsByType(bankAccId, type) {
     try {
         let result = await axios.get(`${url}/notify-budget/bank-account-by-type/${bankAccId}`, {
@@ -194,6 +269,11 @@ export async function getAllNotificationBudgetsByType(bankAccId, type) {
     }
 }
 
+/**
+ * get all transactions from bankAcc
+ * @param bankAccId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactions(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/transactions/${bankAccId}`, {
@@ -208,6 +288,13 @@ export async function getAllTransactions(bankAccId) {
     }
 }
 
+/**
+ * get all transactions from bankAcc by month and year
+ * @param bankAccId
+ * @param month
+ * @param year
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactionsByMonth(bankAccId, month, year) {
     try {
         let result = await axios.get(`${url}/transaction/sorted-month-year/${bankAccId}`, {
@@ -226,6 +313,14 @@ export async function getAllTransactionsByMonth(bankAccId, month, year) {
     }
 }
 
+/**
+ * get all transactions from bankAcc by type between date
+ * @param bankAccId
+ * @param from
+ * @param to
+ * @param type
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactionsByType(bankAccId, from, to, type) {
     try {
         let result = await axios.get(`${url}/transaction/between-date-type/${bankAccId}`, {
@@ -245,6 +340,14 @@ export async function getAllTransactionsByType(bankAccId, from, to, type) {
     }
 }
 
+/**
+ * get all transactions from bankAcc by category between date
+ * @param bankAccId
+ * @param from
+ * @param to
+ * @param categoryId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactionsByCategory(bankAccId, from, to, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/between-date-category/${bankAccId}`, {
@@ -264,6 +367,13 @@ export async function getAllTransactionsByCategory(bankAccId, from, to, category
     }
 }
 
+/**
+ * get all transactions from bankAcc between date
+ * @param bankAccId
+ * @param from
+ * @param to
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactionsBetweenDate(bankAccId, from, to) {
     try {
         let result = await axios.get(`${url}/transaction/between-date/${bankAccId}`, {
@@ -282,6 +392,15 @@ export async function getAllTransactionsBetweenDate(bankAccId, from, to) {
     }
 }
 
+/**
+ * get all transactions from bankAcc by type and category between date
+ * @param bankAccId
+ * @param from
+ * @param to
+ * @param type
+ * @param categoryId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllTransactionsByCategoryAndType(bankAccId, from, to, type, categoryId) {
     try {
         let result = await axios.get(`${url}/transaction/between-date-category-type/${bankAccId}`, {
@@ -302,6 +421,11 @@ export async function getAllTransactionsByCategoryAndType(bankAccId, from, to, t
     }
 }
 
+/**
+ * get user by username
+ * @param username
+ * @returns {Promise<null|T>}
+ */
 export async function getUserByUsername(username) {
     try {
         let result = await axios.get(`${url}/user/username`, {
@@ -319,6 +443,10 @@ export async function getUserByUsername(username) {
     }
 }
 
+/**
+ * get all users created bankAccs
+ * @returns {Promise<null|T>}
+ */
 export async function getAllUsersCreatedBanks() {
     try {
         let result = await axios.get(`${url}/user/created-accounts`, {
@@ -333,6 +461,10 @@ export async function getAllUsersCreatedBanks() {
     }
 }
 
+/**
+ * get all users available bankAccs
+ * @returns {Promise<null|T>}
+ */
 export async function getAllUsersAvailableBanks() {
     try {
         let result = await axios.get(`${url}/user/available-accounts`, {
@@ -347,6 +479,11 @@ export async function getAllUsersAvailableBanks() {
     }
 }
 
+/**
+ * get all budgets from bankAcc
+ * @param bankId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllBudgetsFromBankAcc(bankId) {
     try {
         let result = await axios.get(`${url}/bank-account/budgets/${bankId}`, {
@@ -361,6 +498,11 @@ export async function getAllBudgetsFromBankAcc(bankId) {
     }
 }
 
+/**
+ * get all debts from bankAcc
+ * @param bankId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllDebtsFromBankAcc(bankId) {
     try {
         let result = await axios.get(`${url}/bank-account/debts/${bankId}`, {
@@ -375,6 +517,10 @@ export async function getAllDebtsFromBankAcc(bankId) {
     }
 }
 
+/**
+ * get all users bankAcc include created and available
+ * @returns {Promise<null|T>}
+ */
 export async function getAllUsersBanks() {
     try {
         let result = await axios.get(`${url}/user/all-accounts`, {
@@ -389,6 +535,11 @@ export async function getAllUsersBanks() {
     }
 }
 
+/**
+ * get creator of bankAcc
+ * @param bankAccId
+ * @returns {Promise<null|T>}
+ */
 export async function getCreatorOfBankAcc(bankAccId) {
     try {
         let result = await axios.get(`${url}/bank-account/creator/${bankAccId}`, {
@@ -403,6 +554,10 @@ export async function getCreatorOfBankAcc(bankAccId) {
     }
 }
 
+/**
+ * get current user from back-end
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function getCurrentUserBackEnd() {
     try {
         return await axios.get(`${url}/user/current-user`, {
@@ -416,6 +571,11 @@ export async function getCurrentUserBackEnd() {
     }
 }
 
+/**
+ * get all owners of bankAcc
+ * @param bankId
+ * @returns {Promise<null|T>}
+ */
 export async function getAllOwnersOfBankAcc(bankId) {
     try {
         let result = await axios.get(`${url}/bank-account/owners/${bankId}`, {
@@ -430,6 +590,10 @@ export async function getAllOwnersOfBankAcc(bankId) {
     }
 }
 
+/**
+ * get all users categories include default and created
+ * @returns {Promise<null|T>}
+ */
 export async function getAllUsersCategories() {
     try {
         let result = await axios.get(`${url}/user/categories`, {
@@ -444,6 +608,10 @@ export async function getAllUsersCategories() {
     }
 }
 
+/**
+ * get all users created categories
+ * @returns {Promise<null|T>}
+ */
 export async function getAllUsersCreatedCategories() {
     try {
         let result = await axios.get(`${url}/category/user-created`, {
@@ -458,6 +626,10 @@ export async function getAllUsersCreatedCategories() {
     }
 }
 
+/**
+ * get all default categories
+ * @returns {Promise<null|T>}
+ */
 export async function getAllDefaultCategories() {
     try {
         let result = await axios.get(`${url}/category/default`, {
@@ -472,6 +644,12 @@ export async function getAllDefaultCategories() {
     }
 }
 
+/**
+ * login
+ * @param username
+ * @param password
+ * @returns {Promise<null|T>}
+ */
 export async function login(username, password) {
     try {
         let result = await axios.post(`${url}/login`, null, {
@@ -490,6 +668,10 @@ export async function login(username, password) {
     }
 }
 
+/**
+ * logout
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function logout() {
     try {
         return await axios.post(`${url}/logout`, null, {
@@ -503,6 +685,11 @@ export async function logout() {
     }
 }
 
+/**
+ * registration
+ * @param jsonUser
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function registration(jsonUser) {
     try {
         return await axios.post(`${url}/user`, jsonUser, {
@@ -519,6 +706,11 @@ export async function registration(jsonUser) {
     }
 }
 
+/**
+ * add bankAcc
+ * @param jsonBankAcc
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function addBankAccount(jsonBankAcc) {
     try {
         return await axios.post(`${url}/bank-account`, jsonBankAcc, {
@@ -535,6 +727,13 @@ export async function addBankAccount(jsonBankAcc) {
     }
 }
 
+/**
+ * add transaction to bankAcc
+ * @param jsonTransaction
+ * @param accId
+ * @param categoryId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function addTransaction(jsonTransaction, accId, categoryId) {
     try {
         return await axios.post(`${url}/transaction`, jsonTransaction, {
@@ -555,6 +754,13 @@ export async function addTransaction(jsonTransaction, accId, categoryId) {
     }
 }
 
+/**
+ * add budget to bankAcc
+ * @param jsonBudget
+ * @param accId
+ * @param categoryId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function addBudget(jsonBudget, accId, categoryId) {
     try {
         return await axios.post(`${url}/budget`, jsonBudget, {
@@ -575,6 +781,12 @@ export async function addBudget(jsonBudget, accId, categoryId) {
     }
 }
 
+/**
+ * add debt to bankAcc
+ * @param jsonDebt
+ * @param accId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function addDebt(jsonDebt, accId) {
     try {
         return await axios.post(`${url}/debt`, jsonDebt, {
@@ -594,6 +806,11 @@ export async function addDebt(jsonDebt, accId) {
     }
 }
 
+/**
+ * add category
+ * @param jsonCategory
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function addCategory(jsonCategory) {
     try {
         return await axios.post(`${url}/category`, jsonCategory, {
@@ -610,6 +827,13 @@ export async function addCategory(jsonCategory) {
     }
 }
 
+/**
+ * transfer transaction to another bankAcc
+ * @param fromAccId
+ * @param toAccId
+ * @param transId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function transferTransaction(fromAccId, toAccId, transId) {
     try {
         return await axios.post(`${url}/transaction/transfer`, null, {
@@ -631,6 +855,12 @@ export async function transferTransaction(fromAccId, toAccId, transId) {
     }
 }
 
+/**
+ * share bankAcc with another user by username
+ * @param username
+ * @param bankId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function shareBankAccount(username, bankId) {
     try {
         return await axios.post(`${url}/bank-account/owner`, null, {
@@ -651,6 +881,12 @@ export async function shareBankAccount(username, bankId) {
     }
 }
 
+/**
+ * edit bankAcc
+ * @param jsonBankAcc
+ * @param bankId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editBankAcc(jsonBankAcc, bankId) {
     try {
         return await axios.post(`${url}/bank-account/update`, jsonBankAcc, {
@@ -670,6 +906,12 @@ export async function editBankAcc(jsonBankAcc, bankId) {
     }
 }
 
+/**
+ * edit basic info transaction
+ * @param jsonTransaction
+ * @param transId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editBasicTransaction(jsonTransaction, transId) {
     try {
         return await axios.post(`${url}/transaction/update-basic`, jsonTransaction, {
@@ -689,6 +931,12 @@ export async function editBasicTransaction(jsonTransaction, transId) {
     }
 }
 
+/**
+ * edit category of transaction
+ * @param transId
+ * @param categoryId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editCategoryTransaction(transId, categoryId) {
     try {
         return await axios.post(`${url}/transaction/update-category`, null, {
@@ -709,6 +957,12 @@ export async function editCategoryTransaction(transId, categoryId) {
     }
 }
 
+/**
+ * edit type of transaction
+ * @param transId
+ * @param type
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editTypeTransaction(transId, type) {
     try {
         return await axios.post(`${url}/transaction/update-type`, null, {
@@ -729,6 +983,11 @@ export async function editTypeTransaction(transId, type) {
     }
 }
 
+/**
+ * edit users name and lastname
+ * @param userJson
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editNameLastname(userJson) {
     try {
         return await axios.post(`${url}/user/basic-info`, userJson, {
@@ -745,6 +1004,11 @@ export async function editNameLastname(userJson) {
     }
 }
 
+/**
+ * edit users email
+ * @param email
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editEmail(email) {
     try {
         return await axios.post(`${url}/user/email`, null, {
@@ -764,6 +1028,11 @@ export async function editEmail(email) {
     }
 }
 
+/**
+ * edit users username
+ * @param username
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editUsername(username) {
     try {
         return await axios.post(`${url}/user/username`, null, {
@@ -783,6 +1052,12 @@ export async function editUsername(username) {
     }
 }
 
+/**
+ * edit users password
+ * @param oldPassword
+ * @param newPassword
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editPassword(oldPassword, newPassword) {
     try {
         return await axios.post(`${url}/user/password`, null, {
@@ -803,6 +1078,12 @@ export async function editPassword(oldPassword, newPassword) {
     }
 }
 
+/**
+ * edit category of budget
+ * @param budgetId
+ * @param categoryId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editCategoryBudget(budgetId, categoryId) {
     try {
         return await axios.post(`${url}/budget/update-category`, null, {
@@ -823,6 +1104,12 @@ export async function editCategoryBudget(budgetId, categoryId) {
     }
 }
 
+/**
+ * edit name of budget
+ * @param budgetId
+ * @param name
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editNameBudget(budgetId, name) {
     try {
         return await axios.post(`${url}/budget/update-name`, null, {
@@ -843,6 +1130,12 @@ export async function editNameBudget(budgetId, name) {
     }
 }
 
+/**
+ * edit amount of budget
+ * @param budgetId
+ * @param amount
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editAmountBudget(budgetId, amount) {
     try {
         return await axios.post(`${url}/budget/update-amount`, null, {
@@ -863,6 +1156,12 @@ export async function editAmountBudget(budgetId, amount) {
     }
 }
 
+/**
+ * edit percent of budget
+ * @param budgetId
+ * @param percent
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editPercentBudget(budgetId, percent) {
     try {
         return await axios.post(`${url}/budget/update-percent`, null, {
@@ -883,6 +1182,12 @@ export async function editPercentBudget(budgetId, percent) {
     }
 }
 
+/**
+ * edit basic info of debt
+ * @param debtId
+ * @param jsonDebt
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editBasicDebt(debtId, jsonDebt) {
     try {
         return await axios.post(`${url}/debt/update-basic`, jsonDebt, {
@@ -902,6 +1207,12 @@ export async function editBasicDebt(debtId, jsonDebt) {
     }
 }
 
+/**
+ * edit notifyDate of debt
+ * @param debtId
+ * @param notifyDate
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editNotifyDate(debtId, notifyDate) {
     try {
         return await axios.post(`${url}/debt/update-notify-date`, null, {
@@ -922,6 +1233,12 @@ export async function editNotifyDate(debtId, notifyDate) {
     }
 }
 
+/**
+ * edit deadline of debt
+ * @param debtId
+ * @param deadline
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editDeadline(debtId, deadline) {
     try {
         return await axios.post(`${url}/debt/update-deadline-date`, null, {
@@ -942,6 +1259,12 @@ export async function editDeadline(debtId, deadline) {
     }
 }
 
+/**
+ * edit users category
+ * @param categoryId
+ * @param name
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function editCategory(categoryId, name) {
     try {
         return await axios.post(`${url}/category/update-name`, null, {
@@ -962,6 +1285,11 @@ export async function editCategory(categoryId, name) {
     }
 }
 
+/**
+ * remove transaction from bankAcc
+ * @param transId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeTransactionFromBank(transId) {
     try {
         return await axios.delete(`${url}/bank-account/transaction`, {
@@ -978,6 +1306,11 @@ export async function removeTransactionFromBank(transId) {
     }
 }
 
+/**
+ * remove users bankAcc
+ * @param bankAccountId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeBankAcc(bankAccountId) {
     try {
         return await axios.delete(`${url}/bank-account/${bankAccountId}`, {
@@ -991,6 +1324,11 @@ export async function removeBankAcc(bankAccountId) {
     }
 }
 
+/**
+ * remove budget
+ * @param budgetId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeBudget(budgetId) {
     try {
         return await axios.delete(`${url}/budget/${budgetId}`, {
@@ -1004,6 +1342,11 @@ export async function removeBudget(budgetId) {
     }
 }
 
+/**
+ * remove debt
+ * @param debtId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeDebt(debtId) {
     try {
         return await axios.delete(`${url}/debt/${debtId}`, {
@@ -1017,6 +1360,11 @@ export async function removeDebt(debtId) {
     }
 }
 
+/**
+ * remove users category
+ * @param categoryId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeCategory(categoryId) {
     try {
         return await axios.delete(`${url}/category/${categoryId}`, {
@@ -1030,6 +1378,12 @@ export async function removeCategory(categoryId) {
     }
 }
 
+/**
+ * remove a owner from bankAcc
+ * @param userId
+ * @param bankAccountId
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeOwnerFromBankAcc(userId, bankAccountId) {
     try {
         return await axios.delete(`${url}/bank-account/owner`, {
@@ -1047,6 +1401,10 @@ export async function removeOwnerFromBankAcc(userId, bankAccountId) {
     }
 }
 
+/**
+ * delete user profile
+ * @returns {Promise<null|AxiosResponse<T>>}
+ */
 export async function removeUserProfile() {
     try {
         return await axios.delete(`${url}/user/delete-account`, {

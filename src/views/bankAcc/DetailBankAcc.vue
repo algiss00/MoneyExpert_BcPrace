@@ -89,7 +89,7 @@
                                 />
                                 <v-text-field
                                         id="balanceBankAcc"
-                                        label="balance"
+                                        label="zůstatek"
                                         v-model="balance"
                                         :rules="balanceRules"
                                         hide-details="auto"
@@ -98,7 +98,7 @@
                                 <v-btn color="primary" text @click="editBankAcc($event)" :disabled="!valid"
                                        id="editBtnBank">
                                     Změnit název, měnu,
-                                    balance
+                                    zůstatek
                                 </v-btn>
                                 <v-spacer>
                                 </v-spacer>
@@ -114,9 +114,9 @@
                                             <span>Seznam vlastniků</span>
                                         </v-card-title>
                                         <v-card-text>
-                                            <div class="font-weight-medium black--text m-left"
+                                            <div class="font-weight-light black--text"
                                                  v-if="owners.length === 0">
-                                                No owners :)
+                                                Žádné vlastniky :)
                                             </div>
                                             <v-list v-if="owners.length !== 0">
                                                 <v-list-item
@@ -155,7 +155,7 @@
                                 </v-dialog>
                                 <v-text-field
                                         id="creator"
-                                        label="creator"
+                                        label="tvůrce"
                                         v-model="creator"
                                         hide-details="auto"
                                         disabled
@@ -289,6 +289,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })

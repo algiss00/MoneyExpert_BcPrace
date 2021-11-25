@@ -21,6 +21,10 @@ import DetailDebt from '../views/debt/DetailDebt.vue'
 
 Vue.use(VueRouter)
 
+/**
+ * this js file contains routes for web application
+ */
+
 const routes = [
     {
         path: '/banks',

@@ -133,7 +133,7 @@
                         v-if="createdCategories.length !== 0"
                         subheader
                 >
-                    <v-subheader class="text-sm-h6">Created categories</v-subheader>
+                    <v-subheader class="text-sm-h6">Vytvořené kategorie</v-subheader>
 
                     <v-list-item
                             v-for="item in createdCategories"
@@ -178,7 +178,7 @@
                         subheader
                         v-if="defaultCategories.length !== 0"
                 >
-                    <v-subheader class="text-sm-h6">Default categories</v-subheader>
+                    <v-subheader class="text-sm-h6">Výchozí kategorie</v-subheader>
 
                     <v-list-item
                             v-for="item in defaultCategories"
@@ -283,6 +283,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })

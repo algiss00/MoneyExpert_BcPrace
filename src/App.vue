@@ -239,6 +239,7 @@
             }
         },
         methods: {
+            // route to page
             async toPage(item) {
                 if (item.title === 'Účty') {
                     return this.$router.push(item.link).catch(() => {
@@ -247,6 +248,7 @@
                 return this.$router.push(item.link + this.$route.params.bankId).catch(() => {
                 })
             },
+            // profile dialog open
             async startDialogProfile() {
                 if (!this.$store.state.user) {
                     return await this.$router.push("/").catch(() => {
@@ -349,6 +351,11 @@
                 }
             }
         },
+        /**
+         * get current authenticated user from back-end
+         * and set him on $store
+         * @returns {Promise<void>}
+         */
         async beforeMount() {
             let user = await getCurrentUserBackEnd()
             if (user) {

@@ -19,7 +19,7 @@
                 </v-card-title>
                 <div class="font-weight-medium black--text m-left"
                      v-if="debts.length === 0">
-                    No debts :)
+                    Žádné závazky :)
                 </div>
                 <v-data-table
                         v-if="debts.length !== 0"
@@ -73,6 +73,13 @@
                     typeof value === 'string' &&
                     value.toString().toLocaleUpperCase().indexOf(search) !== -1
             },
+            /**
+             * set color by notification
+             * if debt have notification set color red
+             * else color black
+             * @param item
+             * @returns {string}
+             */
             statusColor(item) {
                 let notifications = this.$store.state.notificationDebt
                 if (this.$store.state.notificationDebt.length > 0) {
@@ -94,6 +101,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })

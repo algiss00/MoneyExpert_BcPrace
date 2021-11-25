@@ -85,7 +85,7 @@
                 </v-card-text>
                 <div class="font-weight-medium black--text m-left"
                      v-if="transactions.length === 0">
-                    No transactions :)
+                    Žádné transakce :)
                 </div>
                 <v-data-table
                         v-if="transactions.length !== 0"
@@ -124,6 +124,15 @@
         getAllUsersCategories, getAllNotificationBudgets
     } from "../../api";
 
+    /**
+     * get transaction from bankAcc by Type and Category
+     * @param bankId
+     * @param from
+     * @param to
+     * @param type
+     * @param categoryId
+     * @returns {Promise<T>}
+     */
     async function getAllTransactionsByTypeAndCategoryMethod(bankId, from, to, type, categoryId) {
         let result = await getAllTransactionsByCategoryAndType(bankId, from, to, type, categoryId)
         if (result == null) {
@@ -204,6 +213,10 @@
                     return
                 }
             },
+            /**
+             * get transactions with sorting by category and type
+             * @returns {Promise<void>}
+             */
             async getAllTransactionsByTypeAndCategoryMethod() {
                 if (this.date.length <= 1) {
                     alert("Invalid date period! Must be start date and end date period!")
@@ -240,6 +253,7 @@
             },
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })
@@ -261,6 +275,8 @@
                 alert("Invalid bankAcc id")
                 return
             }
+
+            // set notifications for budgets
             let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
             this.$store.commit("setNotificationBudget", budgetsNotification)
         }

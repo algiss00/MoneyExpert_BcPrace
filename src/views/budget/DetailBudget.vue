@@ -99,6 +99,12 @@
         editPercentBudget
     } from "../../api";
 
+    /**
+     * find element in array by name
+     * @param array
+     * @param name
+     * @returns {null|*}
+     */
     function findByNameInArray(array, name) {
         for (let i = 0; i < array.length; i++) {
             if (array[i].name === name) {
@@ -193,6 +199,7 @@
             },
         },
         async mounted() {
+            // if user not authenticated route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })
@@ -214,6 +221,7 @@
                 alert("Invalid budget id")
                 return
             }
+            // set category of budget
             this.category = findByNameInArray(categories, budgetById.category[0].name)
             this.name = budgetById.name
             this.amount = budgetById.amount

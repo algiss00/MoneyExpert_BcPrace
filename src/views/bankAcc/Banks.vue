@@ -20,11 +20,11 @@
 
                 <div class="font-weight-medium black--text m-left"
                      v-if="createdBanks.length === 0 && availableBanks.length === 0">
-                    No bank accounts :)
+                    Žádné bankovní účty :)
                 </div>
 
                 <div class="font-weight-medium black--text m-left" v-if="createdBanks.length !== 0">
-                    Created accounts
+                    Vytvořené účty
                 </div>
 
                 <v-data-table
@@ -55,7 +55,7 @@
                 </v-data-table>
 
                 <div class="font-weight-medium black--text m-left" v-if="availableBanks.length !== 0">
-                    Available accounts
+                    Dostupné účty
                 </div>
 
                 <v-data-table
@@ -110,14 +110,14 @@
                             />
                             <v-text-field
                                     id="balance"
-                                    label="balance"
+                                    label="zůstatek"
                                     v-model="balance"
                                     hide-details="auto"
                                     readonly
                             />
                             <v-text-field
                                     id="creator"
-                                    label="creator"
+                                    label="tvůrce"
                                     v-model="creator"
                                     hide-details="auto"
                                     readonly
@@ -192,6 +192,7 @@
             }
         },
         methods: {
+            // search in data-table by string value only caps text
             filterOnlyCapsText(value, search) {
                 return value != null &&
                     search != null &&
@@ -219,6 +220,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })

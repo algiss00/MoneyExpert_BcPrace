@@ -185,7 +185,7 @@
                         >
                             <v-card>
                                 <v-card-title class="text-h5">
-                                    Potverzujete ukončení závazku.
+                                    Potvrzujete ukončení závazku.
                                 </v-card-title>
 
                                 <v-card-text>
@@ -258,6 +258,13 @@
             dialogDebt: false
         }),
         methods: {
+            /**
+             * return if debt have notification
+             * check if have deadline notification or notifyDate
+             * else empty
+             * @param item
+             * @returns {string}
+             */
             isDebtNotify(item) {
                 let notifications = this.$store.state.notificationDebt
                 for (let i = 0; i < notifications.length; i++) {
@@ -270,8 +277,16 @@
                 return "empty"
             },
             toDebts() {
-                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
+                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
+                })
             },
+            /**
+             * close debt
+             * if user accepts in confirm dialog -
+             * remove debt and create new transaction with category "Zavazek" and amount of debt
+             *
+             * @returns {Promise<void>}
+             */
             async closeDebt() {
                 let currentDate = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19)
                 const jsonTransaction = JSON.stringify({
@@ -294,7 +309,8 @@
                     this.$store.commit("setSnackbar", true)
                 }
 
-                await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
+                await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
+                })
             },
             async removeDebt(event) {
                 if (!confirm("Opravdu checete smazat závazek?")) {
@@ -307,7 +323,8 @@
                     alert("Invalid delete!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
             },
             async editBasic(event) {
@@ -361,8 +378,10 @@
             }
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
@@ -376,6 +395,7 @@
                 alert("Invalid transaction id")
                 return
             }
+            // check notifications of debt
             if (this.isDebtNotify(debt) !== "empty") {
                 if (this.isDebtNotify(debt) === "deadline") {
                     this.alertDebtDeadline = true

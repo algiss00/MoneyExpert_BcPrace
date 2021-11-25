@@ -3,6 +3,10 @@ import Vue from 'vue'
 
 Vue.use(Vuex)
 
+/**
+ * this js file contains shared data
+ */
+
 const store = new Vuex.Store({
     state: {
         user: null,

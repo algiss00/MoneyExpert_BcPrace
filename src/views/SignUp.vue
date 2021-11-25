@@ -22,7 +22,7 @@
                                 />
                                 <v-text-field
                                         id="passwordRegistr"
-                                        label="password"
+                                        label="heslo"
                                         v-model="password"
                                         :rules="passRules"
                                         type=password
@@ -40,7 +40,7 @@
                                 />
                                 <v-text-field
                                         id="nameRegistr"
-                                        label="name"
+                                        label="jméno"
                                         v-model="name"
                                         :rules="nameRules"
                                         hide-details="auto"
@@ -48,7 +48,7 @@
                                 />
                                 <v-text-field
                                         id="lastnameRegistr"
-                                        label="lastname"
+                                        label="příjmení"
                                         v-model="lastname"
                                         :rules="nameRules"
                                         hide-details="auto"
@@ -118,7 +118,8 @@
                     alert("Invalid data!")
                 } else if (result.data.username === this.username && result.data.email === this.email) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/').catch(() => {})
+                    await this.$router.push('/').catch(() => {
+                    })
                 }
             }
         }

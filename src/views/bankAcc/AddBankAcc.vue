@@ -28,7 +28,7 @@
                                 />
                                 <v-text-field
                                         id="balanceBankAcc"
-                                        label="balance"
+                                        label="zůstatek"
                                         v-model="balance"
                                         :rules="balanceRules"
                                         hide-details="auto"
@@ -71,6 +71,11 @@
             valid: true,
         }),
         methods: {
+            /**
+             * add bank Acc
+             * @param event
+             * @returns {Promise<void>}
+             */
             async addBankAcc(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
@@ -86,14 +91,19 @@
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
-                    await this.$router.push('/banks').catch(() => {})
+                    await this.$router.push('/banks').catch(() => {
+                    })
                     this.$store.commit("setSnackbar", true)
                 }
             }
         },
         async mounted() {
+            /**
+             * if not authenticated user route to login page
+             */
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
         }
     }

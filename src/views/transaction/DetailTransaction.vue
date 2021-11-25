@@ -38,7 +38,7 @@
                                             text
                                             @click="transferTransaction($event)"
                                     >
-                                        Transfer
+                                        Převod
                                     </v-btn>
                                 </v-card-actions>
                             </v-card>
@@ -192,6 +192,7 @@
         transferTransaction
     } from "../../api";
 
+    // find element in array by name
     function findByNameInArray(array, name) {
         for (let i = 0; i < array.length; i++) {
             if (array[i].name === name) {
@@ -305,6 +306,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })
@@ -326,6 +328,7 @@
             }
 
             this.allBankAccounts = allUsersBanks
+            // set bankAcc
             this.bankAccount = findByNameInArray(allUsersBanks, bankAcc.name)
             this.categories = categories
             let transactionById = await getTransactionById(this.$route.params.transId)
@@ -333,6 +336,7 @@
                 alert("Invalid transaction id")
                 return
             }
+            // set category
             this.category = findByNameInArray(categories, transactionById.category.name)
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction

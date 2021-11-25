@@ -22,7 +22,7 @@
                                 />
                                 <v-text-field
                                         id="passwordLogin"
-                                        label="password"
+                                        label="heslo"
                                         v-model="passwordLogin"
                                         type=password
                                         :rules="passRules"
@@ -74,7 +74,8 @@
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     let user = await getUserByUsername(this.usernameLogin)
                     this.$store.commit("setUser", user)
-                    await this.$router.push('/banks').catch(() => {})
+                    await this.$router.push('/banks').catch(() => {
+                    })
                 } else {
                     if (result.errorMessage) {
                         alert(result.errorMessage)
@@ -83,8 +84,10 @@
             }
         },
         beforeMount() {
+            // if user authenticated user route to banks page
             if (this.$store.state.user) {
-                this.$router.push('/banks').catch(() => {})
+                this.$router.push('/banks').catch(() => {
+                })
             }
         }
     };

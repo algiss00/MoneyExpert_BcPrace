@@ -182,6 +182,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated user route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {})
             }

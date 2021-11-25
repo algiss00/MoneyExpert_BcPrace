@@ -21,7 +21,7 @@
                 </v-card-title>
                 <v-card-text>
                     <div class="font-weight-medium black--text m-left" v-if="budgets.length === 0">
-                        No budgets :)
+                        Žádné rozpočty :)
                     </div>
                     <v-list v-if="budgets.length !== 0">
                         <v-list-item
@@ -72,6 +72,11 @@
 <script>
     import {getAllBudgetsFromBankAcc, getAllNotificationBudgets, getAllNotificationBudgetsByType} from "../../api";
 
+    /**
+     * get percent of budget.sumAmount
+     * @param budget
+     * @returns {number}
+     */
     function getPercentOfSumAmount(budget) {
         return budget.sumAmount * 100 / budget.amount;
     }
@@ -91,6 +96,11 @@
                 this.$router.push('/budgets/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {
                 })
             },
+            /**
+             * check if budget have notification with percent type
+             * @param budget
+             * @returns {boolean}
+             */
             isBudgetInPercentNotification(budget) {
                 for (let i = 0; i < this.alertPercentBudgets.length; i++) {
                     if (this.alertPercentBudgets[i].budget.id === budget.id) {
@@ -99,6 +109,11 @@
                 }
                 return false
             },
+            /**
+             * check if budget have notification with amount type
+             * @param budget
+             * @returns {boolean}
+             */
             isBudgetInAmountNotification(budget) {
                 for (let i = 0; i < this.alertAmountBudgets.length; i++) {
                     if (this.alertAmountBudgets[i].budget.id === budget.id) {
@@ -109,6 +124,7 @@
             }
         },
         async mounted() {
+            // if user not authenticated route to login page
             if (!this.$store.state.user) {
                 return await this.$router.push("/").catch(() => {
                 })

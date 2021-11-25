@@ -16,7 +16,7 @@
                                     height="200"
                             >
                                 <v-card-title class="black--text">
-                                    <p id="info"/>
+                                    <p id="info" class="font-weight-regular black--text ma-2"/>
                                 </v-card-title>
                             </v-card>
                         </v-item>
@@ -70,16 +70,19 @@
         },
         methods: {
             toPage(item) {
-                return this.$router.push(item.link + this.$route.params.bankId).catch(() => {})
+                return this.$router.push(item.link + this.$route.params.bankId).catch(() => {
+                })
             }
         },
         async mounted() {
+            // if user not authenticated route to login page
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let infoEl = document.getElementById("info")
             let bankAcc = await getBankAccById(this.$route.params.bankId)
-            infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: " + bankAcc.balance
+            infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: \n" + bankAcc.balance + " " + bankAcc.currency
 
             // set notify debts
             let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
