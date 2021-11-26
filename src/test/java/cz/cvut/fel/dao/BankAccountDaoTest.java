@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.session.SessionRepository;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,6 +28,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BankAccountDaoTest {
     @Autowired
     private BankAccountDao bankAccountDao;
+
+    @MockBean
+    private SessionRepository sessionRepository;
 
     @Test
     public void findBankAccount() {

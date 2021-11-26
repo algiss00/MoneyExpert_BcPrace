@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.session.SessionRepository;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.text.ParseException;
@@ -31,6 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TransactionDaoTest {
     @Autowired
     private TransactionDao transactionDao;
+
+    @MockBean
+    private SessionRepository sessionRepository;
 
     @Test
     public void find() throws ParseException {
