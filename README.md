@@ -1,2 +1,2 @@
 # MoneyExpert_BcPrace
-Bc. prace back-end aplikaci MoneyExpert
+Bc. prace back-end aplikaci MoneyExpert - Skriabin Algis
