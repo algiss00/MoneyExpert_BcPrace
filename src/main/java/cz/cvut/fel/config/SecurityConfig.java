@@ -90,9 +90,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(authenticationFailureHandler)
                 .loginProcessingUrl(SecurityConstants.SECURITY_CHECK_URI)
                 .usernameParameter(SecurityConstants.USERNAME_PARAM).passwordParameter(SecurityConstants.PASSWORD_PARAM)
-                .and().addFilterAfter(new SessionCookieFilter(), BasicAuthenticationFilter.class)
-                .logout().invalidateHttpSession(true).deleteCookies(COOKIES_TO_DESTROY)
+                .and().logout().invalidateHttpSession(true).deleteCookies(COOKIES_TO_DESTROY)
                 .logoutUrl(SecurityConstants.LOGOUT_URI).logoutSuccessHandler(logoutSuccessHandler)
-                .and().sessionManagement().maximumSessions(1);
+                .and().addFilterAfter(new SessionCookieFilter(), BasicAuthenticationFilter.class)
+                .sessionManagement().maximumSessions(1);
     }
 }
