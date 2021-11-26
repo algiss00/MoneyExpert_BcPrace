@@ -4,7 +4,7 @@ import axios from "axios";
  * This file contains the requests to the back-end part
  */
 
-const url = "http://localhost:8080";
+const url = "https://money-expert-bc.herokuapp.com";
 
 /**
  * get users category by name
