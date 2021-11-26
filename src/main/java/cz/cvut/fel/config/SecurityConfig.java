@@ -16,7 +16,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -65,6 +66,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+        defaultCookieSerializer.setCookieName("SESSIONID");
+        defaultCookieSerializer.setUseHttpOnlyCookie(true);
+        defaultCookieSerializer.setCookiePath("/");
+        defaultCookieSerializer.setUseSecureCookie(true);
+        defaultCookieSerializer.setSameSite("none");
+        return defaultCookieSerializer;
+    }
+
+    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("https://money-expert.netlify.app");
@@ -78,7 +90,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //.addFilterAfter(new SessionCookieFilter(), BasicAuthenticationFilter.class)
         http
                 .cors().and()
                 .authorizeRequests().anyRequest().permitAll()
