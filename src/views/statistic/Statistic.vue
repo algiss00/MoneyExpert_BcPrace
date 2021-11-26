@@ -30,7 +30,7 @@
                                 v-model="date"
                                 range
                         >
-                            <v-spacer></v-spacer>
+                            <v-spacer/>
                             <v-btn
                                     text
                                     color="primary"
@@ -48,16 +48,15 @@
                         </v-date-picker>
                     </v-menu>
                 </v-card-text>
-                <div class="d-md-inline-flex">
-                    <v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog">
-                        <v-container fill-height>
-                            <v-layout row justify-center align-center>
-                                <v-progress-circular indeterminate :size="70" :width="7"
-                                                     color="purple"/>
-                            </v-layout>
-                        </v-container>
-                    </v-dialog>
 
+                <v-container fill-height v-if="loading===true">
+                    <v-layout row justify-center align-center>
+                        <v-progress-circular indeterminate :size="70" :width="7"
+                                             color="primary"/>
+                    </v-layout>
+                </v-container>
+
+                <div class="d-md-inline-flex" v-if="loading===false">
                     <div class="font-weight-medium black--text m-left"
                          v-if="sumOfExpensesCategoryBetweenDate.length === 0
                          && sumExpenseAndIncomeBetweenDate[0].data.length === 0
@@ -285,6 +284,8 @@
 
 <style>
     .loading-dialog {
-        background-color: #303030
+        background-color: #303030;
+
+        height: 600px;
     }
 </style>

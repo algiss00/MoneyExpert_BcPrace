@@ -7,64 +7,72 @@
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Registrace</v-toolbar-title>
                         </v-toolbar>
-                        <v-card-text>
-                            <v-form
-                                    ref="form"
-                                    v-model="valid"
-                                    lazy-validation>
-                                <v-text-field
-                                        id="usernameRegistr"
-                                        label="username"
-                                        v-model="username"
-                                        :rules="usernameRules"
-                                        hide-details="auto"
-                                        required
-                                />
-                                <v-text-field
-                                        id="passwordRegistr"
-                                        label="heslo"
-                                        v-model="password"
-                                        :rules="passRules"
-                                        type=password
-                                        hide-details="auto"
-                                        required
-                                />
-                                <v-text-field
-                                        id="emailRegistr"
-                                        label="email"
-                                        v-model="email"
-                                        type=email
-                                        :rules="emailRules"
-                                        hide-details="auto"
-                                        required
-                                />
-                                <v-text-field
-                                        id="nameRegistr"
-                                        label="jméno"
-                                        v-model="name"
-                                        :rules="nameRules"
-                                        hide-details="auto"
-                                        required
-                                />
-                                <v-text-field
-                                        id="lastnameRegistr"
-                                        label="příjmení"
-                                        v-model="lastname"
-                                        :rules="nameRules"
-                                        hide-details="auto"
-                                        required
-                                />
-                            </v-form>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn color="#e7f6ff" to="/" class="m2-position">Zpět</v-btn>
-                        </v-card-actions>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn @click="registr($event)" color="#e7f6ff" :disabled="!valid"
-                                   class="m3-position">Registrace
-                            </v-btn>
-                        </v-card-actions>
+                        <v-container fill-height v-if="loadingRegistr === true">
+                            <v-layout row justify-center align-center>
+                                <v-progress-circular indeterminate :size="70" :width="7"
+                                                     color="primary"/>
+                            </v-layout>
+                        </v-container>
+                        <div v-if="loadingRegistr === false">
+                            <v-card-text>
+                                <v-form
+                                        ref="form"
+                                        v-model="valid"
+                                        lazy-validation>
+                                    <v-text-field
+                                            id="usernameRegistr"
+                                            label="username"
+                                            v-model="username"
+                                            :rules="usernameRules"
+                                            hide-details="auto"
+                                            required
+                                    />
+                                    <v-text-field
+                                            id="passwordRegistr"
+                                            label="heslo"
+                                            v-model="password"
+                                            :rules="passRules"
+                                            type=password
+                                            hide-details="auto"
+                                            required
+                                    />
+                                    <v-text-field
+                                            id="emailRegistr"
+                                            label="email"
+                                            v-model="email"
+                                            type=email
+                                            :rules="emailRules"
+                                            hide-details="auto"
+                                            required
+                                    />
+                                    <v-text-field
+                                            id="nameRegistr"
+                                            label="jméno"
+                                            v-model="name"
+                                            :rules="nameRules"
+                                            hide-details="auto"
+                                            required
+                                    />
+                                    <v-text-field
+                                            id="lastnameRegistr"
+                                            label="příjmení"
+                                            v-model="lastname"
+                                            :rules="nameRules"
+                                            hide-details="auto"
+                                            required
+                                    />
+                                </v-form>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-btn color="#e7f6ff" to="/" class="m2-position">Zpět</v-btn>
+                            </v-card-actions>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="registr($event)" color="#e7f6ff" :disabled="!valid"
+                                       class="m3-position">Registrace
+                                </v-btn>
+                            </v-card-actions>
+                        </div>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -83,6 +91,7 @@
             email: "",
             name: "",
             lastname: "",
+            loadingRegistr: false,
             nameRules: [
                 v => String(v).trim().length > 0 || 'required',
             ],
@@ -113,14 +122,16 @@
                     password: this.password
                 });
 
+                this.loadingRegistr = true
                 let result = await registration(jsonUser)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Invalid data! Maybe this username or email already exists.")
                 } else if (result.data.username === this.username && result.data.email === this.email) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/').catch(() => {
                     })
                 }
+                this.loadingRegistr = false
             }
         }
     }
