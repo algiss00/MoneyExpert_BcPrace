@@ -49,6 +49,15 @@
                     </v-menu>
                 </v-card-text>
                 <div class="d-md-inline-flex">
+                    <v-dialog v-model="loading" persistent fullscreen content-class="loading-dialog">
+                        <v-container fill-height>
+                            <v-layout row justify-center align-center>
+                                <v-progress-circular indeterminate :size="70" :width="7"
+                                                     color="purple"/>
+                            </v-layout>
+                        </v-container>
+                    </v-dialog>
+
                     <div class="font-weight-medium black--text m-left"
                          v-if="sumOfExpensesCategoryBetweenDate.length === 0
                          && sumExpenseAndIncomeBetweenDate[0].data.length === 0
@@ -94,6 +103,7 @@
                     .toISOString().substr(0, 10),
                     new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
                         .toISOString().substr(0, 10)],
+                loading: true,
                 menu: false,
                 sumExpenseAndIncomeBetweenDate: [{
                     data: [],
@@ -268,10 +278,13 @@
                     }
                 ]
             }
+            this.loading = false
         }
     }
 </script>
 
 <style>
-
+    .loading-dialog {
+        background-color: #303030
+    }
 </style>
