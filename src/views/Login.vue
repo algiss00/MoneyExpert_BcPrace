@@ -71,12 +71,8 @@
                 }
 
                 let result = await login(this.usernameLogin, this.passwordLogin)
-                console.log("LOGIN!")
-                console.log(result)
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     let user = await getUserByUsername(this.usernameLogin)
-                    console.log("USERNAME")
-                    console.log(user)
                     this.$store.commit("setUser", user)
                     await this.$router.push('/banks').catch(() => {
                     })

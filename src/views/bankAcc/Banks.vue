@@ -225,8 +225,6 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
-            console.log("FROM STORE")
-            console.log(this.$store.state.user)
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {
                 alert("Invalid data")

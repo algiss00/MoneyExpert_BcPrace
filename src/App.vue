@@ -358,7 +358,6 @@
          */
         async beforeMount() {
             let user = await getCurrentUserBackEnd()
-            console.log(user)
             if (user) {
                 this.$store.commit("setUser", user)
                 await this.$router.push("/banks").catch(() => {
