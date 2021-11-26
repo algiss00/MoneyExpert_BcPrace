@@ -4,8 +4,6 @@ import cz.cvut.fel.model.User;
 import generator.Generator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.session.SessionRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,9 +14,6 @@ import static org.mockito.Mockito.*;
 public class UserDaoMockTest {
     private UserDao userDao;
     private EntityManager entityManagerMock;
-
-    @MockBean
-    private SessionRepository sessionRepository;
 
     @BeforeEach
     public void setUp() {

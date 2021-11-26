@@ -14,9 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.session.SessionRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,9 +33,6 @@ public class TransactionServiceTest {
     private BankAccountDao bankAccountDao;
     private BudgetDao budgetDao;
     private NotifyBudgetDao notifyBudgetDao;
-
-    @MockBean
-    private SessionRepository sessionRepository;
 
     @BeforeEach
     public void setUp() {
