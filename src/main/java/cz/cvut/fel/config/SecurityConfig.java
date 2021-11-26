@@ -66,17 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CookieSerializer cookieSerializer() {
-        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setCookieName("SESSIONID");
-        defaultCookieSerializer.setUseHttpOnlyCookie(true);
-        defaultCookieSerializer.setCookiePath("/");
-        defaultCookieSerializer.setUseSecureCookie(true);
-        defaultCookieSerializer.setSameSite("none");
-        return defaultCookieSerializer;
-    }
-
-    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("https://money-expert.netlify.app");
@@ -86,6 +75,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+
+    @Bean
+    CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
+        defaultCookieSerializer.setCookieName("SESSIONID");
+        defaultCookieSerializer.setUseHttpOnlyCookie(true);
+        defaultCookieSerializer.setCookiePath("/");
+        defaultCookieSerializer.setUseSecureCookie(true);
+        defaultCookieSerializer.setSameSite("none");
+        return defaultCookieSerializer;
     }
 
     @Override
