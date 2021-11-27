@@ -183,6 +183,8 @@
                     alert("Invalid data")
                     return
                 }
+
+                this.loading = true
                 // get sum of expenses for category
                 for (let i = 0; i < categories.length; i++) {
                     let sumExpense = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId, from, to, categories[i].id)
@@ -226,6 +228,7 @@
                         }
                     ]
                 }
+                this.loading = false
             }
         },
         async mounted() {
@@ -242,7 +245,7 @@
                 alert("Invalid data")
                 return
             }
-
+            this.loading = true
             // get sum of expenses for category
             for (let i = 0; i < categories.length; i++) {
                 let sumExpenseCategory = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId,

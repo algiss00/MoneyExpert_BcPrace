@@ -106,6 +106,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             this.debts = await getAllDebtsFromBankAcc(this.$route.params.bankId)
             if (this.debts == null) {
                 alert("Invalid bankAcc id")
@@ -113,6 +114,7 @@
             }
             let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
             this.$store.commit("setNotificationDebt", debtsNotification)
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

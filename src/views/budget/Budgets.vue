@@ -129,6 +129,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let budgets = await getAllBudgetsFromBankAcc(this.$route.params.bankId)
             this.budgets = budgets
             if (this.budgets == null) {
@@ -148,6 +149,7 @@
 
             this.alertPercentBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_PERCENT")
             this.alertAmountBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_AMOUNT")
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

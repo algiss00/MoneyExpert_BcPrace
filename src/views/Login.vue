@@ -7,47 +7,39 @@
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Přihlášení</v-toolbar-title>
                         </v-toolbar>
-                        <v-container fill-height v-if="loadingLogin === true">
-                            <v-layout row justify-center align-center>
-                                <v-progress-circular indeterminate :size="70" :width="7"
-                                                     color="primary"/>
-                            </v-layout>
-                        </v-container>
-                        <div v-if="loadingLogin === false">
-                            <v-card-text>
-                                <v-form
-                                        ref="form"
-                                        v-model="valid"
-                                        lazy-validation>
-                                    <v-text-field
-                                            id="usernameLogin"
-                                            label="username"
-                                            v-model="usernameLogin"
-                                            :rules="usernameRules"
-                                            hide-details="auto"
-                                            required
-                                    />
-                                    <v-text-field
-                                            id="passwordLogin"
-                                            label="heslo"
-                                            v-model="passwordLogin"
-                                            type=password
-                                            :rules="passRules"
-                                            required
-                                            hide-details="auto"
-                                    />
-                                </v-form>
-                            </v-card-text>
-                            <v-card-actions>
-                                <v-btn color="#e7f6ff" to="/signup" class="m2-position">Registrace</v-btn>
-                            </v-card-actions>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn @click="login($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
-                                    Login
-                                </v-btn>
-                            </v-card-actions>
-                        </div>
+                        <v-card-text>
+                            <v-form
+                                    ref="form"
+                                    v-model="valid"
+                                    lazy-validation>
+                                <v-text-field
+                                        id="usernameLogin"
+                                        label="username"
+                                        v-model="usernameLogin"
+                                        :rules="usernameRules"
+                                        hide-details="auto"
+                                        required
+                                />
+                                <v-text-field
+                                        id="passwordLogin"
+                                        label="heslo"
+                                        v-model="passwordLogin"
+                                        type=password
+                                        :rules="passRules"
+                                        required
+                                        hide-details="auto"
+                                />
+                            </v-form>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-btn color="#e7f6ff" to="/signup" class="m2-position">Registrace</v-btn>
+                        </v-card-actions>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn @click="login($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                                Login
+                            </v-btn>
+                        </v-card-actions>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -62,7 +54,6 @@
         name: 'login',
         data: () => ({
             usernameLogin: "",
-            loadingLogin: false,
             passwordLogin: "",
             usernameRules: [
                 v => String(v).trim().length > 0 || 'username is required',
@@ -79,7 +70,7 @@
                     event.preventDefault()
                     return
                 }
-                this.loadingLogin = true
+                this.$store.commit("setLoading", true)
                 let result = await login(this.usernameLogin, this.passwordLogin)
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     let user = await getUserByUsername(this.usernameLogin)
@@ -91,7 +82,7 @@
                         alert(result.errorMessage)
                     }
                 }
-                this.loadingLogin = false
+                this.$store.commit("setLoading", false)
             }
         },
         beforeMount() {

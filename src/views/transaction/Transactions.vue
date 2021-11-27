@@ -206,12 +206,13 @@
                     alert("Invalid date period! Start date must be before end date!")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                 if (this.transactions == null) {
                     alert("Invalid bankAcc id")
                     return
                 }
+                this.$store.commit("setLoading", false)
             },
             /**
              * get transactions with sorting by category and type
@@ -228,6 +229,7 @@
                     alert("Invalid date period! From date is later then another!")
                     return
                 }
+                this.$store.commit("setLoading", true)
                 if (this.type === "All" && this.category.name === "All") {
                     this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                     if (this.transactions == null) {
@@ -250,6 +252,7 @@
                         return
                     }
                 }
+                this.$store.commit("setLoading", false)
             },
         },
         async mounted() {
@@ -258,6 +261,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 alert("Invalid data")
@@ -279,6 +283,7 @@
             // set notifications for budgets
             let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
             this.$store.commit("setNotificationBudget", budgetsNotification)
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

@@ -294,6 +294,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {
                 alert("Invalid bankAcc id")
@@ -308,6 +309,7 @@
             this.name = result.name
             this.currency = result.currency
             this.balance = result.balance
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

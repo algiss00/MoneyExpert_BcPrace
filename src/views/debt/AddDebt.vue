@@ -179,24 +179,28 @@
                     name: this.name,
                     notifyDate: this.notifyDate
                 });
-
+                this.$store.commit("setLoading", true)
                 let result = await addDebt(jsonDebt, this.$route.params.bankId)
 
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
+                this.$store.commit("setLoading", false)
             },
             toDebts() {
-                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {})
+                this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
+                })
             }
         },
         async mounted() {
             // if user not authenticated user route to login page
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

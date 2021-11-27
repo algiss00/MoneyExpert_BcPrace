@@ -186,6 +186,12 @@
             </v-card>
         </v-dialog>
         <main>
+            <v-container fill-height v-if="$store.state.loading === true">
+                <v-layout row justify-center align-center>
+                    <v-progress-circular indeterminate :size="70" :width="7"
+                                         color="primary"/>
+                </v-layout>
+            </v-container>
             <router-view/>
         </main>
     </v-app>
@@ -354,9 +360,11 @@
         /**
          * get current authenticated user from back-end
          * and set him on $store
+         * invoked when the page is refreshed
          * @returns {Promise<void>}
          */
         async beforeMount() {
+            console.log("Get current User")
             let user = await getCurrentUserBackEnd()
             if (user) {
                 this.$store.commit("setUser", user)

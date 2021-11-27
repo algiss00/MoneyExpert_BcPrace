@@ -13,6 +13,7 @@ const store = new Vuex.Store({
         snackbar: false,
         notificationDebt: [],
         notificationBudget: [],
+        loading: false,
     },
     mutations: {
         setUser(state, user) {
@@ -20,6 +21,9 @@ const store = new Vuex.Store({
         },
         setSnackbar(state, status) {
             state.snackbar = status
+        },
+        setLoading(state, status) {
+            state.loading = status
         },
         setNotificationDebt(state, status) {
             state.notificationDebt = status

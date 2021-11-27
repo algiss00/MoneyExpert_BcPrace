@@ -135,7 +135,6 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-
             </v-card>
         </v-container>
     </v-app>
@@ -225,9 +224,12 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {
                 alert("Invalid data")
+                // if in the first interaction got error, then reload page and check if user is authenticated
+                location.reload()
                 return
             }
             let availableBanks = await getAllUsersAvailableBanks()
@@ -237,6 +239,7 @@
             }
             this.createdBanks = createdBanks
             this.availableBanks = availableBanks
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

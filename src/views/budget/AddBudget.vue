@@ -116,23 +116,28 @@
                     percentNotify: this.percentNotify
                 });
 
+                this.$store.commit("setLoading", true)
                 let result = await addBudget(jsonBudget, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
-                    await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
+                this.$store.commit("setLoading", false)
             },
             toBudgets() {
-                this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {})
+                this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
+                })
             }
         },
         async mounted() {
             // if user not authenticated route to login page
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {

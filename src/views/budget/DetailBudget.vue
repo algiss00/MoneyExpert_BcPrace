@@ -204,6 +204,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
                 alert("Invalid bankAcc id")
@@ -226,6 +227,8 @@
             this.name = budgetById.name
             this.amount = budgetById.amount
             this.percentNotify = budgetById.percentNotify
+
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

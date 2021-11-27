@@ -288,6 +288,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let createdCategories = await getAllUsersCreatedCategories()
             if (createdCategories == null) {
                 alert("Invalid data")
@@ -301,6 +302,7 @@
                 return
             }
             this.defaultCategories = defaultCategories
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

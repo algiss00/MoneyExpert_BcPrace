@@ -166,6 +166,7 @@
                     date: this.date
                 });
 
+                this.$store.commit("setLoading", true)
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
@@ -176,6 +177,7 @@
                     this.$store.commit("setNotificationBudget", budgetsNotification)
                     await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
                 }
+                this.$store.commit("setLoading", false)
             },
             toTransactions() {
                 this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})

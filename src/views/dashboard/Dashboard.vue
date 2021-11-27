@@ -80,6 +80,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let infoEl = document.getElementById("info")
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: \n" + bankAcc.balance + " " + bankAcc.currency
@@ -91,6 +92,7 @@
             // set notify budgets
             let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
             this.$store.commit("setNotificationBudget", budgetsNotification)
+            this.$store.commit("setLoading", false)
         }
     }
 </script>
