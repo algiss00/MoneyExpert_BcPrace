@@ -67,7 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("https://money-expert.netlify.app");
+        // origin for test
         configuration.addAllowedOrigin("http://localhost:8080");
+        // origin for test
+        configuration.addAllowedOrigin("http://localhost:8081");
         configuration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"));
         configuration.addAllowedHeader("Content-Type");
         configuration.setAllowCredentials(true);
