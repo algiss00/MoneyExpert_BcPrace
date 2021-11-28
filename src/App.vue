@@ -345,6 +345,7 @@
                     return
                 }
 
+                this.$store.commit("setLoading", true)
                 let result = await removeUserProfile()
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -355,6 +356,7 @@
                     await this.$router.push("/").catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             }
         },
         /**
@@ -364,7 +366,6 @@
          * @returns {Promise<void>}
          */
         async beforeMount() {
-            console.log("Get current User")
             let user = await getCurrentUserBackEnd()
             if (user) {
                 this.$store.commit("setUser", user)

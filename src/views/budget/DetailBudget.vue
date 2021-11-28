@@ -149,7 +149,7 @@
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await removeBudget(this.$route.params.budgetId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -158,6 +158,7 @@
                     await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             },
             async editCategoryBudget() {
                 let category = await getCategoryByName(this.category.name)

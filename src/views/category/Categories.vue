@@ -268,6 +268,7 @@
                 }
             },
             async removeCategory() {
+                this.$store.commit("setLoading", true)
                 let result = await removeCategory(this.selectedItem.id)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -280,6 +281,7 @@
                     this.$store.commit("setSnackbar", true)
                     this.createdCategories = createdCategories
                 }
+                this.$store.commit("setLoading", false)
             }
         },
         async mounted() {

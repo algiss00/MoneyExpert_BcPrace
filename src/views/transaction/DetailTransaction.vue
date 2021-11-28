@@ -279,6 +279,7 @@
                     return
                 }
 
+                this.$store.commit("setLoading", true)
                 let result = await removeTransactionFromBank(this.$route.params.transId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -287,6 +288,7 @@
                     await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             },
             async transferTransaction(event) {
                 if (this.bankAccount.name === this.bankAcc) {

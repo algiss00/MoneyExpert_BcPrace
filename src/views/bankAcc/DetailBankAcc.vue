@@ -231,6 +231,7 @@
                     return
                 }
 
+                this.$store.commit("setLoading", true)
                 let result = await removeBankAcc(this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -239,6 +240,7 @@
                     await this.$router.push('/banks/').catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             },
             async shareBankAcc(event) {
                 let usernameEl = document.getElementById("username")

@@ -318,6 +318,7 @@
                     return
                 }
 
+                this.$store.commit("setLoading", true)
                 let result = await removeDebt(this.$route.params.debtId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -326,6 +327,7 @@
                     await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             },
             async editBasic(event) {
                 if (!this.$refs.form.validate()) {
