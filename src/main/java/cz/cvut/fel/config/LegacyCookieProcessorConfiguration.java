@@ -7,6 +7,11 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * cookie configuration
+ * set cookie attribute samesite to none
+ * it required for cross site requests
+ */
 @Configuration
 public class LegacyCookieProcessorConfiguration {
 
