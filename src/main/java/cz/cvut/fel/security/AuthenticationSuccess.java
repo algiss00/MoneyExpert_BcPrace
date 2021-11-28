@@ -37,6 +37,7 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler, Logo
             LOG.trace("Successfully authenticated user {}", username);
         }
         final LoginStatus loginStatus = new LoginStatus(true, authentication.isAuthenticated(), username, null);
+        // todo filtr
         mapper.writeValue(httpServletResponse.getOutputStream(), loginStatus);
     }
 
