@@ -4,6 +4,9 @@ import axios from "axios";
  * This file contains the requests to the back-end part
  */
 
+// for tests
+//const localhostUrl = "http://localhost:8080";
+
 const url = "https://money-expert-bc.herokuapp.com";
 
 /**
