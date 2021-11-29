@@ -12,6 +12,7 @@
                                     icon
                                     @click="removeBudget($event)"
                                     title="Smazat rozpočet"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="red"
@@ -32,7 +33,9 @@
                                         :rules="balanceRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editAmountBudget" class="editBtn">Změnit částku
+                                <v-btn color="primary" text @click="editAmountBudget($event)" :disabled="!valid"
+                                       class="editBtn">Změnit
+                                    částku
                                 </v-btn>
                                 <v-text-field
                                         id="name"
@@ -41,7 +44,8 @@
                                         :rules="nameRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editNameBudget" class="editBtn">Změnit název
+                                <v-btn color="primary" text @click="editNameBudget($event)" :disabled="!valid"
+                                       class="editBtn">Změnit název
                                 </v-btn>
                                 <v-text-field
                                         id="percentNotify"
@@ -50,7 +54,8 @@
                                         :rules="percentRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editPercentBudget" class="editBtn">Změnit
+                                <v-btn color="primary" text @click="editPercentBudget($event)" :disabled="!valid"
+                                       class="editBtn">Změnit
                                     procento upozornění
                                 </v-btn>
                                 <v-select
@@ -64,7 +69,8 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="primary" text @click="editCategoryBudget" class="editBtn">Změnit
+                                <v-btn color="primary" text @click="editCategoryBudget($event)" :disabled="!valid"
+                                       class="editBtn">Změnit
                                     kategorii
                                 </v-btn>
                                 <v-text-field
@@ -160,43 +166,66 @@
                 }
                 this.$store.commit("setLoading", false)
             },
-            async editCategoryBudget() {
+            async editCategoryBudget(event) {
+                if (!this.$refs.form.validate()) {
+                    event.preventDefault()
+                    return
+                }
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
                     alert("Invalid category")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await editCategoryBudget(this.$route.params.budgetId, category.id)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe budget for this category already exists.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
-            async editNameBudget() {
+            async editNameBudget(event) {
+                if (!this.$refs.form.validate()) {
+                    event.preventDefault()
+                    return
+                }
+                this.$store.commit("setLoading", true)
                 let result = await editNameBudget(this.$route.params.budgetId, this.name)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
-            async editAmountBudget() {
+            async editAmountBudget(event) {
+                if (!this.$refs.form.validate()) {
+                    event.preventDefault()
+                    return
+                }
+                this.$store.commit("setLoading", true)
                 let result = await editAmountBudget(this.$route.params.budgetId, this.amount)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
-            async editPercentBudget() {
+            async editPercentBudget(event) {
+                if (!this.$refs.form.validate()) {
+                    event.preventDefault()
+                    return
+                }
+                this.$store.commit("setLoading", true)
                 let result = await editPercentBudget(this.$route.params.budgetId, this.percentNotify)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
         },
         async mounted() {
@@ -208,11 +237,13 @@
             this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
@@ -220,6 +251,7 @@
             this.categories = categories
             let budgetById = await getBudgetById(this.$route.params.budgetId)
             if (budgetById == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid budget id")
                 return
             }
@@ -228,7 +260,6 @@
             this.name = budgetById.name
             this.amount = budgetById.amount
             this.percentNotify = budgetById.percentNotify
-
             this.$store.commit("setLoading", false)
         }
     }

@@ -49,6 +49,7 @@
                                     icon
                                     @click="dialog = true"
                                     title="Převod transakci"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="blue"
@@ -62,6 +63,7 @@
                                     icon
                                     @click="removeTransaction($event)"
                                     title="Smazat transakci"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="red"
@@ -142,7 +144,8 @@
                                         v-model="type"
                                         label="typ"
                                 />
-                                <v-btn color="primary" text @click="editTypeTransaction" id="editBtnType">Změnit typ
+                                <v-btn color="primary" :disabled="!valid" text @click="editTypeTransaction"
+                                       id="editBtnType">Změnit typ
                                 </v-btn>
                                 <v-select
                                         id="category"
@@ -155,7 +158,8 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="primary" text @click="editCategoryTransaction" id="editBtnCategory">Změnit
+                                <v-btn color="primary" :disabled="!valid" text @click="editCategoryTransaction"
+                                       id="editBtnCategory">Změnit
                                     kategorii
                                 </v-btn>
                                 <v-text-field
@@ -237,7 +241,7 @@
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 const jsonTransaction = JSON.stringify({
                     amount: this.amount,
                     jottings: this.jottings,
@@ -250,14 +254,17 @@
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editTypeTransaction() {
+                this.$store.commit("setLoading", true)
                 let result = await editTypeTransaction(this.$route.params.transId, this.type)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editCategoryTransaction() {
                 let category = await getCategoryByName(this.category.name)
@@ -265,13 +272,14 @@
                     alert("Invalid category")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await editCategoryTransaction(this.$route.params.transId, category.id)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async removeTransaction(event) {
                 if (!confirm("Opravdu checete smazat transakci?")) {
@@ -296,7 +304,7 @@
                     alert("Not valid Trasfer! You must transfer to another bank account!")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await transferTransaction(this.$route.params.bankId, this.bankAccount.id, this.$route.params.transId)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
@@ -305,6 +313,7 @@
                     await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", false)
             }
         },
         async mounted() {
@@ -316,16 +325,19 @@
             this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
             let allUsersBanks = await getAllUsersBanks()
             if (allUsersBanks == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
@@ -336,6 +348,7 @@
             this.categories = categories
             let transactionById = await getTransactionById(this.$route.params.transId)
             if (transactionById == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid transaction id")
                 return
             }

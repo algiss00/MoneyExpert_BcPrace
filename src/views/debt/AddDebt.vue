@@ -131,7 +131,8 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addDebt($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                            <v-btn @click="addDebt($event)" :loading="loading" :disabled="!valid" color="#e7f6ff"
+                                   class="m3-position">
                                 Přidat
                             </v-btn>
                         </v-card-actions>
@@ -165,6 +166,7 @@
                 v => Number(v) > 0 || 'must be > 0'
             ],
             valid: true,
+            loading: false
         }),
         methods: {
             async addDebt(event) {
@@ -179,7 +181,7 @@
                     name: this.name,
                     notifyDate: this.notifyDate
                 });
-                this.$store.commit("setLoading", true)
+                this.loading = true
                 let result = await addDebt(jsonDebt, this.$route.params.bankId)
 
                 if (result == null || result.status !== 201) {
@@ -189,7 +191,7 @@
                     await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
                     })
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             },
             toDebts() {
                 this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
@@ -202,12 +204,15 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             this.bankAcc = bankAcc.name
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

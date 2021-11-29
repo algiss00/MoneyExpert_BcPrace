@@ -26,6 +26,7 @@
                                     icon
                                     @click="dialogDebt = true"
                                     title="Ukončení závazku"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="green"
@@ -39,6 +40,7 @@
                                     icon
                                     @click="removeDebt($event)"
                                     title="Smazat závazek"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="red"
@@ -73,7 +75,8 @@
                                         label="popis"
                                         rows="2"
                                 />
-                                <v-btn color="primary" text class="editBtnDebt" @click="editBasic($event)">Změnit název,
+                                <v-btn color="primary" text class="editBtnDebt" :disabled="!valid"
+                                       @click="editBasic($event)">Změnit název,
                                     částku, popis
                                 </v-btn>
                                 <v-menu
@@ -118,7 +121,8 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text class="editBtnDebt" @click="editDeadline($event)">Změnit
+                                <v-btn color="primary" text :disabled="!valid" class="editBtnDebt"
+                                       @click="editDeadline($event)">Změnit
                                     deadline
                                 </v-btn>
                                 <v-menu
@@ -163,7 +167,8 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text class="editBtnDebt" @click="editNotifyDate($event)">Změnit
+                                <v-btn color="primary" text :disabled="!valid" class="editBtnDebt"
+                                       @click="editNotifyDate($event)">Změnit
                                     datum upozornění
                                 </v-btn>
                                 <v-text-field
@@ -288,6 +293,7 @@
              * @returns {Promise<void>}
              */
             async closeDebt() {
+                this.$store.commit("setLoading", true)
                 let currentDate = (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19)
                 const jsonTransaction = JSON.stringify({
                     amount: this.amount,
@@ -299,7 +305,9 @@
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, -15)
 
                 if (result == null || result.status !== 201) {
+                    this.$store.commit("setLoading", false)
                     alert("Invalid data! Transaction is not added")
+                    return
                 }
 
                 let resultRemove = await removeDebt(this.$route.params.debtId)
@@ -308,6 +316,7 @@
                 } else if (resultRemove.status === 200) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", true)
 
                 await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
                 })
@@ -334,7 +343,7 @@
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 const jsonDebt = JSON.stringify({
                     amount: this.amount,
                     description: this.description,
@@ -347,13 +356,14 @@
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editDeadline(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await editDeadline(this.$route.params.debtId, this.deadline)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
@@ -362,13 +372,14 @@
                     let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
                     this.$store.commit("setNotificationDebt", debtsNotification)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editNotifyDate(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await editNotifyDate(this.$route.params.debtId, this.notifyDate)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe notifyDate is after deadline date.")
@@ -377,6 +388,7 @@
                     let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
                     this.$store.commit("setNotificationDebt", debtsNotification)
                 }
+                this.$store.commit("setLoading", false)
             }
         },
         async mounted() {
@@ -388,6 +400,7 @@
             this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
@@ -395,6 +408,7 @@
 
             let debt = await getDebtById(this.$route.params.debtId)
             if (debt == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid transaction id")
                 return
             }

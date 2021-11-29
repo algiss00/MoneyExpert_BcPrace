@@ -61,7 +61,7 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="registr($event)" color="#e7f6ff" :disabled="!valid"
+                            <v-btn @click="registr($event)" :loading="loading" color="#e7f6ff" :disabled="!valid"
                                    class="m3-position">Registrace
                             </v-btn>
                         </v-card-actions>
@@ -98,6 +98,7 @@
                 v => /^\w{0,20}$/.test(v) || 'invalid data'
             ],
             valid: true,
+            loading: false
         }),
         methods: {
             async registr(event) {
@@ -113,7 +114,7 @@
                     password: this.password
                 });
 
-                this.$store.commit("setLoading", true)
+                this.loading = true
                 let result = await registration(jsonUser)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe this username or email already exists.")
@@ -122,7 +123,7 @@
                     await this.$router.push('/').catch(() => {
                     })
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             }
         }
     }

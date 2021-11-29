@@ -46,6 +46,7 @@
                                     icon
                                     @click="dialog = true"
                                     title="Sdílet bank account"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="blue"
@@ -53,12 +54,13 @@
                                     mdi-share
                                 </v-icon>
                             </v-btn>
-                            <v-spacer></v-spacer>
+                            <v-spacer/>
                             <v-btn
                                     class="mx-2"
                                     icon
                                     @click="removeBankAcc($event)"
                                     title="Smazat bank account"
+                                    :disabled="!valid"
                             >
                                 <v-icon
                                         color="red"
@@ -211,7 +213,7 @@
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 const jsonBank = JSON.stringify({
                     name: this.name,
                     currency: this.currency,
@@ -224,6 +226,7 @@
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async removeBankAcc(event) {
                 if (!confirm("Opravdu checete smazat účet?")) {
@@ -249,9 +252,10 @@
                     alert("empty field!")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let user = await getUserByUsername(this.username)
                 if (user == null) {
+                    this.$store.commit("setLoading", false)
                     alert("Invalid username")
                     this.username = ''
                     return
@@ -266,21 +270,25 @@
                     this.username = ""
                     this.dialog = false
                 }
+                this.$store.commit("setLoading", false)
             },
             async getOwnersOfBank() {
+                this.$store.commit("setLoading", true)
                 let owners = await getAllOwnersOfBankAcc(this.$route.params.bankId)
                 if (owners == null) {
+                    this.$store.commit("setLoading", false)
                     alert("Invalid bankAcc id")
                     return
                 }
                 this.owners = owners
+                this.$store.commit("setLoading", false)
             },
             async removeOwnerFromBankAcc(event, user) {
                 if (!confirm("Opravdu checete smazat vlastnika?")) {
                     event.preventDefault()
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await removeOwnerFromBankAcc(user.id, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
                     alert("Invalid delete!")
@@ -288,6 +296,7 @@
                     this.$store.commit("setSnackbar", true)
                     this.ownersDialog = false
                 }
+                this.$store.commit("setLoading", false)
             }
         },
         async mounted() {
@@ -299,11 +308,13 @@
             this.$store.commit("setLoading", true)
             let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             let creator = await getCreatorOfBankAcc(this.$route.params.bankId)
             if (creator == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }

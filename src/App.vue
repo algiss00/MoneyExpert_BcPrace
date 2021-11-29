@@ -15,6 +15,7 @@
             <v-toolbar-title v-if="['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name)">
                 MoneyExpert
             </v-toolbar-title>
+
             <v-spacer/>
             <v-toolbar-items
                     v-if="$store.state.user && !(['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name))"
@@ -39,6 +40,14 @@
                     </v-icon>
                 </v-btn>
             </v-toolbar-items>
+
+            <v-progress-linear
+                    :active="$store.state.loading"
+                    :indeterminate="$store.state.loading"
+                    absolute
+                    bottom
+                    color="deep-purple accent-4"
+            />
         </v-app-bar>
         <v-navigation-drawer v-model="drawer" absolute temporary>
             <v-list nav dense>
@@ -97,6 +106,7 @@
                             icon
                             @click="deleteProfile"
                             title="Smazat profile"
+                            :disabled="!valid"
                     >
                         <v-icon
                                 color="red"
@@ -186,12 +196,6 @@
             </v-card>
         </v-dialog>
         <main>
-            <v-container fill-height v-if="$store.state.loading === true">
-                <v-layout row justify-center align-center>
-                    <v-progress-circular indeterminate :size="70" :width="7"
-                                         color="primary"/>
-                </v-layout>
-            </v-container>
             <router-view/>
         </main>
     </v-app>
@@ -260,6 +264,7 @@
                     return await this.$router.push("/").catch(() => {
                     })
                 }
+                this.$store.commit("setLoading", true)
                 let user = await getCurrentUserBackEnd()
                 if (user == null) {
                     alert("Invalid bankAcc id")
@@ -271,6 +276,7 @@
                 this.username = user.data.username
                 this.passwordOld = ""
                 this.passwordNew = ""
+                this.$store.commit("setLoading", false)
             },
             async logout() {
                 await logout()
@@ -284,6 +290,7 @@
                     event.preventDefault()
                     return
                 }
+                this.$store.commit("setLoading", true)
                 const user = JSON.stringify({
                     name: this.name,
                     lastname: this.lastname
@@ -295,30 +302,35 @@
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editEmail(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
+                this.$store.commit("setLoading", true)
                 let result = await editEmail(this.email)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editUsername(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()
                     return
                 }
+                this.$store.commit("setLoading", true)
                 let result = await editUsername(this.username)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
+                this.$store.commit("setLoading", false)
             },
             async editPassword(event) {
                 let oldPasswordEl = document.getElementById("passwordOldProfile")
@@ -328,7 +340,7 @@
                     alert("empty fields!")
                     return
                 }
-
+                this.$store.commit("setLoading", true)
                 let result = await editPassword(this.passwordOld, this.passwordNew)
 
                 if (result == null || result.status !== 201) {
@@ -338,6 +350,7 @@
                     this.passwordOld = ""
                     this.passwordNew = ""
                 }
+                this.$store.commit("setLoading", false)
             },
             async deleteProfile(event) {
                 if (!confirm("Opravdu checete smazat profile?")) {

@@ -36,7 +36,8 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="login($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                            <v-btn @click="login($event)" :loading="loading" :disabled="!valid" color="#e7f6ff"
+                                   class="m3-position">
                                 Login
                             </v-btn>
                         </v-card-actions>
@@ -63,6 +64,7 @@
                 v => !!v || 'password is required'
             ],
             valid: true,
+            loading: false,
         }),
         methods: {
             async login(event) {
@@ -70,7 +72,7 @@
                     event.preventDefault()
                     return
                 }
-                this.$store.commit("setLoading", true)
+                this.loading = true
                 let result = await login(this.usernameLogin, this.passwordLogin)
                 if (result.loggedIn === true && result.success === true && result.username === this.usernameLogin) {
                     let user = await getUserByUsername(this.usernameLogin)
@@ -82,7 +84,7 @@
                         alert(result.errorMessage)
                     }
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             }
         },
         beforeMount() {

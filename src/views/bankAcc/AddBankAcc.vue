@@ -40,7 +40,7 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addBankAcc($event)" :disabled="!valid" color="#e7f6ff"
+                            <v-btn @click="addBankAcc($event)" :loading="loading" :disabled="!valid" color="#e7f6ff"
                                    class="m3-position">
                                 Přidat
                             </v-btn>
@@ -70,6 +70,7 @@
                 v => String(v).trim().length > 0 || 'required'
             ],
             valid: true,
+            loading: false
         }),
         methods: {
             /**
@@ -88,7 +89,7 @@
                     balance: this.balance
                 });
 
-                this.$store.commit("setLoading", true)
+                this.loading = true
                 let result = await addBankAccount(jsonBankAcc)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data!")
@@ -97,7 +98,7 @@
                     })
                     this.$store.commit("setSnackbar", true)
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             }
         },
         async mounted() {

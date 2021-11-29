@@ -207,8 +207,10 @@
                 })
             },
             async detailAvailableBank(item) {
+                this.$store.commit("setLoading", true)
                 let creator = await getCreatorOfBankAcc(item.id)
                 if (creator == null) {
+                    this.$store.commit("setLoading", false)
                     alert("Invalid bankAcc id")
                     return
                 }
@@ -216,6 +218,7 @@
                 this.currency = item.currency
                 this.balance = item.balance
                 this.creator = creator.username
+                this.$store.commit("setLoading", false)
             }
         },
         async mounted() {
@@ -227,6 +230,7 @@
             this.$store.commit("setLoading", true)
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 // if in the first interaction got error, then reload page and check if user is authenticated
                 location.reload()
@@ -234,6 +238,7 @@
             }
             let availableBanks = await getAllUsersAvailableBanks()
             if (availableBanks == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }

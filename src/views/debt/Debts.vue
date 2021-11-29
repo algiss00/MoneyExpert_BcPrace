@@ -109,6 +109,7 @@
             this.$store.commit("setLoading", true)
             this.debts = await getAllDebtsFromBankAcc(this.$route.params.bankId)
             if (this.debts == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }

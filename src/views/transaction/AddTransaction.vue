@@ -99,7 +99,7 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addTransaction($event)" color="#e7f6ff" :disabled="!valid"
+                            <v-btn @click="addTransaction($event)" :loading="loading" color="#e7f6ff" :disabled="!valid"
                                    class="m3-position">Přidat
                             </v-btn>
                         </v-card-actions>
@@ -140,6 +140,7 @@
                 v => Number(v) > 0 || 'must be > 0'
             ],
             valid: true,
+            loading: false
         }),
         computed: {
             dateRangeText() {
@@ -152,9 +153,11 @@
                     event.preventDefault()
                     return
                 }
+                this.loading = true
 
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
+                    this.loading = false
                     alert("Invalid category")
                     return
                 }
@@ -166,7 +169,6 @@
                     date: this.date
                 });
 
-                this.$store.commit("setLoading", true)
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
@@ -175,31 +177,38 @@
                     this.$store.commit("setSnackbar", true)
                     let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
                     this.$store.commit("setNotificationBudget", budgetsNotification)
-                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
+                    await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
+                    })
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             },
             toTransactions() {
-                this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {})
+                this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
+                })
             }
         },
         async mounted() {
             // if user not authenticated user route to login page
             if (!this.$store.state.user) {
-                return await this.$router.push("/").catch(() => {})
+                return await this.$router.push("/").catch(() => {
+                })
             }
+            this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
             this.bankAcc = bankAcc.name
             this.categories = categories
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

@@ -58,7 +58,8 @@
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn @click="addBudget($event)" :disabled="!valid" color="#e7f6ff" class="m3-position">
+                            <v-btn @click="addBudget($event)" :loading="loading" :disabled="!valid" color="#e7f6ff"
+                                   class="m3-position">
                                 Přidat
                             </v-btn>
                         </v-card-actions>
@@ -96,6 +97,7 @@
                 v => Number(v) <= 100 || 'must be <= 100'
             ],
             valid: true,
+            loading: false
         }),
         methods: {
             async addBudget(event) {
@@ -104,8 +106,11 @@
                     return
                 }
 
+                this.loading = true
+
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
+                    this.loading = false
                     alert("Invalid category")
                     return
                 }
@@ -116,7 +121,6 @@
                     percentNotify: this.percentNotify
                 });
 
-                this.$store.commit("setLoading", true)
                 let result = await addBudget(jsonBudget, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
@@ -126,7 +130,7 @@
                     await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
                     })
                 }
-                this.$store.commit("setLoading", false)
+                this.loading = false
             },
             toBudgets() {
                 this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
@@ -139,18 +143,22 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.$store.commit("setLoading", true)
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid bankAcc id")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
             this.bankAcc = bankAcc.name
             this.categories = categories
+            this.$store.commit("setLoading", false)
         }
     }
 </script>

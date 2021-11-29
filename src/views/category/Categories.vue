@@ -46,6 +46,7 @@
                                         color="primary"
                                         text
                                         @click="addCategory($event)"
+                                        :loading="loading"
                                 >
                                     Přidat
                                 </v-btn>
@@ -217,7 +218,8 @@
             nameCategoryEdit: "",
             dialogEditCategory: false,
             selectedItem: {},
-            dialogConfirm: false
+            dialogConfirm: false,
+            loading: false
         }),
         methods: {
             async editCategory(event) {
@@ -227,12 +229,14 @@
                     alert("empty field!")
                     return
                 }
+                this.$store.commit("setLoading", true)
                 let result = await editCategory(this.selectedItem.id, this.nameCategoryEdit)
                 if (result == null || result.status !== 201) {
                     alert("Invalid data! Maybe category with this name already exists.")
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
+                        this.$store.commit("setLoading", false)
                         alert("Invalid data!")
                         return
                     }
@@ -240,6 +244,7 @@
                     this.createdCategories = createdCategories
                     this.dialogEditCategory = false
                 }
+                this.$store.commit("setLoading", false)
             },
             async addCategory(event) {
                 let nameEl = document.getElementById("nameCategory")
@@ -248,6 +253,7 @@
                     alert("empty field!")
                     return
                 }
+                this.loading = true
                 const jsonCategory = JSON.stringify({
                     name: this.nameCategory
                 });
@@ -258,14 +264,16 @@
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
+                        this.loading = false
                         alert("Invalid data!")
                         return
                     }
                     this.$store.commit("setSnackbar", true)
                     this.createdCategories = createdCategories
-                    this.nameCategory = ""
                     this.dialogAddCategory = false
                 }
+                this.nameCategory = ""
+                this.loading = false
             },
             async removeCategory() {
                 this.$store.commit("setLoading", true)
@@ -275,6 +283,7 @@
                 } else if (result.status === 200) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
+                        this.$store.commit("setLoading", false)
                         alert("Invalid data!")
                         return
                     }
@@ -293,6 +302,7 @@
             this.$store.commit("setLoading", true)
             let createdCategories = await getAllUsersCreatedCategories()
             if (createdCategories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
@@ -300,6 +310,7 @@
 
             let defaultCategories = await getAllDefaultCategories()
             if (defaultCategories == null) {
+                this.$store.commit("setLoading", false)
                 alert("Invalid data")
                 return
             }
