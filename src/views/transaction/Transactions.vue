@@ -282,7 +282,6 @@
             this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, this.date[0], this.date[1])
             if (this.transactions == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
                 return
             }
 

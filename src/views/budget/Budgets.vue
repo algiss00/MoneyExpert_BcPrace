@@ -134,7 +134,6 @@
             this.budgets = budgets
             if (this.budgets == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
                 return
             }
 

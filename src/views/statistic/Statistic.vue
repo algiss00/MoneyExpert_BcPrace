@@ -180,7 +180,7 @@
 
                 let categories = await getAllUsersCategories()
                 if (categories == null) {
-                    alert("Invalid data")
+                    alert("Invalid data, no categories!")
                     return
                 }
 
@@ -189,7 +189,6 @@
                 for (let i = 0; i < categories.length; i++) {
                     let sumExpense = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId, from, to, categories[i].id)
                     if (sumExpense == null) {
-                        alert("Invalid data!")
                         return
                     }
                     if (sumExpense !== 0) {
@@ -242,7 +241,7 @@
 
             let categories = await getAllUsersCategories()
             if (categories == null) {
-                alert("Invalid data")
+                alert("Invalid data, no categories!")
                 return
             }
             this.loading = true
@@ -251,7 +250,6 @@
                 let sumExpenseCategory = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId,
                     from, to, categories[i].id)
                 if (sumExpenseCategory == null) {
-                    alert("Invalid data!")
                     return
                 }
                 if (sumExpenseCategory !== 0) {
