@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "Category.getAll", query = "SELECT c FROM Category c"),
-        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id < 0 order by c.name")
+        @NamedQuery(name = "Category.getDefault", query = "SELECT c FROM Category c where c.id < 0 order by c.name asc")
 })
 public class Category extends AbstractEntity {
     @Column

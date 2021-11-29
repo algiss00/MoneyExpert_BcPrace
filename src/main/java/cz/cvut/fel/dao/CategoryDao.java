@@ -45,7 +45,7 @@ public class CategoryDao extends AbstractDao<Category> {
         try {
             return em.createNativeQuery("SELECT id, name FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
-                            "where relation.user_id = :userId order by cat.name desc",
+                            "where relation.user_id = :userId order by cat.name asc",
                     Category.class)
                     .setParameter("userId", uid)
                     .getResultList();
@@ -67,7 +67,7 @@ public class CategoryDao extends AbstractDao<Category> {
         try {
             return em.createNativeQuery("SELECT cat.id, cat.name  FROM category_table as cat inner JOIN relation_category_user as relation " +
                             "ON relation.category_id = cat.id " +
-                            "where relation.user_id = :userId and relation.category_id >= 0 order by cat.name desc",
+                            "where relation.user_id = :userId and relation.category_id >= 0 order by cat.name asc",
                     Category.class)
                     .setParameter("userId", uid)
                     .getResultList();

@@ -39,7 +39,7 @@ public class CategoryDaoTest {
         assertFalse(categories.isEmpty());
         assertEquals(2, categories.size());
 
-        int[] ids = {2, 1};
+        int[] ids = {1, 2};
         for (int i = 0; i < categories.size(); i++) {
             assertEquals(ids[i], categories.get(i).getId());
         }
