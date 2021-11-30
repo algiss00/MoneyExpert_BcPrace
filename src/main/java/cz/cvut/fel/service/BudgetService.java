@@ -207,6 +207,14 @@ public class BudgetService extends AbstractServiceHelper {
             notifyBudgetDao.deleteNotifyBudgetByBudgetId(budget.getId());
         }
         budget.getCategory().remove(0);
+
+        // clear old transactions from budget
+        budget.getTransactions().forEach(transaction -> {
+            transaction.setBudget(null);
+            transactionDao.update(transaction);
+        });
+        budget.getTransactions().clear();
+
         budget.getCategory().add(category);
         budget.setSumAmount(0);
 

@@ -2,10 +2,7 @@ package cz.cvut.fel.service;
 
 import cz.cvut.fel.MoneyExpertApplication;
 import cz.cvut.fel.dao.*;
-import cz.cvut.fel.model.BankAccount;
-import cz.cvut.fel.model.Budget;
-import cz.cvut.fel.model.Category;
-import cz.cvut.fel.model.User;
+import cz.cvut.fel.model.*;
 import cz.cvut.fel.security.SecurityUtils;
 import cz.cvut.fel.service.exceptions.NotAuthenticatedClient;
 import cz.cvut.fel.service.exceptions.NotValidDataException;
@@ -21,8 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -157,6 +153,10 @@ public class BudgetServiceTest {
         category2.getCreators().add(user);
         category2.setName("Test Category -2");
 
+        Transaction transaction = Generator.generateDefaultTransaction();
+        transaction.setId(100);
+        transaction.setAmount(10);
+
         Budget budget = Generator.generateDefaultBudget();
         budget.setId(2);
         budget.setAmount(1000);
@@ -164,6 +164,8 @@ public class BudgetServiceTest {
         budget.setBankAccount(bankAccount);
         budget.getCategory().add(category);
         bankAccount.getBudgets().add(budget);
+        budget.getTransactions().add(transaction);
+        transaction.setBudget(budget);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(budgetDao.find(anyInt())).thenReturn(budget);
@@ -174,6 +176,8 @@ public class BudgetServiceTest {
             budgetService.updateBudgetCategory(budget.getId(), -2);
             verify(budgetDao, times(1)).update(budget);
             assertEquals(-2, budget.getCategory().get(0).getId());
+            assertTrue(budget.getTransactions().isEmpty());
+            assertNull(transaction.getBudget());
         }
     }
 
