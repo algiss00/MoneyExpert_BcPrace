@@ -186,6 +186,7 @@ public class BudgetService extends AbstractServiceHelper {
      * Update category in Budget.
      * In bankAcc may not be a budget for the same category
      * Also, when you change the category, all notifyBudgets for that Budget are removed
+     * And old transactions for budget also be removed
      *
      * @param budgetId
      * @param categoryId
