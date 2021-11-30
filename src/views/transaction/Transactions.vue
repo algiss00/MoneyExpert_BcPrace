@@ -148,9 +148,12 @@
             return {
                 search: '',
                 transactions: [],
-                date: [new Date(new Date().getFullYear(), new Date().getMonth(), 2)
-                    .toISOString().substr(0, 10),
-                    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)
+                date: [
+                    // first day of actual month 0:00 hours
+                    new Date(new Date().getFullYear(), new Date().getMonth(), 2)
+                        .toISOString().substr(0, 10),
+                    // first day of next month 0:00 hours
+                    new Date(new Date().getFullYear(), new Date().getMonth() + 1, 2)
                         .toISOString().substr(0, 10)],
                 menu: false,
                 types: ['All', 'EXPENSE', 'INCOME'],
