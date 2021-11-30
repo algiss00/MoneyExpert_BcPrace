@@ -106,14 +106,14 @@
     } from "../../api";
 
     /**
-     * find element in array by name
+     * find element in array by id
      * @param array
-     * @param name
+     * @param id
      * @returns {null|*}
      */
-    function findByNameInArray(array, name) {
+    function findByIdInArray(array, id) {
         for (let i = 0; i < array.length; i++) {
-            if (array[i].name === name) {
+            if (array[i].id === id) {
                 return array[i]
             }
         }
@@ -247,8 +247,7 @@
                 alert("Server error!")
                 return
             }
-            this.bankAcc = bankAcc.name
-            this.categories = categories
+
             let budgetById = await getBudgetById(this.$route.params.budgetId)
             if (budgetById == null) {
                 this.$store.commit("setLoading", false)
@@ -256,7 +255,18 @@
                 return
             }
             // set category of budget
-            this.category = findByNameInArray(categories, budgetById.category[0].name)
+            // category may be not from users categories
+            let budgetCategory = {
+                id: budgetById.category[0].id,
+                name: budgetById.category[0].name
+            }
+            if (findByIdInArray(categories, budgetCategory.id) == null) {
+                categories.push(budgetCategory)
+            }
+            this.categories = categories
+            this.category = budgetCategory
+
+            this.bankAcc = bankAcc.name
             this.name = budgetById.name
             this.amount = budgetById.amount
             this.percentNotify = budgetById.percentNotify

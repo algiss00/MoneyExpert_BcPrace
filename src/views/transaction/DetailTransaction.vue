@@ -16,7 +16,7 @@
                                     <v-select
                                             id="bankAccounts"
                                             :items="allBankAccounts"
-                                            v-model="bankAccount"
+                                            v-model="shareBankAccount"
                                             label="dostupné bankovní účty"
                                             item-text="name"
                                             item-value="id"
@@ -165,7 +165,7 @@
                                 <v-text-field
                                         id="bankAcc"
                                         label="účet"
-                                        v-model="bankAcc"
+                                        v-model="bankAcc.name"
                                         hide-details="auto"
                                         disabled
                                 />
@@ -196,10 +196,10 @@
         transferTransaction
     } from "../../api";
 
-    // find element in array by name
-    function findByNameInArray(array, name) {
+    // find element in array by id
+    function findByIdInArray(array, id) {
         for (let i = 0; i < array.length; i++) {
-            if (array[i].name === name) {
+            if (array[i].id === id) {
                 return array[i]
             }
         }
@@ -213,7 +213,7 @@
             date: "",
             categories: [],
             allBankAccounts: [],
-            bankAccount: "",
+            shareBankAccount: "",
             category: "",
             type: "",
             amount: "",
@@ -299,13 +299,13 @@
                 this.$store.commit("setLoading", false)
             },
             async transferTransaction(event) {
-                if (this.bankAccount.name === this.bankAcc) {
+                if (this.shareBankAccount.id === this.bankAcc.id) {
                     event.preventDefault()
                     alert("Not valid Transfer! You must transfer to another bank account!")
                     return
                 }
                 this.$store.commit("setLoading", true)
-                let result = await transferTransaction(this.$route.params.bankId, this.bankAccount.id, this.$route.params.transId)
+                let result = await transferTransaction(this.$route.params.bankId, this.shareBankAccount.id, this.$route.params.transId)
                 if (result == null || result.status !== 201) {
                     alert("Server error! Cant transfer.")
                 } else if (result.status === 201) {
@@ -335,6 +335,24 @@
                 alert("Server error!")
                 return
             }
+            let transactionById = await getTransactionById(this.$route.params.transId)
+            if (transactionById == null) {
+                this.$store.commit("setLoading", false)
+                alert("Server error!")
+                return
+            }
+            // set category to transaction
+            // category may be not from users category
+            let transactionCategory = {
+                id: transactionById.category.id,
+                name: transactionById.category.name
+            }
+            if (findByIdInArray(categories, transactionCategory.id) == null) {
+                categories.push(transactionCategory)
+            }
+            this.categories = categories
+            this.category = transactionCategory
+
             let allUsersBanks = await getAllUsersBanks()
             if (allUsersBanks == null) {
                 this.$store.commit("setLoading", false)
@@ -343,22 +361,14 @@
             }
 
             this.allBankAccounts = allUsersBanks
-            // set bankAcc
-            this.bankAccount = findByNameInArray(allUsersBanks, bankAcc.name)
-            this.categories = categories
-            let transactionById = await getTransactionById(this.$route.params.transId)
-            if (transactionById == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
-            // set category
-            this.category = findByNameInArray(categories, transactionById.category.name)
+            // set actual bankAcc to shareBankAcc dialog box
+            this.shareBankAccount = findByIdInArray(allUsersBanks, bankAcc.id)
+
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction
             this.amount = transactionById.amount
             this.jottings = transactionById.jottings
-            this.bankAcc = bankAcc.name
+            this.bankAcc = bankAcc
             this.$store.commit("setLoading", false)
         }
     }
