@@ -2,7 +2,7 @@
     <v-app>
         <v-app-bar color="#e7f6ff">
             <v-app-bar-nav-icon @click="drawer = true"
-                                class="hidden-sm-and-up"
+                                class="hidden-md-and-up"
                                 v-if="$store.state.user && !(['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name))"/>
 
             <v-btn icon elevation="2" color="black" v-if="$store.state.user"
@@ -19,7 +19,7 @@
             <v-spacer/>
             <v-toolbar-items
                     v-if="$store.state.user && !(['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name))"
-                    class=" hidden-xs-only">
+                    class="hidden-sm-and-down">
                 <v-btn v-for="item in menuItems"
                        :key="item.title"
                        router
