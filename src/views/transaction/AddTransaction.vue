@@ -158,7 +158,7 @@
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
                     this.loading = false
-                    alert("Invalid category")
+                    alert("Server error! Invalid category.")
                     return
                 }
 
@@ -172,7 +172,7 @@
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Cant add transaction.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
@@ -197,13 +197,13 @@
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             this.bankAcc = bankAcc.name

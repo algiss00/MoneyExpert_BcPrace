@@ -222,7 +222,7 @@
 
                 let result = await editBankAcc(jsonBank, this.$route.params.bankId)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Fail edit!")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -237,7 +237,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeBankAcc(this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
-                    alert("Invalid delete!")
+                    alert("Server error! Cant remove bank account.")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/banks/').catch(() => {
@@ -256,7 +256,7 @@
                 let user = await getUserByUsername(this.username)
                 if (user == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Invalid username")
+                    alert("User not exists!")
                     this.username = ''
                     return
                 }
@@ -264,7 +264,7 @@
                 if (result == null || result.status !== 201) {
                     this.username = ""
                     this.dialog = false
-                    alert("Invalid data!")
+                    alert("Server error! Cant share bank account.")
                 } else {
                     this.$store.commit("setSnackbar", true)
                     this.username = ""
@@ -277,7 +277,7 @@
                 let owners = await getAllOwnersOfBankAcc(this.$route.params.bankId)
                 if (owners == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Invalid bankAcc id")
+                    alert("Server error!")
                     return
                 }
                 this.owners = owners
@@ -291,7 +291,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeOwnerFromBankAcc(user.id, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
-                    alert("Invalid delete!")
+                    alert("Server error!")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     this.ownersDialog = false
@@ -309,13 +309,13 @@
             let result = await getBankAccById(this.$route.params.bankId)
             if (result == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             let creator = await getCreatorOfBankAcc(this.$route.params.bankId)
             if (creator == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             this.creator = creator.username

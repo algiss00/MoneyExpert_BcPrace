@@ -237,7 +237,7 @@
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Invalid data!")
+                        alert("Server error!")
                         return
                     }
                     this.$store.commit("setSnackbar", true)
@@ -265,7 +265,7 @@
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
                         this.loading = false
-                        alert("Invalid data!")
+                        alert("Server error!")
                         return
                     }
                     this.$store.commit("setSnackbar", true)
@@ -279,12 +279,12 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeCategory(this.selectedItem.id)
                 if (result == null || result.status !== 200) {
-                    alert("Invalid delete!")
+                    alert("Server error! Cant delete.")
                 } else if (result.status === 200) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Invalid data!")
+                        alert("Server error!")
                         return
                     }
                     this.$store.commit("setSnackbar", true)
@@ -303,7 +303,7 @@
             let createdCategories = await getAllUsersCreatedCategories()
             if (createdCategories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             this.createdCategories = createdCategories
@@ -311,7 +311,7 @@
             let defaultCategories = await getAllDefaultCategories()
             if (defaultCategories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             this.defaultCategories = defaultCategories

@@ -210,7 +210,7 @@
                 this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                 if (this.transactions == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Invalid bankAcc id")
+                    alert("Server error!")
                     return
                 }
                 this.$store.commit("setLoading", false)
@@ -235,7 +235,7 @@
                     this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Invalid bankAcc id")
+                        alert("Server error!")
                         return
                     }
                 } else if (this.type !== "All" && this.category.name !== "All") {
@@ -245,14 +245,14 @@
                     this.transactions = await getAllTransactionsByType(this.$route.params.bankId, from, to, this.type)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Invalid bankAcc id")
+                        alert("Server error!")
                         return
                     }
                 } else if (this.type === "All" && this.category.name !== "All") {
                     this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, from, to, this.category.id)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Invalid bankAcc id")
+                        alert("Server error!")
                         return
                     }
                 }
@@ -269,7 +269,7 @@
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             let defaultCategory = {

@@ -180,7 +180,7 @@
 
                 let categories = await getAllUsersCategories()
                 if (categories == null) {
-                    alert("Invalid data, no categories!")
+                    alert("Server error! No categories.")
                     return
                 }
 
@@ -241,7 +241,7 @@
 
             let categories = await getAllUsersCategories()
             if (categories == null) {
-                alert("Invalid data, no categories!")
+                alert("Server error! No categories.")
                 return
             }
             this.loading = true

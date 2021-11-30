@@ -208,7 +208,7 @@
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             this.bankAcc = bankAcc.name

@@ -111,7 +111,7 @@
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
                     this.loading = false
-                    alert("Invalid category")
+                    alert("Invalid category!")
                     return
                 }
 
@@ -147,13 +147,13 @@
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             this.bankAcc = bankAcc.name

@@ -267,7 +267,8 @@
                 this.$store.commit("setLoading", true)
                 let user = await getCurrentUserBackEnd()
                 if (user == null) {
-                    alert("Invalid bankAcc id")
+                    this.$store.commit("setLoading", false)
+                    alert("Server error!")
                     return
                 }
                 this.name = user.data.name
@@ -298,7 +299,7 @@
 
                 let result = await editNameLastname(user)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Cant edit.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -312,7 +313,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editEmail(this.email)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Maybe email already exists.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -326,7 +327,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editUsername(this.username)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Maybe username already exists.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -344,7 +345,7 @@
                 let result = await editPassword(this.passwordOld, this.passwordNew)
 
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Maybe old password not equal to actual password.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     this.passwordOld = ""
@@ -361,7 +362,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeUserProfile()
                 if (result == null || result.status !== 200) {
-                    alert("Invalid delete!")
+                    alert("Server error! Cant delete profile.")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     this.profileDrawer = false

@@ -92,7 +92,7 @@
                 this.loading = true
                 let result = await addBankAccount(jsonBankAcc)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Bank account not added. Server error!")
                 } else if (result.data.name == this.name && result.data.balance == this.balance && result.data.currency == this.currency) {
                     await this.$router.push('/banks').catch(() => {
                     })

@@ -306,13 +306,13 @@
 
                 if (result == null || result.status !== 201) {
                     this.$store.commit("setLoading", false)
-                    alert("Invalid data! Transaction is not added")
+                    alert("Server error! Transaction is not added")
                     return
                 }
 
                 let resultRemove = await removeDebt(this.$route.params.debtId)
                 if (resultRemove == null || resultRemove.status !== 200) {
-                    alert("Invalid delete debt!")
+                    alert("Server error! Cant delete debt.")
                 } else if (resultRemove.status === 200) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -330,7 +330,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeDebt(this.$route.params.debtId)
                 if (result == null || result.status !== 200) {
-                    alert("Invalid delete!")
+                    alert("Server error! Cant delete.")
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
@@ -352,7 +352,7 @@
 
                 let result = await editBasicDebt(this.$route.params.debtId, jsonDebt)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data!")
+                    alert("Server error! Cant edit.")
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -401,7 +401,7 @@
             let bankAcc = await getBankAccById(this.$route.params.bankId)
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid bankAcc id")
+                alert("Server error!")
                 return
             }
             this.bankAcc = bankAcc.name
@@ -409,7 +409,7 @@
             let debt = await getDebtById(this.$route.params.debtId)
             if (debt == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid transaction id")
+                alert("Server error!")
                 return
             }
             // check notifications of debt

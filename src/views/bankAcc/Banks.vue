@@ -211,7 +211,7 @@
                 let creator = await getCreatorOfBankAcc(item.id)
                 if (creator == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Invalid bankAcc id")
+                    alert("Server error!")
                     return
                 }
                 this.name = item.name
@@ -231,7 +231,7 @@
             let createdBanks = await getAllUsersCreatedBanks()
             if (createdBanks == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 // if in the first interaction got error, then reload page and check if user is authenticated
                 location.reload()
                 return
@@ -239,7 +239,7 @@
             let availableBanks = await getAllUsersAvailableBanks()
             if (availableBanks == null) {
                 this.$store.commit("setLoading", false)
-                alert("Invalid data")
+                alert("Server error!")
                 return
             }
             this.createdBanks = createdBanks
