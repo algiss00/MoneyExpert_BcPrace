@@ -64,9 +64,7 @@ public class DebtService extends AbstractServiceHelper {
      * then those find will add to the NotifyDebt entity
      */
     //every 6 hours - "0 0 */6 * * * "
-    // every 0:05, 1:05, 2:05 ... to bylo bez "/" v sekundach
-    // ted to mam kazde 10 sec
-    @Scheduled(cron = "*/10 * * * * * ")
+    @Scheduled(cron = "0 0 */6 * * * ")
     public void checkNotifyDates() {
         log.info("check DEBT NotifyDate");
         List<Debt> notifyDebts = debtDao.getNotifyDebts();
@@ -103,7 +101,7 @@ public class DebtService extends AbstractServiceHelper {
      * Checks all Debts for which Deadline date has occurred
      * then those find will add to the NotifyDebt entity
      */
-    @Scheduled(cron = "*/10 * * * * * ")
+    @Scheduled(cron = "0 0 */6 * * * ")
     public void checkDeadlineDates() {
         log.info("check DEBT DEADLINE date");
         List<Debt> deadlineDebts = debtDao.getDeadlineDebts();
