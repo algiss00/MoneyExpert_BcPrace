@@ -306,13 +306,15 @@
 
                 if (result == null || result.status !== 201) {
                     this.$store.commit("setLoading", false)
-                    alert("Server error! Transaction is not added")
+                    this.$store.commit("setSnackbarText", "Server error! Transaction is not added")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
 
                 let resultRemove = await removeDebt(this.$route.params.debtId)
                 if (resultRemove == null || resultRemove.status !== 200) {
-                    alert("Server error! Cant delete debt.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant delete debt.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (resultRemove.status === 200) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -330,7 +332,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeDebt(this.$route.params.debtId)
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant delete.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant delete.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
@@ -352,7 +355,8 @@
 
                 let result = await editBasicDebt(this.$route.params.debtId, jsonDebt)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -366,7 +370,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editDeadline(this.$route.params.debtId, this.deadline)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
@@ -382,7 +387,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editNotifyDate(this.$route.params.debtId, this.notifyDate)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
@@ -398,20 +404,25 @@
                 })
             }
             this.$store.commit("setLoading", true)
-            let bankAcc = await getBankAccById(this.$route.params.bankId)
-            if (bankAcc == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
-            this.bankAcc = bankAcc.name
 
             let debt = await getDebtById(this.$route.params.debtId)
             if (debt == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                alert("Server error! Cant get debt.")
+                location.reload()
                 return
             }
+
+            let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error!")
+                this.$store.commit("setSnackbarError", true)
+                return
+            }
+            this.bankAcc = bankAcc.name
+
+
             // check notifications of debt
             if (this.isDebtNotify(debt) !== "empty") {
                 if (this.isDebtNotify(debt) === "deadline") {

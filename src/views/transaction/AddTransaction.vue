@@ -158,7 +158,8 @@
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
                     this.loading = false
-                    alert("Server error! Invalid category.")
+                    this.$store.commit("setSnackbarText", "Server error! Invalid category.")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
 
@@ -172,7 +173,8 @@
                 let result = await addTransaction(jsonTransaction, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant add transaction.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant add transaction.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
@@ -194,16 +196,19 @@
                 })
             }
             this.$store.commit("setLoading", true)
-            let bankAcc = await getBankAccById(this.$route.params.bankId)
-            if (bankAcc == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
+                return
+            }
+
+            let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error! Cant get bankAcc.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             this.bankAcc = bankAcc.name

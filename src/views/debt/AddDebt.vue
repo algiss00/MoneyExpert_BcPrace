@@ -185,7 +185,8 @@
                 let result = await addDebt(jsonDebt, this.$route.params.bankId)
 
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/debts/' + this.$route.params.bankId).catch(() => {
@@ -209,6 +210,7 @@
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
             this.bankAcc = bankAcc.name

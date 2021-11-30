@@ -117,7 +117,8 @@
                 this.loading = true
                 let result = await registration(jsonUser)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe this username or email already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe this username or email already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.data.username === this.username && result.data.email === this.email) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/').catch(() => {

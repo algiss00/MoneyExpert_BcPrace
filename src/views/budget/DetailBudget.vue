@@ -158,7 +158,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeBudget(this.$route.params.budgetId)
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant delete.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant delete.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
@@ -173,13 +174,15 @@
                 }
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
-                    alert("Server error! Invalid category.")
+                    this.$store.commit("setSnackbarText", "Server error! Invalid category.")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let result = await editCategoryBudget(this.$route.params.budgetId, category.id)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe budget for this category already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe budget for this category already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -193,7 +196,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editNameBudget(this.$route.params.budgetId, this.name)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -207,7 +211,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editAmountBudget(this.$route.params.budgetId, this.amount)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -221,7 +226,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editPercentBudget(this.$route.params.budgetId, this.percentNotify)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -235,23 +241,28 @@
                 })
             }
             this.$store.commit("setLoading", true)
-            let bankAcc = await getBankAccById(this.$route.params.bankId)
-            if (bankAcc == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
+
+            let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error!")
+                this.$store.commit("setSnackbarError", true)
+                return
+            }
+
 
             let budgetById = await getBudgetById(this.$route.params.budgetId)
             if (budgetById == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error! Cant get budget")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             // set category of budget

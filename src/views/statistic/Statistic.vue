@@ -75,7 +75,7 @@
                     <div id="chartCashflow" v-if="sumExpenseAndIncomeBetweenDate[0].data.length !== 0
                     || sumExpenseAndIncomeBetweenDate[1].data.length !== 0" class="ml-10">
                         <div class="font-weight-light black--text m-left">
-                            Cashflow - utrácím méně než výdělávám?
+                            Cash flow - utrácím méně než výdělávám?
                         </div>
                         <apexchart type="bar" width="600" height="300" :options="chartOptions2"
                                    :series="sumExpenseAndIncomeBetweenDate"/>
@@ -170,11 +170,13 @@
                 let to = this.date[1]
 
                 if (from === undefined || to === undefined) {
-                    alert("Invalid date period! Must be start date and end date!")
+                    this.$store.commit("setSnackbarText", "Invalid date period! Must be start date and end date!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 if (from > to) {
-                    alert("Invalid date period! Start date must be before end date!")
+                    this.$store.commit("setSnackbarText", "Invalid date period! Start date must be before end date!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
 
@@ -183,7 +185,8 @@
 
                 let categories = await getAllUsersCategories()
                 if (categories == null) {
-                    alert("Server error! No categories.")
+                    this.$store.commit("setSnackbarText", "Server error! No categories.")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
 
@@ -245,6 +248,7 @@
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 alert("Server error! No categories.")
+                location.reload()
                 return
             }
             this.loading = true

@@ -85,7 +85,7 @@
                 </v-card-text>
                 <div class="font-weight-medium black--text m-left"
                      v-if="transactions.length === 0">
-                    Žádné transakce :)
+                    Žádné transakce v tomto období  :)
                 </div>
                 <v-data-table
                         v-if="transactions.length !== 0"
@@ -134,12 +134,7 @@
      * @returns {Promise<T>}
      */
     async function getAllTransactionsByTypeAndCategoryMethod(bankId, from, to, type, categoryId) {
-        let result = await getAllTransactionsByCategoryAndType(bankId, from, to, type, categoryId)
-        if (result == null) {
-            alert("Invalid bankAcc id")
-            return
-        }
-        return result
+        return await getAllTransactionsByCategoryAndType(bankId, from, to, type, categoryId)
     }
 
     export default {
@@ -196,7 +191,8 @@
                 let to = this.date[1]
 
                 if (from === undefined || to === undefined) {
-                    alert("Invalid date period! Must be start date and end date!")
+                    this.$store.commit("setSnackbarText", "Invalid date period! Must be start date and end date!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.type = "All"
@@ -206,14 +202,16 @@
                 }
 
                 if (from > to) {
-                    alert("Invalid date period! Start date must be before end date!")
+                    this.$store.commit("setSnackbarText", "Invalid date period! Start date must be before end date!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                 if (this.transactions == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", false)
@@ -230,7 +228,8 @@
                 let from = this.date[0]
                 let to = this.date[1]
                 if (from > to) {
-                    alert("Invalid date period! From date is later then another!")
+                    this.$store.commit("setSnackbarText", "Invalid date period! From date is later then another!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
@@ -238,24 +237,32 @@
                     this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, from, to)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Server error!")
+                        this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                        this.$store.commit("setSnackbarError", true)
                         return
                     }
                 } else if (this.type !== "All" && this.category.name !== "All") {
                     this.transactions = await getAllTransactionsByTypeAndCategoryMethod(this.$route.params.bankId, from,
                         to, this.type, this.category.id)
+                    if (this.transactions == null) {
+                        this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                        this.$store.commit("setSnackbarError", true)
+                        return
+                    }
                 } else if (this.type !== "All" && this.category.name === "All") {
                     this.transactions = await getAllTransactionsByType(this.$route.params.bankId, from, to, this.type)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Server error!")
+                        this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                        this.$store.commit("setSnackbarError", true)
                         return
                     }
                 } else if (this.type === "All" && this.category.name !== "All") {
                     this.transactions = await getAllTransactionsByCategory(this.$route.params.bankId, from, to, this.category.id)
                     if (this.transactions == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Server error!")
+                        this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                        this.$store.commit("setSnackbarError", true)
                         return
                     }
                 }
@@ -273,6 +280,7 @@
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
             let defaultCategory = {
@@ -285,11 +293,17 @@
             this.transactions = await getAllTransactionsBetweenDate(this.$route.params.bankId, this.date[0], this.date[1])
             if (this.transactions == null) {
                 this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error! Cant get transactions.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
 
             // set notifications for budgets
             let budgetsNotification = await getAllNotificationBudgets(this.$route.params.bankId)
+            if (budgetsNotification == null) {
+                this.$store.commit("setLoading", false)
+                return
+            }
             this.$store.commit("setNotificationBudget", budgetsNotification)
             this.$store.commit("setLoading", false)
         }

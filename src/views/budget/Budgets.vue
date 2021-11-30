@@ -131,16 +131,13 @@
             }
             this.$store.commit("setLoading", true)
             let budgets = await getAllBudgetsFromBankAcc(this.$route.params.bankId)
-            this.budgets = budgets
-            if (this.budgets == null) {
+            if (budgets == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
-
-            // set notifications for Budget
-            let notifyBudgets = await getAllNotificationBudgets(this.$route.params.bankId)
-            this.$store.commit("setNotificationBudget", notifyBudgets)
+            this.budgets = budgets
 
             // set for each budget percentOfSumAmount and set alerts
             for (let budget of budgets) {
@@ -148,8 +145,24 @@
                 this.$set(budget, 'percentOfSumAmount', percentOfSumAmount)
             }
 
+            // set notifications for Budget
+            let notifyBudgets = await getAllNotificationBudgets(this.$route.params.bankId)
+            if (notifyBudgets == null) {
+                this.$store.commit("setLoading", false)
+                return
+            }
+            this.$store.commit("setNotificationBudget", notifyBudgets)
+
             this.alertPercentBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_PERCENT")
+            if (this.alertPercentBudgets == null) {
+                this.$store.commit("setLoading", false)
+                return
+            }
             this.alertAmountBudgets = await getAllNotificationBudgetsByType(this.$route.params.bankId, "BUDGET_AMOUNT")
+            if (this.alertAmountBudgets == null) {
+                this.$store.commit("setLoading", false)
+                return
+            }
             this.$store.commit("setLoading", false)
         }
     }

@@ -111,7 +111,8 @@
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
                     this.loading = false
-                    alert("Invalid category!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
 
@@ -124,7 +125,8 @@
                 let result = await addBudget(jsonBudget, this.$route.params.bankId, category.id)
 
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe budget for this category already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe budget for this category already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/budgets/' + this.$route.params.bankId).catch(() => {
@@ -144,18 +146,22 @@
                 })
             }
             this.$store.commit("setLoading", true)
-            let bankAcc = await getBankAccById(this.$route.params.bankId)
-            if (bankAcc == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
+
+            let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error!")
+                this.$store.commit("setSnackbarError", true)
+                return
+            }
+
             this.bankAcc = bankAcc.name
             this.categories = categories
             this.$store.commit("setLoading", false)

@@ -250,7 +250,8 @@
 
                 let result = await editBasicTransaction(jsonTransaction, this.$route.params.transId)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -260,7 +261,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editTypeTransaction(this.$route.params.transId, this.type)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -269,13 +271,15 @@
             async editCategoryTransaction() {
                 let category = await getCategoryByName(this.category.name)
                 if (category == null) {
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error! Cant category.")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let result = await editCategoryTransaction(this.$route.params.transId, category.id)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant edit.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -290,7 +294,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeTransactionFromBank(this.$route.params.transId)
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant delete.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant delete.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
@@ -301,13 +306,15 @@
             async transferTransaction(event) {
                 if (this.shareBankAccount.id === this.bankAcc.id) {
                     event.preventDefault()
-                    alert("Not valid Transfer! You must transfer to another bank account!")
+                    this.$store.commit("setSnackbarText", "Not valid Transfer! You must transfer to another bank account!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let result = await transferTransaction(this.$route.params.bankId, this.shareBankAccount.id, this.$route.params.transId)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant transfer.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant transfer.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/transactions/' + this.$route.params.bankId).catch(() => {
@@ -323,22 +330,26 @@
                 })
             }
             this.$store.commit("setLoading", true)
-            let bankAcc = await getBankAccById(this.$route.params.bankId)
-            if (bankAcc == null) {
-                this.$store.commit("setLoading", false)
-                alert("Server error!")
-                return
-            }
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
+                return
+            }
+
+            let bankAcc = await getBankAccById(this.$route.params.bankId)
+            if (bankAcc == null) {
+                this.$store.commit("setLoading", false)
+                this.$store.commit("setSnackbarText", "Server error! Cant get bankAcc.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             let transactionById = await getTransactionById(this.$route.params.transId)
             if (transactionById == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error! Cant get transaction.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             // set category to transaction
@@ -356,7 +367,8 @@
             let allUsersBanks = await getAllUsersBanks()
             if (allUsersBanks == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error! Cant get bank accounts.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
 

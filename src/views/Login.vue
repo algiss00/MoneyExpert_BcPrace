@@ -81,7 +81,8 @@
                     })
                 } else {
                     if (result.errorMessage) {
-                        alert(result.errorMessage)
+                        this.$store.commit("setSnackbarText", result.errorMessage)
+                        this.$store.commit("setSnackbarError", true)
                     }
                 }
                 this.loading = false

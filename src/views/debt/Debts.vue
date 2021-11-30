@@ -110,10 +110,15 @@
             this.debts = await getAllDebtsFromBankAcc(this.$route.params.bankId)
             if (this.debts == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                alert("Server error! Cant get debts.")
+                location.reload()
                 return
             }
             let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
+            if (debtsNotification == null) {
+                this.$store.commit("setLoading", false)
+                return
+            }
             this.$store.commit("setNotificationDebt", debtsNotification)
             this.$store.commit("setLoading", false)
         }

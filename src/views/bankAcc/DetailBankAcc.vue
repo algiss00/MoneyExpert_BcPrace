@@ -222,7 +222,8 @@
 
                 let result = await editBankAcc(jsonBank, this.$route.params.bankId)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Fail edit!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -237,7 +238,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeBankAcc(this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant remove bank account.")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     await this.$router.push('/banks/').catch(() => {
@@ -249,14 +251,16 @@
                 let usernameEl = document.getElementById("username")
                 if (usernameEl.value.trim().length === 0) {
                     event.preventDefault()
-                    alert("empty field!")
+                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let user = await getUserByUsername(this.username)
                 if (user == null) {
                     this.$store.commit("setLoading", false)
-                    alert("User not exists!")
+                    this.$store.commit("setSnackbarText", "User not exists!")
+                    this.$store.commit("setSnackbarError", true)
                     this.username = ''
                     return
                 }
@@ -264,7 +268,8 @@
                 if (result == null || result.status !== 201) {
                     this.username = ""
                     this.dialog = false
-                    alert("Server error! Cant share bank account.")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else {
                     this.$store.commit("setSnackbar", true)
                     this.username = ""
@@ -277,7 +282,8 @@
                 let owners = await getAllOwnersOfBankAcc(this.$route.params.bankId)
                 if (owners == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.owners = owners
@@ -291,7 +297,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeOwnerFromBankAcc(user.id, this.$route.params.bankId)
                 if (result == null || result.status !== 200) {
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     this.ownersDialog = false
@@ -310,12 +317,14 @@
             if (result == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
+                location.reload()
                 return
             }
             let creator = await getCreatorOfBankAcc(this.$route.params.bankId)
             if (creator == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error!")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             this.creator = creator.username

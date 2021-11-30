@@ -64,15 +64,38 @@
         <v-snackbar
                 v-model="$store.state.snackbar"
                 :timeout="timeout"
+                color="success"
         >
             {{ text }}
 
             <template v-slot:action="{ attrs }">
                 <v-btn
-                        color="blue"
+                        color="black"
                         icon
                         v-bind="attrs"
                         @click="$store.commit('setSnackbar', false)"
+                >
+                    <v-icon>
+                        mdi-close
+                    </v-icon>
+                </v-btn>
+            </template>
+        </v-snackbar>
+
+        <v-snackbar
+                v-model="$store.state.snackbarError"
+                :timeout="timeoutError"
+                centered
+                color="red"
+        >
+            {{ $store.state.textSnack }}
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                        color="black"
+                        icon
+                        v-bind="attrs"
+                        @click="$store.commit('setSnackbarError', false)"
                 >
                     <v-icon>
                         mdi-close
@@ -244,8 +267,9 @@
                     v => !!v.trim() || 'E-mail is required',
                     v => /.+@.+/.test(v) || 'E-mail must be valid'
                 ],
-                text: 'Success',
-                timeout: 2000
+                timeout: 2000,
+                text: "Success",
+                timeoutError: 4000,
             }
         },
         methods: {
@@ -268,7 +292,8 @@
                 let user = await getCurrentUserBackEnd()
                 if (user == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.name = user.data.name
@@ -299,7 +324,8 @@
 
                 let result = await editNameLastname(user)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Cant edit.")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -313,7 +339,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editEmail(this.email)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Maybe email already exists.")
+                    this.$store.commit("setSnackbarText", "Server error! Maybe email already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -327,7 +354,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await editUsername(this.username)
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Maybe username already exists.")
+                    this.$store.commit("setSnackbarText", "Server error! Maybe username already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                 }
@@ -338,14 +366,16 @@
                 let newPasswordEl = document.getElementById("passwordNewProfile")
                 if (oldPasswordEl.value.trim().length === 0 || newPasswordEl.value.trim().length === 0) {
                     event.preventDefault()
-                    alert("empty fields!")
+                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let result = await editPassword(this.passwordOld, this.passwordNew)
 
                 if (result == null || result.status !== 201) {
-                    alert("Server error! Maybe old password not equal to actual password.")
+                    this.$store.commit("setSnackbarText", "Server error! Maybe old password not equal to actual password.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
                     this.passwordOld = ""
@@ -362,7 +392,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeUserProfile()
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant delete profile.")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
                     this.profileDrawer = false

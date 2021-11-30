@@ -226,18 +226,21 @@
                 let nameEditEl = document.getElementById("nameCategoryEdit")
                 if (nameEditEl.value.trim().length === 0) {
                     event.preventDefault()
-                    alert("empty field!")
+                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.$store.commit("setLoading", true)
                 let result = await editCategory(this.selectedItem.id, this.nameCategoryEdit)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
                         this.$store.commit("setLoading", false)
-                        alert("Server error!")
+                        this.$store.commit("setSnackbarText", "Server error! Cant get categories.")
+                        this.$store.commit("setSnackbarError", true)
                         return
                     }
                     this.$store.commit("setSnackbar", true)
@@ -250,7 +253,8 @@
                 let nameEl = document.getElementById("nameCategory")
                 if (nameEl.value.trim().length === 0) {
                     event.preventDefault()
-                    alert("empty field!")
+                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.loading = true
@@ -260,12 +264,14 @@
 
                 let result = await addCategory(jsonCategory)
                 if (result == null || result.status !== 201) {
-                    alert("Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
                         this.loading = false
-                        alert("Server error!")
+                        this.$store.commit("setSnackbarText", "Server error! Cant get categories.")
+                        this.$store.commit("setSnackbarError", true)
                         return
                     }
                     this.$store.commit("setSnackbar", true)
@@ -279,7 +285,8 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeCategory(this.selectedItem.id)
                 if (result == null || result.status !== 200) {
-                    alert("Server error! Cant delete.")
+                    this.$store.commit("setSnackbarText", "Server error! Cant delete.")
+                    this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     let createdCategories = await getAllUsersCreatedCategories()
                     if (createdCategories == null) {
@@ -303,7 +310,8 @@
             let createdCategories = await getAllUsersCreatedCategories()
             if (createdCategories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                alert("Server error! Cant get users categories.")
+                location.reload()
                 return
             }
             this.createdCategories = createdCategories
@@ -311,7 +319,8 @@
             let defaultCategories = await getAllDefaultCategories()
             if (defaultCategories == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error! Cant get default categories.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             this.defaultCategories = defaultCategories

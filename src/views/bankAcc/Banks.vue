@@ -211,7 +211,8 @@
                 let creator = await getCreatorOfBankAcc(item.id)
                 if (creator == null) {
                     this.$store.commit("setLoading", false)
-                    alert("Server error!")
+                    this.$store.commit("setSnackbarText", "Server error!")
+                    this.$store.commit("setSnackbarError", true)
                     return
                 }
                 this.name = item.name
@@ -239,7 +240,8 @@
             let availableBanks = await getAllUsersAvailableBanks()
             if (availableBanks == null) {
                 this.$store.commit("setLoading", false)
-                alert("Server error!")
+                this.$store.commit("setSnackbarText", "Server error! Cant get available bank accounts.")
+                this.$store.commit("setSnackbarError", true)
                 return
             }
             this.createdBanks = createdBanks
