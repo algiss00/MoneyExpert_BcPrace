@@ -58,7 +58,7 @@
                                         height="25"
                                         :color="item.percentOfSumAmount >= item.percentNotify ? 'red' : 'green'"
                                 >
-                                    <strong>{{ Math.ceil(item.sumAmount) }}</strong>
+                                    <strong>{{ item.sumAmount }}</strong>
                                 </v-progress-linear>
                             </v-list-item-content>
                         </v-list-item>
