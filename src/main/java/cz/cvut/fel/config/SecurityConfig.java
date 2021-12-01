@@ -66,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // deployed front-end origin
         configuration.addAllowedOrigin("https://money-expert.netlify.app");
         // origin for test
         configuration.addAllowedOrigin("http://localhost:8080");

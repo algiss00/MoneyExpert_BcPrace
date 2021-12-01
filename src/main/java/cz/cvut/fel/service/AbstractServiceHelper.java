@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * This Class is used to share function between Service Classes.
+ * This Class is used to share functions between Service Classes.
  */
 @Transactional
 abstract class AbstractServiceHelper {
