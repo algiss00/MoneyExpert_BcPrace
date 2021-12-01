@@ -11,6 +11,7 @@
                                 small
                                 color="green"
                                 fab
+                                title="Přidat kategorii"
                                 @click="dialogAddCategory = true"
                         >
                             <v-icon>mdi-plus</v-icon>

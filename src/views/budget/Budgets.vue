@@ -13,6 +13,7 @@
                                 small
                                 color="green"
                                 fab
+                                title="Přidat rozpočet"
                                 @click="toAddBudget"
                         >
                             <v-icon>mdi-plus</v-icon>

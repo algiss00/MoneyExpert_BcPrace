@@ -11,6 +11,7 @@
                                 small
                                 color="green"
                                 fab
+                                title="Přidat závazek"
                                 @click="toAddDebt"
                         >
                             <v-icon>mdi-plus</v-icon>

@@ -45,7 +45,7 @@
                             <v-btn
                                     icon
                                     @click="dialog = true"
-                                    title="Sdílet bank account"
+                                    title="Sdílet bank. účet"
                                     :disabled="!valid"
                             >
                                 <v-icon

@@ -12,6 +12,7 @@
                                 small
                                 color="green"
                                 fab
+                                title="Přidat bank. účet"
                         >
                             <v-icon>mdi-plus</v-icon>
                         </v-btn>

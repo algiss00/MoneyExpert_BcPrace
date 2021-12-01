@@ -11,6 +11,7 @@
                                 small
                                 color="green"
                                 fab
+                                title="Přidat transakci"
                                 @click="toAddTransaction"
                         >
                             <v-icon>mdi-plus</v-icon>
