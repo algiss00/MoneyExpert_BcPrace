@@ -43,6 +43,41 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
+                        <v-dialog
+                                v-model="dialogConfirm"
+                                max-width="360"
+                        >
+                            <v-card>
+                                <v-card-title class="text-h5">
+                                    Potvrzujete změnu kategorii.
+                                </v-card-title>
+
+                                <v-card-text>
+                                    Potvrzením změny - u transakci se změní kategorie, má to následky na vytvořené rozpočty.
+                                    Pokud máte rozpočet na editovanou kategorii, tak částka transakci se přidá k tomu rozpočtu.
+                                </v-card-text>
+
+                                <v-card-actions>
+                                    <v-spacer/>
+
+                                    <v-btn
+                                            color="green darken-1"
+                                            text
+                                            @click="dialogConfirm = false"
+                                    >
+                                        Zrušit
+                                    </v-btn>
+
+                                    <v-btn
+                                            color="green darken-1"
+                                            text
+                                            @click="dialogConfirm = false, editCategoryTransaction()"
+                                    >
+                                        Potvrdit
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail transakce</v-toolbar-title>
                             <v-btn
@@ -158,7 +193,7 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="primary" :disabled="!valid" text @click="editCategoryTransaction"
+                                <v-btn color="primary" :disabled="!valid" text @click="dialogConfirm = true"
                                        id="editBtnCategory">Změnit
                                     kategorii
                                 </v-btn>
@@ -230,6 +265,7 @@
                 v => Number(v) > 0 || 'must be > 0'
             ],
             valid: true,
+            dialogConfirm: false
         }),
         methods: {
             toTransactions() {
