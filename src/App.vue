@@ -407,7 +407,7 @@
         /**
          * get current authenticated user from back-end
          * and set him on $store
-         * invoked when the page is refreshed
+         * invoked when the page is reloaded
          * @returns {Promise<void>}
          */
         async beforeMount() {
@@ -416,8 +416,6 @@
                 this.$store.commit("setUser", user)
                 await this.$router.push("/banks").catch(() => {
                 })
-            } else {
-                this.$store.commit("setUser", null)
             }
         }
     }
