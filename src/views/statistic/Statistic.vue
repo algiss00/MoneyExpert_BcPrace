@@ -248,8 +248,9 @@
             let categories = await getAllUsersCategories()
             if (categories == null) {
                 alert("Server error! No categories.")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             this.loading = true
             // get sum of expenses for category

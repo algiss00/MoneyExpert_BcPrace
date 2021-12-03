@@ -85,8 +85,9 @@
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let infoEl = document.getElementById("info")
             infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: \n" + bankAcc.balance + " " + bankAcc.currency

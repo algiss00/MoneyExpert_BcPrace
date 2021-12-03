@@ -112,8 +112,9 @@
             if (this.debts == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error! Cant get debts.")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let debtsNotification = await getAllNotificationDebts(this.$route.params.bankId)
             if (debtsNotification == null) {

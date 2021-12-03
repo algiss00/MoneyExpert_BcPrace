@@ -200,8 +200,9 @@
             if (categories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
 
             let bankAcc = await getBankAccById(this.$route.params.bankId)

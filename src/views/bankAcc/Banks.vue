@@ -234,9 +234,9 @@
             if (createdBanks == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
-                // if in the first interaction got error, then reload page and check if user is authenticated
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let availableBanks = await getAllUsersAvailableBanks()
             if (availableBanks == null) {

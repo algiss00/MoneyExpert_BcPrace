@@ -210,8 +210,9 @@
             if (bankAcc == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             this.bankAcc = bankAcc.name
             this.$store.commit("setLoading", false)

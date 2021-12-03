@@ -317,8 +317,9 @@
             if (result == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error!")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             let creator = await getCreatorOfBankAcc(this.$route.params.bankId)
             if (creator == null) {

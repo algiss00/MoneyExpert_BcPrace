@@ -312,8 +312,9 @@
             if (createdCategories == null) {
                 this.$store.commit("setLoading", false)
                 alert("Server error! Cant get users categories.")
-                location.reload()
-                return
+                this.$store.commit("setUser", null)
+                return await this.$router.push("/").catch(() => {
+                })
             }
             this.createdCategories = createdCategories
 
