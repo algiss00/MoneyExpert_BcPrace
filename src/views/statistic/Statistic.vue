@@ -157,6 +157,7 @@
                         categories: ["INCOME", "EXPENSE"],
                     }
                 },
+                bankIdStatistic: null
             }
         },
         computed: {
@@ -193,7 +194,7 @@
                 this.loading = true
                 // get sum of expenses for category
                 for (let i = 0; i < categories.length; i++) {
-                    let sumExpense = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId, from, to, categories[i].id)
+                    let sumExpense = await getSumOfExpenseForCategoryBetweenDate(this.bankIdStatistic, from, to, categories[i].id)
                     if (sumExpense == null) {
                         return
                     }
@@ -214,8 +215,8 @@
                 ]
 
                 // get sum of expenses and incomes from bankAcc between date
-                let sumExpense = await getSumOfExpenseBetweenDate(this.$route.params.bankId, from, to)
-                let sumIncome = await getSumOfIncomeBetweenDate(this.$route.params.bankId, from, to)
+                let sumExpense = await getSumOfExpenseBetweenDate(this.bankIdStatistic, from, to)
+                let sumIncome = await getSumOfIncomeBetweenDate(this.bankIdStatistic, from, to)
                 if (sumIncome !== 0) {
                     this.sumExpenseAndIncomeBetweenDate = [{
                         data: [...this.sumExpenseAndIncomeBetweenDate[0].data, sumIncome],
@@ -242,6 +243,7 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
+            this.bankIdStatistic = this.$route.params.bankId
             let from = this.date[0]
             let to = this.date[1]
 
@@ -255,8 +257,7 @@
             this.loading = true
             // get sum of expenses for category
             for (let i = 0; i < categories.length; i++) {
-                let sumExpenseCategory = await getSumOfExpenseForCategoryBetweenDate(this.$route.params.bankId,
-                    from, to, categories[i].id)
+                let sumExpenseCategory = await getSumOfExpenseForCategoryBetweenDate(this.bankIdStatistic, from, to, categories[i].id)
                 if (sumExpenseCategory == null) {
                     return
                 }
@@ -267,8 +268,8 @@
             }
 
             // get sum of expenses and incomes from bankAcc between date
-            let sumExpense = await getSumOfExpenseBetweenDate(this.$route.params.bankId, from, to)
-            let sumIncome = await getSumOfIncomeBetweenDate(this.$route.params.bankId, from, to)
+            let sumExpense = await getSumOfExpenseBetweenDate(this.bankIdStatistic, from, to)
+            let sumIncome = await getSumOfIncomeBetweenDate(this.bankIdStatistic, from, to)
             if (sumIncome !== 0) {
                 this.sumExpenseAndIncomeBetweenDate = [{
                     data: [...this.sumExpenseAndIncomeBetweenDate[0].data, sumIncome],
