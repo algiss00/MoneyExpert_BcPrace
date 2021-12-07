@@ -362,7 +362,7 @@
                 this.$store.commit("setLoading", false)
             },
             async editPassword(event) {
-                if (this.passwordOld.trim().length === 0 || this.passwordNew.trim().length === 0) {
+                if (this.passwordOld.length === 0 || this.passwordNew.length === 0) {
                     event.preventDefault()
                     this.$store.commit("setSnackbarText", "Empty fields!")
                     this.$store.commit("setSnackbarError", true)
