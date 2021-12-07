@@ -16,7 +16,15 @@
                                     height="200"
                             >
                                 <v-card-title class="black--text">
-                                    <p id="info" class="font-weight-regular black--text ma-2"/>
+                                    <p id="info" class="font-weight-regular black--text ma-2">
+                                        Aktuální info:
+                                        <br>
+                                        {{info}}
+                                        <br>
+                                        Aktuální zůstatek:
+                                        <br>
+                                        {{actualBalance}}
+                                    </p>
                                 </v-card-title>
                             </v-card>
                         </v-item>
@@ -65,7 +73,9 @@
                     {title: 'Rozpočty', link: '/budgets/'}
                 ],
                 actualInfo: {title: 'Aktuální info'},
-                balance: ""
+                balance: "",
+                info: "",
+                actualBalance: ""
             }
         },
         methods: {
@@ -90,8 +100,8 @@
                 return await this.$router.push("/").catch(() => {
                 })
             }
-            let infoEl = document.getElementById("info")
-            infoEl.innerText = "Aktuální info o účtu: \n" + bankAcc.name + "\n Aktuální zůstatek: \n" + bankAcc.balance + " " + bankAcc.currency
+            this.info = bankAcc.name
+            this.actualBalance = bankAcc.balance + " " + bankAcc.currency
 
             // set notify debts
             let debtsNotification = await getAllNotificationDebts(bankAccIdPath)

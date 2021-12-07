@@ -27,7 +27,6 @@
                             </v-card-title>
                             <v-card-text>
                                 <v-text-field
-                                        id="nameCategory"
                                         label="název"
                                         :rules="rules"
                                         v-model="nameCategory"
@@ -69,7 +68,6 @@
                         </v-card-title>
                         <v-card-text>
                             <v-text-field
-                                    id="nameCategoryEdit"
                                     label="název"
                                     :rules="rules"
                                     v-model="nameCategoryEdit"
@@ -224,8 +222,7 @@
         }),
         methods: {
             async editCategory(event) {
-                let nameEditEl = document.getElementById("nameCategoryEdit")
-                if (nameEditEl.value.trim().length === 0) {
+                if (this.nameCategoryEdit.trim().length === 0) {
                     event.preventDefault()
                     this.$store.commit("setSnackbarText", "Empty fields!")
                     this.$store.commit("setSnackbarError", true)
@@ -251,8 +248,7 @@
                 this.$store.commit("setLoading", false)
             },
             async addCategory(event) {
-                let nameEl = document.getElementById("nameCategory")
-                if (nameEl.value.trim().length === 0) {
+                if (this.nameCategory.trim().length === 0) {
                     event.preventDefault()
                     this.$store.commit("setSnackbarText", "Empty fields!")
                     this.$store.commit("setSnackbarError", true)

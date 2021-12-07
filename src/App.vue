@@ -362,9 +362,7 @@
                 this.$store.commit("setLoading", false)
             },
             async editPassword(event) {
-                let oldPasswordEl = document.getElementById("passwordOldProfile")
-                let newPasswordEl = document.getElementById("passwordNewProfile")
-                if (oldPasswordEl.value.trim().length === 0 || newPasswordEl.value.trim().length === 0) {
+                if (this.passwordOld.trim().length === 0 || this.passwordNew.trim().length === 0) {
                     event.preventDefault()
                     this.$store.commit("setSnackbarText", "Empty fields!")
                     this.$store.commit("setSnackbarError", true)

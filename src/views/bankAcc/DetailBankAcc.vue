@@ -14,7 +14,6 @@
                                 </v-card-title>
                                 <v-card-text>
                                     <v-text-field
-                                            id="username"
                                             label="username"
                                             :rules="rules"
                                             v-model="username"
@@ -248,8 +247,7 @@
                 this.$store.commit("setLoading", false)
             },
             async shareBankAcc(event) {
-                let usernameEl = document.getElementById("username")
-                if (usernameEl.value.trim().length === 0) {
+                if (this.username.trim().length === 0) {
                     event.preventDefault()
                     this.$store.commit("setSnackbarText", "Empty fields!")
                     this.$store.commit("setSnackbarError", true)
