@@ -37,7 +37,7 @@
                                 <v-btn
                                         color="primary"
                                         text
-                                        @click="dialogAddCategory = false"
+                                        @click="dialogAddCategory = false, nameCategory = ''"
                                 >
                                     Zavřit
                                 </v-btn>
