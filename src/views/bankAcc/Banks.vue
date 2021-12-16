@@ -43,7 +43,7 @@
                 >
                     <template v-slot:item.detail="props">
                         <v-btn icon @click="detailBankAcc(props.item)">
-                            <v-icon dark>mdi-wrench</v-icon>
+                            <v-icon dark>mdi-dots-horizontal</v-icon>
                         </v-btn>
                     </template>
                     <template v-slot:top>
@@ -179,7 +179,7 @@
                     {text: 'Nazev', value: 'name'},
                     {text: 'Zůstatek', value: 'balance'},
                     {text: 'Měna', value: 'currency'},
-                    {text: 'Nastavení', value: 'detail'},
+                    {text: 'Detail', value: 'detail'},
                 ],
                 searchCreated: '',
                 headersAvailable: [
