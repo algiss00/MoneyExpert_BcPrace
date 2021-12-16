@@ -5,7 +5,7 @@ import axios from "axios";
  */
 
 // for tests
-//const localhostUrl = "http://localhost:8080";
+//const url = "http://localhost:8080";
 
 const url = "https://money-expert-bc.herokuapp.com";
 

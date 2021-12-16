@@ -97,7 +97,7 @@
                         item-key="id"
                         class="elevation-1"
                         :search="search"
-                        :custom-filter="filterOnlyCapsText"
+                        :custom-filter="filterText"
                         @click:row="toDetailTransaction"
                 >
                     <template v-slot:item.date="{ item }">
@@ -106,7 +106,7 @@
                     <template v-slot:top>
                         <v-text-field
                                 v-model="search"
-                                label="Vyhledej podle kategorii nebo typu (POUZE VELKÁ PÍSMENA)"
+                                label="Vyhledej podle kategorii nebo typu"
                                 class="mx-4"
                         />
                     </template>
@@ -173,11 +173,9 @@
             },
         },
         methods: {
-            filterOnlyCapsText(value, search) {
-                return value != null &&
-                    search != null &&
-                    typeof value === 'string' &&
-                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            filterText(value, search) {
+                return value != null && search && typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search.toUpperCase()) !== -1
             },
             toDetailTransaction(item) {
                 this.$router.push('/transactions/' + this.$route.params.bankId + '/detail/' + item.id).catch(() => {

@@ -31,7 +31,7 @@
                         item-key="id"
                         class="elevation-1"
                         :search="search"
-                        :custom-filter="filterOnlyCapsText"
+                        :custom-filter="filterText"
                         @click:row="toDetailDebt"
                         :item-class="statusColor"
                 >
@@ -41,7 +41,7 @@
                     <template v-slot:top>
                         <v-text-field
                                 v-model="search"
-                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
+                                label="Vyhledej podle názvu"
                                 class="mx-4"
                         />
                     </template>
@@ -68,11 +68,9 @@
             }
         },
         methods: {
-            filterOnlyCapsText(value, search) {
-                return value != null &&
-                    search != null &&
-                    typeof value === 'string' &&
-                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            filterText(value, search) {
+                return value != null && search && typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search.toUpperCase()) !== -1
             },
             /**
              * set color by notification

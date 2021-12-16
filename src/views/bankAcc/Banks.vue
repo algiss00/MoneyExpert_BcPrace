@@ -38,7 +38,7 @@
                         item-key="id"
                         class="elevation-1"
                         :search="searchCreated"
-                        :custom-filter="filterOnlyCapsText"
+                        :custom-filter="filterText"
                         @click:row="toDashboard"
                 >
                     <template v-slot:item.detail="props">
@@ -49,7 +49,7 @@
                     <template v-slot:top>
                         <v-text-field
                                 v-model="searchCreated"
-                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
+                                label="Vyhledej podle názvu"
                                 class="mx-4"
                         />
                     </template>
@@ -69,7 +69,7 @@
                         item-key="id"
                         class="elevation-1"
                         :search="searchAvailable"
-                        :custom-filter="filterOnlyCapsText"
+                        :custom-filter="filterText"
                         @click:row="toDashboard"
                 >
                     <template v-slot:item.detail="props">
@@ -80,7 +80,7 @@
                     <template v-slot:top>
                         <v-text-field
                                 v-model="searchAvailable"
-                                label="Vyhledej podle názvu (POUZE VELKÁ PÍSMENA)"
+                                label="Vyhledej podle názvu"
                                 class="mx-4"
                         />
                     </template>
@@ -192,12 +192,10 @@
             }
         },
         methods: {
-            // search in data-table by string value only caps text
-            filterOnlyCapsText(value, search) {
-                return value != null &&
-                    search != null &&
-                    typeof value === 'string' &&
-                    value.toString().toLocaleUpperCase().indexOf(search) !== -1
+            // search in data-table by string
+            filterText(value, search) {
+                return value != null && search && typeof value === 'string' &&
+                    value.toString().toLocaleUpperCase().indexOf(search.toUpperCase()) !== -1
             },
             detailBankAcc(item) {
                 this.$router.push('/banks/detail/' + item.id).catch(() => {

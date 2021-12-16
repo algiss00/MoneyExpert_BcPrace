@@ -18,6 +18,7 @@
                                             :items="allBankAccounts"
                                             v-model="shareBankAccount"
                                             label="dostupné bankovní účty"
+                                            :rules="[v => !!v || 'Item is required']"
                                             item-text="name"
                                             item-value="id"
                                             persistent-hint
@@ -340,9 +341,9 @@
                 this.$store.commit("setLoading", false)
             },
             async transferTransaction(event) {
-                if (this.shareBankAccount.id === this.bankAcc.id) {
+                if (!this.shareBankAccount) {
                     event.preventDefault()
-                    this.$store.commit("setSnackbarText", "Not valid Transfer! You must transfer to another bank account!")
+                    this.$store.commit("setSnackbarText", "Not valid Transfer!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }
@@ -410,8 +411,6 @@
             }
 
             this.allBankAccounts = allUsersBanks
-            // set actual bankAcc to shareBankAcc dialog box
-            this.shareBankAccount = findByIdInArray(allUsersBanks, bankAcc.id)
 
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction
