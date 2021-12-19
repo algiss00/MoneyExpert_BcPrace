@@ -42,19 +42,6 @@
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail účtu</v-toolbar-title>
                             <v-btn
-                                    icon
-                                    @click="dialog = true"
-                                    title="Sdílet bank. účet"
-                                    :disabled="!valid"
-                            >
-                                <v-icon
-                                        color="blue"
-                                >
-                                    mdi-share
-                                </v-icon>
-                            </v-btn>
-                            <v-spacer/>
-                            <v-btn
                                     class="mx-2"
                                     icon
                                     @click="removeBankAcc($event)"
@@ -66,6 +53,20 @@
                                 >
                                     mdi-delete
                                 </v-icon>
+                            </v-btn>
+                            <v-spacer/>
+                            <v-btn
+                                    text
+                                    @click="dialog = true"
+                                    title="Sdílet bank. účet"
+                                    :disabled="!valid"
+                            >
+                                <v-icon
+                                        color="blue"
+                                >
+                                    mdi-share
+                                </v-icon>
+                                Sdílet
                             </v-btn>
                         </v-toolbar>
                         <v-card-text>
@@ -96,7 +97,7 @@
                                         hide-details="auto"
                                         required
                                 />
-                                <v-btn color="primary" text @click="editBankAcc($event)" :disabled="!valid"
+                                <v-btn color="primary" @click="editBankAcc($event)" :disabled="!valid"
                                        id="editBtnBank">
                                     Změnit název, měnu,
                                     zůstatek
@@ -165,7 +166,7 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="#e7f6ff" to="/banks">Zpět</v-btn>
+                            <v-btn color="#e7f6ff" @click="toBanks">Zpět</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -207,6 +208,10 @@
             valid: true,
         }),
         methods: {
+            toBanks() {
+                this.$router.push('/banks/').catch(() => {
+                })
+            },
             async editBankAcc(event) {
                 if (!this.$refs.form.validate()) {
                     event.preventDefault()

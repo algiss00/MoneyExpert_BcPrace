@@ -36,7 +36,7 @@
                             </v-form>
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="#e7f6ff" to="/banks" class="m2-position">Zpět</v-btn>
+                            <v-btn color="#e7f6ff" @click="toBanks" class="m2-position">Zpět</v-btn>
                         </v-card-actions>
                         <v-card-actions>
                             <v-spacer></v-spacer>
@@ -73,6 +73,10 @@
             loading: false
         }),
         methods: {
+            toBanks() {
+                this.$router.push('/banks/').catch(() => {
+                })
+            },
             /**
              * add bank Acc
              * @param event

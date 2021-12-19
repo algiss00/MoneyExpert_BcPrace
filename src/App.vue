@@ -6,14 +6,16 @@
                                 v-if="$store.state.user && !(['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name))"/>
 
             <v-btn icon elevation="2" color="black" v-if="$store.state.user"
-                   @click.stop="profileDrawer = true, startDialogProfile()">
+                   title="profile" @click.stop="profileDrawer = true, startDialogProfile()">
                 <v-icon>
                     mdi-account
                 </v-icon>
             </v-btn>
             <v-spacer/>
-            <v-toolbar-title v-if="['Banks', 'Login', 'SignUp', 'AddBankAcc', 'DetailBankAcc'].includes($route.name)">
-                MoneyExpert
+            <v-toolbar-title>
+                <v-btn @click="toBanks" text class="text-capitalize text-h6">
+                    MoneyExpert
+                </v-btn>
             </v-toolbar-title>
 
             <v-spacer/>
@@ -110,20 +112,6 @@
             <v-card class="elevation-12">
                 <v-toolbar color="#e7f6ff">
                     <v-toolbar-title>Profile</v-toolbar-title>
-                    <v-card-actions>
-                        <v-btn
-                                class="mx-2"
-                                icon
-                                @click="logout"
-                                title="Logout"
-                        >
-                            <v-icon
-                            >
-                                mdi-logout
-                            </v-icon>
-                        </v-btn>
-                    </v-card-actions>
-                    <v-spacer></v-spacer>
                     <v-btn
                             class="mx-2"
                             icon
@@ -137,6 +125,21 @@
                             mdi-delete
                         </v-icon>
                     </v-btn>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                        <v-btn
+                                text
+                                @click="logout"
+                                title="Logout"
+                                color="black"
+                        >
+                            <v-icon
+                            >
+                                mdi-logout
+                            </v-icon>
+                            LOGOUT
+                        </v-btn>
+                    </v-card-actions>
                 </v-toolbar>
                 <v-card-text>
                     <v-form
@@ -160,7 +163,7 @@
                                 hide-details="auto"
                                 required
                         />
-                        <v-btn color="primary" text :disabled="!valid" id="editNameLastname"
+                        <v-btn color="primary" :disabled="!valid" id="editNameLastname"
                                @click="editNameLastname($event)" class="m-edit">
                             Změnit jméno a přijmení
                         </v-btn>
@@ -173,7 +176,7 @@
                                 hide-details="auto"
                                 required
                         />
-                        <v-btn color="primary" text :disabled="!valid" id="editEmail" @click="editEmail($event)"
+                        <v-btn color="primary" :disabled="!valid" id="editEmail" @click="editEmail($event)"
                                class="m-edit">
                             Změnit email
                         </v-btn>
@@ -185,7 +188,7 @@
                                 hide-details="auto"
                                 required
                         />
-                        <v-btn color="primary" text :disabled="!valid" id="editUsername"
+                        <v-btn color="primary" :disabled="!valid" id="editUsername"
                                @click="editUsername($event)" class="m-edit">
                             Změnit username
                         </v-btn>
@@ -205,7 +208,7 @@
                                 hide-details="auto"
                                 required
                         />
-                        <v-btn color="primary" text :disabled="!valid" id="editPassword"
+                        <v-btn color="primary" :disabled="!valid" id="editPassword"
                                @click="editPassword($event)" class="m-edit">
                             Změnit heslo
                         </v-btn>
@@ -273,6 +276,10 @@
             }
         },
         methods: {
+            toBanks() {
+                this.$router.push('/banks/').catch(() => {
+                })
+            },
             // route to page
             async toPage(item) {
                 if (item.title === 'Účty') {

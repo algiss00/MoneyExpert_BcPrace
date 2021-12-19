@@ -6,7 +6,6 @@
                     <v-card class="elevation-12">
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail rozpočtu</v-toolbar-title>
-                            <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
                                     icon
@@ -33,7 +32,7 @@
                                         :rules="balanceRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editAmountBudget($event)" :disabled="!valid"
+                                <v-btn color="primary" @click="editAmountBudget($event)" :disabled="!valid"
                                        class="editBtn">Změnit
                                     částku
                                 </v-btn>
@@ -44,7 +43,7 @@
                                         :rules="nameRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editNameBudget($event)" :disabled="!valid"
+                                <v-btn color="primary" @click="editNameBudget($event)" :disabled="!valid"
                                        class="editBtn">Změnit název
                                 </v-btn>
                                 <v-text-field
@@ -54,7 +53,7 @@
                                         :rules="percentRules"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editPercentBudget($event)" :disabled="!valid"
+                                <v-btn color="primary" @click="editPercentBudget($event)" :disabled="!valid"
                                        class="editBtn">Změnit
                                     procento upozornění
                                 </v-btn>
@@ -69,9 +68,8 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="primary" text @click="editCategoryBudget($event)" :disabled="!valid"
-                                       class="editBtn">Změnit
-                                    kategorii
+                                <v-btn color="primary" @click="editCategoryBudget($event)" :disabled="!valid"
+                                       class="editBtn">Změnit kategorii
                                 </v-btn>
                                 <v-text-field
                                         id="bankAcc"

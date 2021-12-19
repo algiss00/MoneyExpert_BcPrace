@@ -44,56 +44,8 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
-                        <v-dialog
-                                v-model="dialogConfirm"
-                                max-width="360"
-                        >
-                            <v-card>
-                                <v-card-title class="text-h5">
-                                    Potvrzujete změnu kategorii.
-                                </v-card-title>
-
-                                <v-card-text>
-                                    Potvrzením změny - u transakci se změní kategorie, má to následky na vytvořené rozpočty.
-                                    Pokud máte rozpočet na editovanou kategorii, tak částka transakci se přidá k tomu rozpočtu.
-                                </v-card-text>
-
-                                <v-card-actions>
-                                    <v-spacer/>
-
-                                    <v-btn
-                                            color="green darken-1"
-                                            text
-                                            @click="dialogConfirm = false"
-                                    >
-                                        Zrušit
-                                    </v-btn>
-
-                                    <v-btn
-                                            color="green darken-1"
-                                            text
-                                            @click="dialogConfirm = false, editCategoryTransaction()"
-                                    >
-                                        Potvrdit
-                                    </v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
                         <v-toolbar color="#e7f6ff">
                             <v-toolbar-title>Detail transakce</v-toolbar-title>
-                            <v-btn
-                                    icon
-                                    @click="dialog = true"
-                                    title="Převod transakci"
-                                    :disabled="!valid"
-                            >
-                                <v-icon
-                                        color="blue"
-                                >
-                                    mdi-share
-                                </v-icon>
-                            </v-btn>
-                            <v-spacer></v-spacer>
                             <v-btn
                                     class="mx-2"
                                     icon
@@ -106,6 +58,20 @@
                                 >
                                     mdi-delete
                                 </v-icon>
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                    text
+                                    @click="dialog = true"
+                                    title="Převod transakci"
+                                    :disabled="!valid"
+                            >
+                                <v-icon
+                                        color="blue"
+                                >
+                                    mdi-share
+                                </v-icon>
+                                Převod
                             </v-btn>
                         </v-toolbar>
                         <v-card-text>
@@ -168,7 +134,7 @@
                                         v-model="jottings"
                                         hide-details="auto"
                                 />
-                                <v-btn color="primary" text @click="editBasicInfo($event)" :disabled="!valid"
+                                <v-btn color="primary" @click="editBasicInfo($event)" :disabled="!valid"
                                        id="editBtn">
                                     Změnit datum, částku,
                                     poznámky
@@ -180,7 +146,7 @@
                                         v-model="type"
                                         label="typ"
                                 />
-                                <v-btn color="primary" :disabled="!valid" text @click="editTypeTransaction"
+                                <v-btn color="primary" :disabled="!valid" @click="editTypeTransaction"
                                        id="editBtnType">Změnit typ
                                 </v-btn>
                                 <v-select
@@ -194,9 +160,8 @@
                                         persistent-hint
                                         return-object
                                 />
-                                <v-btn color="primary" :disabled="!valid" text @click="dialogConfirm = true"
-                                       id="editBtnCategory">Změnit
-                                    kategorii
+                                <v-btn color="primary" :disabled="!valid" @click="editCategoryTransaction"
+                                       id="editBtnCategory">Změnit kategorii
                                 </v-btn>
                                 <v-text-field
                                         id="bankAcc"
@@ -220,15 +185,15 @@
 
 <script>
     import {
-        getTransactionById,
-        getBankAccById,
         editBasicTransaction,
-        editTypeTransaction,
         editCategoryTransaction,
-        getCategoryByName,
-        getAllUsersCategories,
-        removeTransactionFromBank,
+        editTypeTransaction,
         getAllUsersBanks,
+        getAllUsersCategories,
+        getBankAccById,
+        getCategoryByName,
+        getTransactionById,
+        removeTransactionFromBank,
         transferTransaction
     } from "../../api";
 
@@ -265,8 +230,7 @@
                 v => String(v).trim().length > 0 || 'required',
                 v => Number(v) > 0 || 'must be > 0'
             ],
-            valid: true,
-            dialogConfirm: false
+            valid: true
         }),
         methods: {
             toTransactions() {
@@ -401,7 +365,6 @@
             }
             this.categories = categories
             this.category = transactionCategory
-
             let allUsersBanks = await getAllUsersBanks()
             if (allUsersBanks == null) {
                 this.$store.commit("setLoading", false)
@@ -410,7 +373,10 @@
                 return
             }
 
-            this.allBankAccounts = allUsersBanks
+            // filter users banks, does not contain actual bankAcc
+            this.allBankAccounts = allUsersBanks.filter(function (value) {
+                return value.id !== bankAcc.id;
+            })
 
             this.date = new Date(transactionById.date).toISOString().substring(0, 19)
             this.type = transactionById.typeTransaction

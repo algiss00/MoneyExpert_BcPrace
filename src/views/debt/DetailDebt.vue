@@ -24,20 +24,6 @@
                             <v-btn
                                     class="mx-2"
                                     icon
-                                    @click="dialogDebt = true"
-                                    title="Ukončení závazku"
-                                    :disabled="!valid"
-                            >
-                                <v-icon
-                                        color="green"
-                                >
-                                    mdi-check-bold
-                                </v-icon>
-                            </v-btn>
-                            <v-spacer></v-spacer>
-                            <v-btn
-                                    class="mx-2"
-                                    icon
                                     @click="removeDebt($event)"
                                     title="Smazat závazek"
                                     :disabled="!valid"
@@ -47,6 +33,21 @@
                                 >
                                     mdi-delete
                                 </v-icon>
+                            </v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                    class="mx-2"
+                                    text
+                                    @click="dialogDebt = true"
+                                    title="Ukončení závazku"
+                                    :disabled="!valid"
+                            >
+                                <v-icon
+                                        color="green"
+                                >
+                                    mdi-check-bold
+                                </v-icon>
+                                Ukončit
                             </v-btn>
                         </v-toolbar>
                         <v-card-text>
@@ -75,7 +76,7 @@
                                         label="popis"
                                         rows="2"
                                 />
-                                <v-btn color="primary" text class="editBtnDebt" :disabled="!valid"
+                                <v-btn color="primary" class="editBtnDebt" :disabled="!valid"
                                        @click="editBasic($event)">Změnit název,
                                     částku, popis
                                 </v-btn>
@@ -121,7 +122,7 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text :disabled="!valid" class="editBtnDebt"
+                                <v-btn color="primary" :disabled="!valid" class="editBtnDebt"
                                        @click="editDeadline($event)">Změnit
                                     deadline
                                 </v-btn>
@@ -167,7 +168,7 @@
                                         </v-btn>
                                     </v-date-picker>
                                 </v-menu>
-                                <v-btn color="primary" text :disabled="!valid" class="editBtnDebt"
+                                <v-btn color="primary" :disabled="!valid" class="editBtnDebt"
                                        @click="editNotifyDate($event)">Změnit
                                     datum upozornění
                                 </v-btn>
