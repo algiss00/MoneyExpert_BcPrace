@@ -23,7 +23,7 @@
                                         id="currencyBankAcc"
                                         :items="items"
                                         v-model="currency"
-                                        :rules="[v => !!v || 'Item is required']"
+                                        :rules="[v => !!v || 'povinný']"
                                         label="měna"
                                 />
                                 <v-text-field
@@ -63,11 +63,11 @@
             balance: "",
             items: ['CZK', 'EUR'],
             nameRules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             valid: true,
             loading: false

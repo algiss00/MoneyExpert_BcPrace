@@ -85,7 +85,7 @@
                                 <v-select
                                         id="currencyBankAcc"
                                         :items="items"
-                                        :rules="[v => !!v || 'Item is required']"
+                                        :rules="[v => !!v || 'povinný']"
                                         v-model="currency"
                                         label="měna"
                                 />
@@ -199,11 +199,11 @@
             ownersDialog: false,
             owners: [],
             rules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             valid: true,
         }),
@@ -254,7 +254,7 @@
             async shareBankAcc(event) {
                 if (this.username.trim().length === 0) {
                     event.preventDefault()
-                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarText", "Prázdné pole!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }
@@ -262,7 +262,7 @@
                 let user = await getUserByUsername(this.username)
                 if (user == null) {
                     this.$store.commit("setLoading", false)
-                    this.$store.commit("setSnackbarText", "User not exists!")
+                    this.$store.commit("setSnackbarText", "Uživatel neexistuje!")
                     this.$store.commit("setSnackbarError", true)
                     this.username = ''
                     return

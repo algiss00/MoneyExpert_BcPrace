@@ -57,11 +57,11 @@
             usernameLogin: "",
             passwordLogin: "",
             usernameRules: [
-                v => String(v).trim().length > 0 || 'username is required',
+                v => String(v).trim().length > 0 || 'povinný',
                 v => /^\w{0,20}$/.test(v) || 'invalid username'// todo only english letters, cisla a underscore
             ],
             passRules: [
-                v => !!v || 'password is required'
+                v => !!v || 'povinný'
             ],
             valid: true,
             loading: false,

@@ -158,12 +158,12 @@
             menu: false,
             menu2: false,
             nameRules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required',
-                v => Number(v) > 0 || 'must be > 0'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný',
+                v => Number(v) > 0 || 'musí být > 0'
             ],
             valid: true,
             loading: false
@@ -185,7 +185,7 @@
                 let result = await addDebt(jsonDebt, this.$route.params.bankId)
 
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Invalid data! Maybe notifyDate is after deadline date.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Možná notifyDate je po deadline date.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)

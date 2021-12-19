@@ -210,7 +210,7 @@
             createdCategories: [],
             defaultCategories: [],
             rules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             dialogAddCategory: false,
             nameCategory: "",
@@ -231,7 +231,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editCategory(this.selectedItem.id, this.nameCategoryEdit)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Možná kategorie s timhle názvem již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()
@@ -250,7 +250,7 @@
             async addCategory(event) {
                 if (this.nameCategory.trim().length === 0) {
                     event.preventDefault()
-                    this.$store.commit("setSnackbarText", "Empty fields!")
+                    this.$store.commit("setSnackbarText", "Prázdné pole!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }
@@ -261,7 +261,7 @@
 
                 let result = await addCategory(jsonCategory)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Invalid data! Maybe category with this name already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Možná kategorie s timhle názvem již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     let createdCategories = await getAllUsersCreatedCategories()

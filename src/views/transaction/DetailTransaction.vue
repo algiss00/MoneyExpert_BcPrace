@@ -142,7 +142,7 @@
                                 <v-select
                                         id="type"
                                         :items="types"
-                                        :rules="[v => !!v || 'Item is required']"
+                                        :rules="[v => !!v || 'povinný']"
                                         v-model="type"
                                         label="typ"
                                 />
@@ -155,7 +155,7 @@
                                         v-model="category"
                                         label="Kategorie"
                                         item-text="name"
-                                        :rules="[v => !!v || 'Item is required']"
+                                        :rules="[v => !!v || 'povinný']"
                                         item-value="id"
                                         persistent-hint
                                         return-object
@@ -223,12 +223,12 @@
             menu: false,
             dialog: false,
             rules: [
-                v => String(v).trim().length > 0 || 'required',
+                v => String(v).trim().length > 0 || 'povinný',
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required',
-                v => Number(v) > 0 || 'must be > 0'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný',
+                v => Number(v) > 0 || 'musí být > 0'
             ],
             valid: true
         }),
@@ -307,7 +307,7 @@
             async transferTransaction(event) {
                 if (!this.shareBankAccount) {
                     event.preventDefault()
-                    this.$store.commit("setSnackbarText", "Not valid Transfer!")
+                    this.$store.commit("setSnackbarText", "Nevalidní převod!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }

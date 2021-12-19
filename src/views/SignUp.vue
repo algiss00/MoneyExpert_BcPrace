@@ -84,17 +84,17 @@
             name: "",
             lastname: "",
             nameRules: [
-                v => String(v).trim().length > 0 || 'required',
+                v => String(v).trim().length > 0 || 'povinný',
             ],
             passRules: [
-                v => !!v || 'Name is required'
+                v => !!v || 'povinný'
             ],
             emailRules: [
-                v => String(v).trim().length > 0 || 'E-mail is required',
-                v => /.+@.+/.test(v) || 'E-mail must be valid'
+                v => String(v).trim().length > 0 || 'povinný',
+                v => /.+@.+/.test(v) || 'E-mail musí být validní'
             ],
             usernameRules: [
-                v => String(v).trim().length > 0 || 'required',
+                v => String(v).trim().length > 0 || 'povinný',
                 v => /^\w{0,20}$/.test(v) || 'invalid data'
             ],
             valid: true,
@@ -117,7 +117,7 @@
                 this.loading = true
                 let result = await registration(jsonUser)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Invalid data! Maybe this username or email already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Možná tenhle username nebo email již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.data.username === this.username && result.data.email === this.email) {
                     this.$store.commit("setSnackbar", true)

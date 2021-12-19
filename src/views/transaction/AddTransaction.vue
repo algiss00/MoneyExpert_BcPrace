@@ -71,7 +71,7 @@
                                         id="type"
                                         :items="types"
                                         v-model="type"
-                                        :rules="[v => !!v || 'Item is required']"
+                                        :rules="[v => !!v || 'povinný']"
                                         label="typ"
                                 />
                                 <v-select
@@ -80,7 +80,7 @@
                                         v-model="category"
                                         label="Kategorie"
                                         item-text="name"
-                                        :rules="[v => !!v|| 'Item is required']"
+                                        :rules="[v => !!v|| 'povinný']"
                                         item-value="id"
                                         persistent-hint
                                         return-object
@@ -132,12 +132,12 @@
             date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substring(0, 19),
             menu: false,
             rules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required',
-                v => Number(v) > 0 || 'must be > 0'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný',
+                v => Number(v) > 0 || 'musí být > 0'
             ],
             valid: true,
             loading: false

@@ -190,7 +190,7 @@
                 let to = this.date[1]
 
                 if (from === undefined || to === undefined) {
-                    this.$store.commit("setSnackbarText", "Invalid date period! Must be start date and end date!")
+                    this.$store.commit("setSnackbarText", "Invalid rozsah období! Musí být počáteční datum a koncový datum!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }
@@ -201,7 +201,7 @@
                 }
 
                 if (from > to) {
-                    this.$store.commit("setSnackbarText", "Invalid date period! Start date must be before end date!")
+                    this.$store.commit("setSnackbarText", "Invalid rozsah období! Počáteční datum musí být před koncovým datem!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }
@@ -221,13 +221,13 @@
              */
             async getAllTransactionsByTypeAndCategoryMethod() {
                 if (this.date.length <= 1) {
-                    alert("Invalid date period! Must be start date and end date period!")
+                    alert("Invalid rozsah období! Musí být počáteční datum a koncový datum!")
                     return
                 }
                 let from = this.date[0]
                 let to = this.date[1]
                 if (from > to) {
-                    this.$store.commit("setSnackbarText", "Invalid date period! From date is later then another!")
+                    this.$store.commit("setSnackbarText", "Invalid rozsah období! Počáteční datum musí být před koncovým datem!")
                     this.$store.commit("setSnackbarError", true)
                     return
                 }

@@ -260,15 +260,15 @@
                 passwordNew: "",
                 valid: true,
                 nameRules: [
-                    v => !!v || 'required',
+                    v => !!v || 'povinný',
                 ],
                 usernameRules: [
                     v => !!v || 'required',
                     v => /^\w{0,20}$/.test(v) || 'invalid data'
                 ],
                 emailRules: [
-                    v => !!v.trim() || 'E-mail is required',
-                    v => /.+@.+/.test(v) || 'E-mail must be valid'
+                    v => !!v.trim() || 'povinný',
+                    v => /.+@.+/.test(v) || 'E-mail musí být validní'
                 ],
                 timeout: 2000,
                 text: "Success",
@@ -346,7 +346,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editEmail(this.email)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Server error! Maybe email already exists.")
+                    this.$store.commit("setSnackbarText", "Server error! Možná tenhle email již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
@@ -361,7 +361,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editUsername(this.username)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Server error! Maybe username already exists.")
+                    this.$store.commit("setSnackbarText", "Server error! Možná tenhle username již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
@@ -379,7 +379,7 @@
                 let result = await editPassword(this.passwordOld, this.passwordNew)
 
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Server error! Maybe old password not equal to actual password.")
+                    this.$store.commit("setSnackbarText", "Server error! Možná původní heslo není stejný jako aktuální heslo.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)

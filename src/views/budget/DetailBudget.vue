@@ -63,7 +63,7 @@
                                         v-model="category"
                                         label="Kategorie"
                                         item-text="name"
-                                        :rules="[v => !!v|| 'Item is required']"
+                                        :rules="[v => !!v|| 'povinný']"
                                         item-value="id"
                                         persistent-hint
                                         return-object
@@ -128,18 +128,18 @@
             percentNotify: "",
             amount: "",
             nameRules: [
-                v => String(v).trim().length > 0 || 'required'
+                v => String(v).trim().length > 0 || 'povinný'
             ],
             balanceRules: [
-                v => !Number.isNaN(Number(v)) || 'must be number',
-                v => String(v).trim().length > 0 || 'required',
-                v => Number(v) > 0 || 'must be > 0'
+                v => !Number.isNaN(Number(v)) || 'musí být číslo',
+                v => String(v).trim().length > 0 || 'povinný',
+                v => Number(v) > 0 || 'musí být > 0'
             ],
             percentRules: [
-                v => Number.isInteger(Number(v)) || 'must be integer',
-                v => String(v).trim().length > 0 || 'required',
-                v => Number(v) > 0 || 'must be > 0',
-                v => Number(v) <= 100 || 'must be <= 100'
+                v => Number.isInteger(Number(v)) || 'musí být integer',
+                v => String(v).trim().length > 0 || 'povinný',
+                v => Number(v) > 0 || 'musí být > 0',
+                v => Number(v) <= 100 || 'musí být <= 100'
             ],
             valid: true,
         }),
@@ -156,7 +156,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await removeBudget(this.$route.params.budgetId)
                 if (result == null || result.status !== 200) {
-                    this.$store.commit("setSnackbarText", "Server error! Cant delete.")
+                    this.$store.commit("setSnackbarText", "Server error! Nelze smazat.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 200) {
                     this.$store.commit("setSnackbar", true)
@@ -179,7 +179,7 @@
                 this.$store.commit("setLoading", true)
                 let result = await editCategoryBudget(this.$route.params.budgetId, category.id)
                 if (result == null || result.status !== 201) {
-                    this.$store.commit("setSnackbarText", "Invalid data! Maybe budget for this category already exists.")
+                    this.$store.commit("setSnackbarText", "Invalid data! Možná rozpočet pro tuhle kategorii již existuje.")
                     this.$store.commit("setSnackbarError", true)
                 } else if (result.status === 201) {
                     this.$store.commit("setSnackbar", true)
