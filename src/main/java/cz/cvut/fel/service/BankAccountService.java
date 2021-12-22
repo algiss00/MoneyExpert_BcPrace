@@ -140,8 +140,7 @@ public class BankAccountService extends AbstractServiceHelper {
 
     /**
      * Persist bankAccount.
-     * if Balance > 0, then will be created start transaction with amount of balance
-     * if Balance <= 0, then will be not created start transaction
+     * if Balance != 0, then will be created start transaction with amount of balance
      *
      * @param bankAccount
      * @return
@@ -156,7 +155,7 @@ public class BankAccountService extends AbstractServiceHelper {
         BankAccount persistedEntity = bankAccountDao.persist(bankAccount);
         u.getCreatedBankAccounts().add(bankAccount);
         userDao.update(u);
-        if (bankAccount.getBalance() > 0) {
+        if (bankAccount.getBalance() != 0) {
             Transaction startTransaction = createStartTransaction(bankAccount);
             persistedEntity.getTransactions().add(startTransaction);
             bankAccountDao.update(persistedEntity);
@@ -330,8 +329,11 @@ public class BankAccountService extends AbstractServiceHelper {
         startTransaction.setJottings("Start transaction");
         startTransaction.setAmount(bankAccount.getBalance());
         startTransaction.setDate(new Date());
-        startTransaction.setTypeTransaction(TypeTransaction.INCOME);
-
+        if (bankAccount.getBalance() > 0) {
+            startTransaction.setTypeTransaction(TypeTransaction.INCOME);
+        } else if (bankAccount.getBalance() < 0) {
+            startTransaction.setTypeTransaction(TypeTransaction.EXPENSE);
+        }
         return transactionDao.persist(startTransaction);
     }
 }

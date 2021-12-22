@@ -72,7 +72,6 @@ public class BankAccountServiceTest {
         bankAccount.setCreator(user);
         Category category = Generator.generateDefaultCategory();
         Transaction transaction = Generator.generateDefaultTransaction();
-        transaction.setBankAccount(bankAccount);
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.persist(bankAccount)).thenReturn(bankAccount);
@@ -94,12 +93,21 @@ public class BankAccountServiceTest {
         BankAccount bankAccount = Generator.generateDefaultBankAccount();
         bankAccount.setCreator(user);
         bankAccount.setBalance((double) -100);
+        Category category = Generator.generateDefaultCategory();
+        Transaction transaction = Generator.generateDefaultTransaction();
         try (MockedStatic<SecurityUtils> utilities = Mockito.mockStatic(SecurityUtils.class)) {
             HelperFunctions.authUser(utilities, userDao, user);
             when(bankAccountDao.persist(bankAccount)).thenReturn(bankAccount);
+            when(categoryDao.find(anyInt())).thenReturn(category);
+            when(categoryDao.getUsersCategoryById(anyInt(), anyInt())).thenReturn(category);
+            when(transactionDao.persist(any())).thenReturn(transaction);
+
             BankAccount persisted = bankAccountService.persist(bankAccount);
             verify(bankAccountDao, times(1)).persist(bankAccount);
-            assertEquals(bankAccount, persisted);
+            verify(transactionDao, times(1)).persist(any());
+            verify(bankAccountDao, times(1)).update(persisted);
+            assertFalse(persisted.getTransactions().isEmpty());
+            assertEquals(transaction, persisted.getTransactions().get(0));
         }
     }
 
